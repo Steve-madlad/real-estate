@@ -1,0 +1,4 @@
+echo "linting, typechecking and formatting files for commit..."
+bunx lint-staged
+bun typecheck
+bun format
