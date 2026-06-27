@@ -228,7 +228,7 @@
     @apply absolute top-1/2 -translate-y-1/2;
   }
   .abs-center {
-    @apply absolute right-1/2 left-1/2 -translate-1/2;
+    @apply absolute top-1/2 left-1/2 -translate-1/2;
   }
   .abs-fill {
     @apply absolute inset-0;

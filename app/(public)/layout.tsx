@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 
 export default function layout({ children }: { children: ReactNode }) {
   return (
-    <div>
+    <div className="size-full">
       <Navbar />
       <main className={`col size-full pt-${NAVBAR_HEIGHT}px`}>{children}</main>
     </div>
