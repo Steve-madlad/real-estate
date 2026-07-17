@@ -1,9 +1,7 @@
-import { AiFillYoutube } from 'react-icons/ai';
-import { AiFillLinkedin } from 'react-icons/ai';
-import { GrTwitter } from 'react-icons/gr';
-import { AiFillInstagram } from 'react-icons/ai';
-import { FaFacebook } from 'react-icons/fa6';
 import Link from 'next/link';
+import { AiFillInstagram, AiFillLinkedin, AiFillYoutube } from 'react-icons/ai';
+import { FaFacebook } from 'react-icons/fa6';
+import { GrTwitter } from 'react-icons/gr';
 
 export default function Footer() {
   return (
@@ -53,6 +51,10 @@ export default function Footer() {
               <AiFillLinkedin size={25} />
             </a>
           </div>
+        </div>
+
+        <div className="just-center mt-8 text-center text-sm text-gray-500">
+          <span>© {new Date().getFullYear()} RENTIFUL. All rights reserved.</span>
         </div>
       </div>
     </footer>
