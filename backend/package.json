@@ -10,7 +10,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed": "bun ./data/seed.ts",
     "prisma-gen": "prisma generate",
-    "postprisma-gen": "shx cp -r ./prisma/generated/client.ts ../frontend/types/prismaTypes.d.ts",
     "prisma-migrate": "prisma migrate dev"
   },
   "dependencies": {
