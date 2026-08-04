@@ -1,12 +1,24 @@
-import axios from "axios";
+import { fetchAuthSession } from 'aws-amplify/auth';
+import axios from 'axios';
 
-const api = axios.create({
+const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
+apiClient.interceptors.request.use(
+  async (config) => {
+    const session = await fetchAuthSession();
+    const { idToken } = session.tokens ?? {};
+    if (idToken) {
+      config.headers?.set('Authorization', `Bearer ${idToken}`);
+    }
 
-export { api };
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
+export { apiClient };
