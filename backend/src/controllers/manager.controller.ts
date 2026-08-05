@@ -45,7 +45,7 @@ export const getManager = catchAsync(async (req: Request, res: Response) => {
 export const createManager = catchAsync(async (req: Request, res: Response) => {
   const { cognitoId, name, email, phoneNumber } = req.body;
 
-  const parsed = createManagerSchema.safeParse({ cognitoId });
+  const parsed = createManagerSchema.safeParse({ cognitoId, name, email, phoneNumber });
   handleValidationError<z.Infer<typeof createManagerSchema>>(parsed, res);
 
   const manager = await prisma.manager.create({

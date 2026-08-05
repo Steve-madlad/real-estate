@@ -14,7 +14,7 @@ export const userKeys = {
   all: ['user'] as const,
 };
 
-export const useAuthUser = (options?: UseAuthUserProps) => {
+export const useGetAuthUser = (options?: UseAuthUserProps) => {
   return useQuery({
     queryFn: getAuthUser,
     queryKey: userKeys.all,

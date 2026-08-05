@@ -14,7 +14,7 @@ const createTenantSchema = z
     cognitoId: z.string().min(1, "Cognito ID is required"),
     name: z.string().min(1, "Name is required"),
     email: z.email("Invalid email address"),
-    phoneNumber: z.string().min(1, "Phone number is required"),
+    phoneNumber: z.string(),
   })
   .strip();
 
@@ -48,7 +48,7 @@ export const getTenant = catchAsync(async (req: Request, res: Response) => {
 export const createTenant = catchAsync(async (req: Request, res: Response) => {
   const { cognitoId, name, email, phoneNumber } = req.body;
 
-  const parsed = createTenantSchema.safeParse({ cognitoId });
+  const parsed = createTenantSchema.safeParse({ cognitoId, name, email, phoneNumber });
   handleValidationError<z.Infer<typeof createTenantSchema>>(parsed, res);
 
   const tenant = await prisma.tenant.create({

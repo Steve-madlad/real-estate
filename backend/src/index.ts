@@ -19,8 +19,9 @@ app.get("/", (req, res) => {
 })
 
 app.use("/tenants", authMiddleWare(["tenant"]), tenantRoutes)
-app.use("/manager", authMiddleWare(["manager"]), managerRoutes)
+app.use("/managers", authMiddleWare(["manager"]), managerRoutes)
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 })
