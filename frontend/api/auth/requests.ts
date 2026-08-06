@@ -2,10 +2,8 @@ import { apiClient } from '@/lib/http-client';
 import { Manager, Tenant } from '@/types/prismaTypes';
 import { AuthUser, fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 import axios from 'axios';
-
-type UserRole = 'manager' | 'tenant';
-
-const isUserRole = (value: unknown): value is UserRole => value === 'manager' || value === 'tenant';
+import { UserRole } from './types';
+import { isUserRole } from '@/lib/utils';
 
 const getAuthUser = async (): Promise<User> => {
   const session = await fetchAuthSession();

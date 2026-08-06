@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { SidebarTrigger } from './ui/sidebar';
 
 export default function Navbar() {
   const { data: user } = useGetAuthUser();
@@ -35,15 +36,13 @@ export default function Navbar() {
 
   return (
     <div className={`fixed top-0 left-0 z-50 w-full shadow-xl h-${NAVBAR_HEIGHT}`}>
-      <div className="flex-between bg-primary-700 w-full px-8 py-3 text-white">
+      <div className="flex-between bg-primary-700 w-full px-4 md:px-8 py-3 text-white">
         <div className="align-center gap-4 md:gap-6">
-          {/* {
-            isDashboardRoute && (
-              <div className="md:hidden">
-                <SiderbarTrigger/>
-              </div>
-            )
-          } */}
+          {isDashboardRoute && (
+            <div className="md:hidden! flex-center mr-5">
+              <SidebarTrigger iconClassname="size-6"/>
+            </div>
+          )}
           <Link href="/" className="hover:text-primary-300! cursor-pointer" scroll={false}>
             <div className="align-center gap-3">
               <Image
@@ -108,19 +107,12 @@ export default function Navbar() {
                   </Avatar>
                   <p className="text-primary-200 hidden md:block">{user.userInfo.name}</p>
                 </DropdownMenuTrigger>
-                {/* <DropdownMenuContent className="text-primary-700"> */}
                 <DropdownMenuContent>
                   <DropdownMenuGroup>
-                    {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
                     <DropdownMenuItem
-                      className="hover:bg-primary-700! hover:text-white! font-semibold"
+                      className="hover:bg-primary-700! font-semibold hover:text-white!"
                       onClick={() => {
-                        router.push(
-                          user.userRole === 'manager'
-                            ? '/managers/dashboard'
-                            : '/tenants/dashboard',
-                          { scroll: false },
-                        );
+                        router.push(`/${user.userRole}s/dashboard`, { scroll: false });
                       }}
                     >
                       Go To Dashboard
@@ -129,7 +121,7 @@ export default function Navbar() {
                     <DropdownMenuItem
                       className="hover:bg-primary-700! hover:text-white!"
                       onClick={() => {
-                        router.push(`${user.userRole}s/settings`, { scroll: false });
+                        router.push(`/${user.userRole}s/settings`, { scroll: false });
                       }}
                     >
                       Settings
@@ -140,7 +132,6 @@ export default function Navbar() {
                     >
                       Sign out
                     </DropdownMenuItem>
-                    {/* <DropdownMenuItem>Billing</DropdownMenuItem> */}
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>

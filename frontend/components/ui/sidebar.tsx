@@ -1,12 +1,10 @@
 'use client';
 
-import * as React from 'react';
 import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
+import * as React from 'react';
 
-import { useIsMobile } from '@/hooks/useMobile';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +17,8 @@ import {
 } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useIsMobile } from '@/hooks/useMobile';
+import { cn } from '@/lib/utils';
 import { PanelLeftIcon } from 'lucide-react';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
@@ -244,7 +244,12 @@ function Sidebar({
   );
 }
 
-function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
+function SidebarTrigger({
+  className,
+  onClick,
+  iconClassname,
+  ...props
+}: React.ComponentProps<typeof Button> & { iconClassname?: string }) {
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -252,7 +257,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
-      size="icon-sm"
+      size={'icon-sm'}
       className={cn(className)}
       onClick={(event) => {
         onClick?.(event);
@@ -260,7 +265,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      <PanelLeftIcon className={iconClassname}/>
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

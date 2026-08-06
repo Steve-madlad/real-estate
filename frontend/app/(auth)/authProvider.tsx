@@ -153,7 +153,7 @@ export default function Auth({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const isAuthPage = pathname.match(/^\/(signin|signup)$/);
-  const isDashboardPage = pathname.startsWith('/manager') || pathname.startsWith('/tenants');
+  const isDashboardPage = pathname.startsWith('/managers') || pathname.startsWith('/tenants');
 
   useEffect(() => {
     if (user && isAuthPage) {
