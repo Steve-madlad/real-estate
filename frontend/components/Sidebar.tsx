@@ -1,12 +1,10 @@
 'use client';
 
-import { useGetAuthUser } from '@/api/auth';
 import { NAVBAR_HEIGHT } from '@/asset-download/asset-download/client/lib/constants';
 import { cn } from '@/lib/utils';
 import { Building, FileText, Home, Menu, Settings, X } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import {
   Sidebar as SidebarComponent,
   SidebarContent,
@@ -17,43 +15,25 @@ import {
   useSidebar,
 } from './ui/sidebar';
 
+const navLinks = (userType: string) =>
+  userType === 'manager'
+    ? [
+        { icon: Building, label: 'Properties', href: '/managers/dashboard/properties' },
+        { icon: FileText, label: 'Applications', href: '/managers/dashboard/applications' },
+        { icon: Settings, label: 'settings', href: '/managers/dashboard/settings' },
+      ]
+    : [
+        { icon: Building, label: 'Favorites', href: '/tenants/dashboard/favorites' },
+        { icon: FileText, label: 'Applications', href: '/tenants/dashboard/applications' },
+        { icon: Home, label: 'Residences', href: '/tenants/dashboard/residences' },
+        { icon: Settings, label: 'settings', href: '/managers/dashboard/settings' },
+      ];
+
 export default function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const { toggleSidebar, open } = useSidebar();
+
   const userType = pathname.startsWith('/managers') ? 'manager' : 'tenant';
-  const { data: userData } = useGetAuthUser();
-  console.log({ userData });
-
-  useEffect(() => {
-    if (pathname.endsWith('/tenants/dashboard'))
-      router.push('/tenants/dashboard/favorites', { scroll: false });
-    else if (pathname.endsWith('/managers/dashboard'))
-      router.push('/managers/dashboard/properties', { scroll: false });
-  }, [pathname]);
-
-  useEffect(() => {
-    if (userData) {
-      if (userData.userRole === 'manager' && pathname.startsWith('/tenants'))
-        router.replace("/manager/dashboard/properties");
-      else if (userData.userRole === 'tenant' && pathname.startsWith('/managers'))
-        router.replace("/tenants/dashboard/favorites");
-    }
-  }, [userData, pathname]);
-
-  const navLinks =
-    userType === 'manager'
-      ? [
-          { icon: Building, label: 'Properties', href: '/managers/dashboard/properties' },
-          { icon: FileText, label: 'Applications', href: '/managers/dashboard/applications' },
-          { icon: Settings, label: 'settings', href: '/managers/dashboard/settings' },
-        ]
-      : [
-          { icon: Building, label: 'Favorites', href: '/tenants/dashboard/favorites' },
-          { icon: FileText, label: 'Applications', href: '/tenants/dashboard/applications' },
-          { icon: Home, label: 'Residences', href: '/tenants/dashboard/residences' },
-          { icon: Settings, label: 'settings', href: '/managers/dashboard/settings' },
-        ];
 
   return (
     <SidebarComponent
@@ -101,7 +81,7 @@ export default function Sidebar() {
 
       <SidebarContent>
         <SidebarMenu>
-          {navLinks.map((link) => {
+          {navLinks(userType).map((link) => {
             const isActive = pathname === link.href;
 
             return (

@@ -1,3 +1,5 @@
-export default function page() {
-  return <div>tenant dashabord</div>;
+import { redirect } from 'next/navigation';
+
+export default function Page() {
+  redirect('/tenants/dashboard/favorites');
 }

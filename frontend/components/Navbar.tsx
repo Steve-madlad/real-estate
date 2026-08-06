@@ -36,11 +36,11 @@ export default function Navbar() {
 
   return (
     <div className={`fixed top-0 left-0 z-50 w-full shadow-xl h-${NAVBAR_HEIGHT}`}>
-      <div className="flex-between bg-primary-700 w-full px-4 md:px-8 py-3 text-white">
+      <div className="flex-between bg-primary-700 w-full px-4 py-3 text-white md:px-8">
         <div className="align-center gap-4 md:gap-6">
           {isDashboardRoute && (
-            <div className="md:hidden! flex-center mr-5">
-              <SidebarTrigger iconClassname="size-6"/>
+            <div className="flex-center mr-5 md:hidden!">
+              <SidebarTrigger iconClassname="size-6" />
             </div>
           )}
           <Link href="/" className="hover:text-primary-300! cursor-pointer" scroll={false}>
@@ -112,7 +112,10 @@ export default function Navbar() {
                     <DropdownMenuItem
                       className="hover:bg-primary-700! font-semibold hover:text-white!"
                       onClick={() => {
-                        router.push(`/${user.userRole}s/dashboard`, { scroll: false });
+                        router.push(
+                          `/${user.userRole}s/dashboard/${user.userRole === 'manager' ? 'properties' : 'favorites'}`,
+                          { scroll: false },
+                        );
                       }}
                     >
                       Go To Dashboard
