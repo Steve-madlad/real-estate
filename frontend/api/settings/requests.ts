@@ -4,7 +4,7 @@ import { Manager, Tenant } from '@/types/prismaTypes';
 import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 import { UserRole } from './types';
 
-export type UserUpdateBody = Partial<Tenant>;
+export type UserUpdateBody = Partial<Tenant | Manager>;
 const updateUser = async (body: UserUpdateBody): Promise<User> => {
   const session = await fetchAuthSession();
   const { idToken } = session.tokens ?? {};

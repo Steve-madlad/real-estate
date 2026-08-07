@@ -3,8 +3,9 @@ import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
 import { authMiddleWare } from "./middleware/auth.js";
-import tenantRoutes from "./routes/tenantRoutes.js";
-import managerRoutes from "./routes/managerRoutes.js";
+import tenantRoutes from "./routes/tenant.routes.js";
+import managerRoutes from "./routes/manager.routes.js";
+import propertyRoutes from "./routes/property.route.js";
 
 const app = express();
 app.use(express.json());
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 })
 
+app.use("/property", propertyRoutes)
 app.use("/tenants", authMiddleWare(["tenant"]), tenantRoutes)
 app.use("/managers", authMiddleWare(["manager"]), managerRoutes)
 

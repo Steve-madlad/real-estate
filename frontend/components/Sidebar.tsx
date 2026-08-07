@@ -26,7 +26,7 @@ const navLinks = (userType: string) =>
         { icon: Building, label: 'Favorites', href: '/tenants/dashboard/favorites' },
         { icon: FileText, label: 'Applications', href: '/tenants/dashboard/applications' },
         { icon: Home, label: 'Residences', href: '/tenants/dashboard/residences' },
-        { icon: Settings, label: 'settings', href: '/managers/dashboard/settings' },
+        { icon: Settings, label: 'settings', href: '/tenants/dashboard/settings' },
       ];
 
 export default function Sidebar() {

@@ -22,8 +22,8 @@ const createTenantSchema = z
 const updateTenantSchema = z
   .object({
     cognitoId: z.string().min(1, "Cognito ID is required"),
-    name: z.string().optional(),
-    email: z.email("Invalid email address").optional(),
+    name: z.string().min(3, "Name must be at least 3 characters").optional(),
+    email: z.email("Invalid email address"),
     phoneNumber: z.string().optional(),
   })
   .strip();
@@ -88,10 +88,6 @@ export const updateTenant = catchAsync(async (req: Request, res: Response) => {
     phoneNumber,
   });
   handleValidationError<z.Infer<typeof updateTenantSchema>>(parsed, res);
-
-  if (!parsed.data.name && !parsed.data.email && !parsed.data.phoneNumber) {
-    throw new AppError("At least one field must be updated", 400);
-  }
 
   const tenant = await prisma.tenant.update({
     where: { cognitoId: parsed.data.cognitoId },
