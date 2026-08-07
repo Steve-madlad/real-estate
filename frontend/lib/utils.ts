@@ -6,4 +6,5 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const isUserRole = (value: unknown): value is UserRole => value === 'manager' || value === 'tenant';
+export const isUserRole = (value: unknown): value is UserRole =>
+  value === 'manager' || value === 'tenant';

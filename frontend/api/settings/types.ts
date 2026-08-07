@@ -1,1 +1,1 @@
-export type UpdatedUserResponse = User
+export type UpdatedUserResponse = User;

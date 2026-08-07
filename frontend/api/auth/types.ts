@@ -1,1 +1,1 @@
-export type AuthUserResponse = User
+export type AuthUserResponse = User;

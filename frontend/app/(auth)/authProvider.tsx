@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { Amplify } from 'aws-amplify';
 
@@ -31,17 +31,13 @@ Amplify.configure({
   },
 });
 
-
-
 const components: AuthenticatorProps['components'] = {
   Header() {
     return (
       <View className="mt-4 mb-7">
         <Heading level={3} className="text-2xl! font-bold!">
           RENT
-          <span className="text-secondary-500 font-light hover:text-primary-300!">
-            IFUL
-          </span>
+          <span className="text-secondary-500 hover:text-primary-300! font-light">IFUL</span>
         </Heading>
         <p className="text-muted-foreground mt-2">
           <span className="font-bold">Welcome!</span> Please sign in to continue
@@ -53,12 +49,12 @@ const components: AuthenticatorProps['components'] = {
     Footer() {
       const { toSignUp } = useAuthenticator();
       return (
-        <View className="text-center mt-4">
+        <View className="mt-4 text-center">
           <p className="text-muted-foreground">
-            Don&apos;t have an account?{" "}
+            Don&apos;t have an account?{' '}
             <button
               onClick={toSignUp}
-              className="text-primary hover:underline bg-transparent border-none p-0"
+              className="text-primary border-none bg-transparent p-0 hover:underline"
             >
               Sign up here
             </button>
@@ -77,8 +73,8 @@ const components: AuthenticatorProps['components'] = {
           <RadioGroupField
             legend="Role"
             name="custom:role"
-            errorMessage={validationErrors?.["custom:role"]}
-            hasError={!!validationErrors?.["custom:role"]}
+            errorMessage={validationErrors?.['custom:role']}
+            hasError={!!validationErrors?.['custom:role']}
             isRequired
           >
             <Radio value="tenant">Tenant</Radio>
@@ -91,12 +87,12 @@ const components: AuthenticatorProps['components'] = {
     Footer() {
       const { toSignIn } = useAuthenticator();
       return (
-        <View className="text-center mt-4">
+        <View className="mt-4 text-center">
           <p className="text-muted-foreground">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <button
               onClick={toSignIn}
-              className="text-primary hover:underline bg-transparent border-none p-0"
+              className="text-primary border-none bg-transparent p-0 hover:underline"
             >
               Sign in
             </button>
