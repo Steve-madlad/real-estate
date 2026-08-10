@@ -6,17 +6,26 @@ import { UserRole } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import z from 'zod';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { FieldDescription, FieldGroup, FieldLegend, FieldSet } from '../ui/field';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from '../ui/field';
 import InputField from './InputField';
+import { PhoneInput } from '../ui/phone-input';
 
 const settingsSchema = z.object({
   name: z.string().optional(),
   email: z.email('Invalid email address'),
-  phone: z.string().optional(),
+  phone: z.string().min(1, 'min 1 num hoe'),
 });
 
 type FormValues = z.infer<typeof settingsSchema>;
@@ -68,7 +77,28 @@ export default function SettingsForm({ initialValues, userRole }: SettingsFormPr
             <FieldGroup>
               <InputField name="name" label="Name" />
               <InputField name="email" type="email" label="Email" />
-              <InputField name="phone" type="tel" label="Phone Number" />
+              <Controller
+                control={settingsForm.control}
+                name="phone"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel className="font-medium" htmlFor={field.name}>
+                      Phone Number
+                    </FieldLabel>
+                    <PhoneInput
+                      {...field}
+                      id={field.name}
+                      disabled={!editEnabled}
+                      placeholder="+44 xxx xxx xxx"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <FieldDescription>
+                      Include your phone number with country code.
+                    </FieldDescription>
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
             </FieldGroup>
           </FieldSet>
 

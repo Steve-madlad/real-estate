@@ -1,4 +1,4 @@
-import type { UserRole } from '@/api/auth';
+import { UserRole } from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

@@ -1,9 +1,9 @@
 import { apiClient } from '@/lib/http-client';
-import { Manager, Tenant } from '@/types/prismaTypes';
-import { AuthUser, fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
-import axios from 'axios';
-import { UserRole } from './types';
 import { isUserRole } from '@/lib/utils';
+import { UserRole } from '@/types';
+import { Manager, Tenant } from '@/types/prismaTypes';
+import { AuthUser, fetchAuthSession, getCurrentUser, JWT } from 'aws-amplify/auth';
+import axios from 'axios';
 
 const getAuthUser = async (): Promise<User> => {
   const session = await fetchAuthSession();
@@ -24,7 +24,7 @@ const getAuthUser = async (): Promise<User> => {
       userRole,
     };
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
+    if (axios.isAxiosError(error) && error.response?.status === 404 && idToken) {
       const newUser = await createUser(user, idToken, userRole);
       return {
         cognitoInfo: { ...user },
@@ -37,11 +37,11 @@ const getAuthUser = async (): Promise<User> => {
   }
 };
 
-const createUser = async (user: AuthUser, idToken: any, userRole: UserRole) => {
+const createUser = async (user: AuthUser, idToken: JWT, userRole: UserRole) => {
   const response = await apiClient.post(`/${userRole}s`, {
     cognitoId: user.userId,
     name: user.username,
-    email: idToken?.payload?.email || '',
+    email: idToken?.payload.email || '',
     phoneNumber: '',
   });
 

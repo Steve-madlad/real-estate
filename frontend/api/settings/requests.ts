@@ -2,7 +2,7 @@ import { apiClient } from '@/lib/http-client';
 import { isUserRole } from '@/lib/utils';
 import { Manager, Tenant } from '@/types/prismaTypes';
 import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
-import { UserRole } from './types';
+import { UserRole } from '@/types'; 
 
 export type UserUpdateBody = Partial<Tenant | Manager>;
 const updateUser = async (body: UserUpdateBody): Promise<User> => {
