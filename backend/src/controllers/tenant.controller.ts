@@ -1,8 +1,11 @@
+import { wktToGeoJSON } from "@terraformer/wkt";
 import type { Request, Response } from "express";
 import z from "zod";
+import { Prisma } from "../../prisma/generated/client.js";
 import { AppError } from "../lib/app-error.js";
 import { prisma } from "../lib/db.js";
 import handleValidationError, { catchAsync } from "../lib/utils.js";
+import { cognitoIdSchema, favoritePropertySchema } from "../schemas/schema.js";
 
 const tenantSchema = z
   .object({
@@ -32,7 +35,7 @@ export const getTenant = catchAsync(async (req: Request, res: Response) => {
   const { cognitoId } = req.params;
 
   const parsed = tenantSchema.safeParse({ cognitoId });
-  handleValidationError<z.Infer<typeof tenantSchema>>(parsed, res);
+  handleValidationError<z.Infer<typeof tenantSchema>>(parsed);
   const { cognitoId: id } = parsed.data;
 
   const tenant = await prisma.tenant.findUnique({
@@ -43,12 +46,12 @@ export const getTenant = catchAsync(async (req: Request, res: Response) => {
   });
 
   if (tenant) {
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: tenant,
     });
   } else {
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
       message: "Tenant not found",
     });
@@ -64,13 +67,13 @@ export const createTenant = catchAsync(async (req: Request, res: Response) => {
     email,
     phoneNumber,
   });
-  handleValidationError<z.Infer<typeof createTenantSchema>>(parsed, res);
+  handleValidationError<z.Infer<typeof createTenantSchema>>(parsed);
 
   const tenant = await prisma.tenant.create({
     data: parsed.data,
   });
 
-  res.status(201).json({
+  return res.status(201).json({
     success: true,
     message: "Tenant created successfully",
     data: tenant,
@@ -87,16 +90,177 @@ export const updateTenant = catchAsync(async (req: Request, res: Response) => {
     email,
     phoneNumber,
   });
-  handleValidationError<z.Infer<typeof updateTenantSchema>>(parsed, res);
+  handleValidationError<z.Infer<typeof updateTenantSchema>>(parsed);
 
   const tenant = await prisma.tenant.update({
     where: { cognitoId: parsed.data.cognitoId },
     data: parsed.data,
   });
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: "Tenant updated successfully",
     data: tenant,
   });
 });
+
+export const getCurrentresidences = catchAsync(
+  async (req: Request, res: Response) => {
+    const { cognitoId } = req.params;
+
+    const parsed = cognitoIdSchema.safeParse({ cognitoId });
+    handleValidationError<z.infer<typeof cognitoIdSchema>>(parsed);
+    const { cognitoId: id } = parsed.data;
+
+    const tenant = await prisma.tenant.findUnique({
+      where: {
+        cognitoId: id,
+      },
+    });
+
+    if (!tenant) {
+      return res.status(404).json({
+        success: false,
+        message: "Tenant not found",
+      });
+    }
+
+    const residences = await prisma.property.findMany({
+      where: {
+        tenants: { some: { cognitoId: id } },
+      },
+      include: {
+        location: true,
+      },
+    });
+
+    if (residences && residences.length > 0) {
+      const residencesWithFormattedLocation = await Promise.all(
+        residences.map(async (property) => {
+          const coordinates: { coordinates: string }[] =
+            await prisma.$queryRaw`SELECT ST_asText(coordinates) as coordinates from "Location" where id = ${property.location.id}`;
+
+          const geoJSON: any = wktToGeoJSON(coordinates[0]?.coordinates || "");
+          const longitude = geoJSON.coordinates[0];
+          const latitude = geoJSON.coordinates[1];
+
+          return {
+            ...property,
+            location: {
+              ...property.location,
+              coordinates: {
+                longitude,
+                latitude,
+              },
+            },
+          };
+        }),
+      );
+
+      return res.json({
+        success: true,
+        residences: residencesWithFormattedLocation,
+      });
+    }
+
+    return res.status(404).json({
+      success: false,
+      message: "Property not found",
+    });
+  },
+);
+
+export const favoriteProperty = catchAsync(
+  async (req: Request, res: Response) => {
+    const cognitoId = req.user.id;
+    const { propertyId } = req.params;
+
+    const parsed = favoritePropertySchema.safeParse({ cognitoId, propertyId });
+    handleValidationError<z.infer<typeof favoritePropertySchema>>(parsed);
+    const { cognitoId: id, propertyId: residenceId } = parsed.data;
+
+    const [tenant, property] = await Promise.all([
+      prisma.tenant.findUnique({
+        where: { cognitoId: id },
+        select: {
+          id: true,
+          favorites: {
+            where: { id: residenceId },
+            select: { id: true },
+          },
+        },
+      }),
+      prisma.property.findUnique({
+        where: { id: residenceId },
+        select: { id: true },
+      }),
+    ]);
+
+    if (!tenant || !property)
+      throw new AppError(`${!tenant ? "Tenant" : "Property"} not found`, 404);
+
+    if (tenant.favorites.length > 0)
+      throw new AppError("Property already favorited", 409);
+
+    try {
+      await prisma.tenant.update({
+        where: { cognitoId: id },
+        data: { favorites: { connect: { id: residenceId } } },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Property favorited successfully",
+        data: { propertyId: residenceId, isFavorited: true },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        throw new AppError("Property already favorited", 409);
+      }
+
+      throw error;
+    }
+  },
+);
+
+export const unfavoriteProperty = catchAsync(
+  async (req: Request, res: Response) => {
+    const cognitoId = req.user.id;
+    const { propertyId } = req.params;
+
+    const parsed = favoritePropertySchema.safeParse({ cognitoId, propertyId });
+    handleValidationError<z.infer<typeof favoritePropertySchema>>(parsed);
+    const { cognitoId: id, propertyId: residenceId } = parsed.data;
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { cognitoId: id },
+      select: {
+        id: true,
+        favorites: {
+          where: { id: residenceId },
+          select: { id: true },
+        },
+      },
+    });
+
+    if (!tenant) throw new AppError("Tenant not found", 404);
+
+    if (tenant.favorites.length > 0) {
+      await prisma.tenant.update({
+        where: { cognitoId: id },
+        data: { favorites: { disconnect: { id: residenceId } } },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Property unfavorited successfully",
+        data: { propertyId: residenceId, isFavorited: false },
+      });
+    }
+
+    throw new AppError("Property is not favorited", 409);
+  },
+);

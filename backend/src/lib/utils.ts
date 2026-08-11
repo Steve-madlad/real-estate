@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { type ZodSafeParseResult } from "zod";
+import { z } from "zod";
+import { AppError } from "./app-error.js";
 
 type AsyncController = (
   req: Request,
@@ -14,34 +15,35 @@ export function catchAsync(fn: AsyncController) {
 }
 
 export default function handleValidationError<T>(
-  parsed: ZodSafeParseResult<T>,
-  res: Response,
+  parsed: ReturnType<z.ZodType<T>["safeParse"]>,
 ): asserts parsed is { success: true; data: T } {
   if (!parsed.success) {
     const issues = parsed.error.issues;
-    const errors: Record<string, string> = {};
+    const firstIssue = issues[0];
+
+    let errorsMap: Record<string, string> | undefined = undefined;
 
     if (issues.length > 1) {
+      const map: Record<string, string> = {};
+
       for (const issue of issues) {
         const field = issue.path[0];
-
-        if (typeof field === "string" && !errors[field]) {
-          errors[field] = issue.message;
+        if (typeof field === "string" && !map[field]) {
+          map[field] = issue.message;
         }
+      }
+
+      if (Object.keys(map).length > 0) {
+        errorsMap = map;
       }
     }
 
-    const errorsObjectEmpty = Object.keys(errors).length === 0;
-    const firstIssue = issues[0];
     const firstErrorMessage =
-      (errorsObjectEmpty
-        ? firstIssue?.message?.replace("input", String(firstIssue?.path[0]))
-        : firstIssue?.message) || "Invalid input";
+      firstIssue?.message?.replace(
+        "input",
+        String(firstIssue?.path[0] ?? "field"),
+      ) || "Invalid input";
 
-    res.status(400).json({
-      success: false,
-      message: firstErrorMessage,
-      errors,
-    });
+    throw new AppError(firstErrorMessage, 400, errorsMap);
   }
 }

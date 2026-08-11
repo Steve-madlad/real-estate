@@ -1,44 +1,64 @@
+import { CognitoJwtVerifier } from "aws-jwt-verify";
 import type { NextFunction, Request, Response } from "express";
-import jwt, { type JwtPayload } from "jsonwebtoken";
 import type { Role, RoleList } from "../../types/index.js";
 import { AppError } from "../lib/app-error.js";
 
-interface DecodedToken extends JwtPayload {
-  sub: string;
-  "custom:role"?: string;
+if (!process.env.COGNITO_USER_POOL_ID || !process.env.COGNITO_CLIENT_ID) {
+  throw new Error("Missing environment variables");
 }
 
+const idVerifier = CognitoJwtVerifier.create({
+  userPoolId: process.env.COGNITO_USER_POOL_ID,
+  tokenUse: "id",
+  clientId: process.env.COGNITO_CLIENT_ID,
+});
+
+const accessVerifier = CognitoJwtVerifier.create({
+  userPoolId: process.env.COGNITO_USER_POOL_ID,
+  tokenUse: "access",
+  clientId: process.env.COGNITO_CLIENT_ID,
+});
+
 export function authMiddleWare(allowedRoles: RoleList) {
-  return (req: Request, _res: Response, next: NextFunction) => {
-    const token = req.headers?.authorization?.split(" ")[1];
+  return async (req: Request, _res: Response, next: NextFunction) => {
+    const authHeader = req.headers?.authorization;
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null;
 
     if (!token) {
-      throw new AppError("Unauthorized", 401);
+      return next(new AppError("Unauthorized: Missing token", 401));
     }
 
     try {
-      let decoded;
-      try {
-        decoded = jwt.decode(token) as DecodedToken;
-      } catch (jwtErr) {
-        throw new AppError("Unauthorized: Invalid or expired token", 401);
-      }
-      const userRole = decoded?.["custom:role"] as Role;
+      const payload = await (async () => {
+        try {
+          return await idVerifier.verify(token);
+        } catch {
+          return await accessVerifier.verify(token);
+        }
+      })();
 
-      if (!userRole) throw new AppError("Unauthorized: Access Denied", 403);
+      const userRole = (payload["custom:role"] ??
+        payload["cognito:groups"]) as Role;
+
+      if (!userRole) {
+        throw new AppError("Forbidden: Access Denied", 403);
+      }
 
       req.user = {
-        id: decoded.sub,
+        id: payload.sub,
         role: userRole,
       };
 
-      const hasAccess = allowedRoles.includes(userRole);
-
-      if (!hasAccess) throw new AppError("Unauthorized: Access Denied", 403);
+      if (!allowedRoles.includes(userRole)) {
+        throw new AppError("Forbidden: Insufficient privileges", 403);
+      }
 
       next();
     } catch (error) {
-      next(error);
+      console.log({ error });
+      next(new AppError("Unauthorized: Invalid or expired token", 401));
     }
   };
 }
