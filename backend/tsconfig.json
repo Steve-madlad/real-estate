@@ -32,5 +32,10 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*", "src/data/**/*.json", "prisma/**/*", "types/**/*.d.ts"]
+  "include": [
+    "src/**/*",
+    "src/data/**/*.json",
+    "prisma/**/*",
+    "types/**/*.d.ts"
+  ]
 }

@@ -8,8 +8,8 @@ import {
 import { authMiddleWare } from "../middleware/auth.js";
 import multer from "multer";
 
-const storage = multer.memoryStorage()
-const upload = multer({storage})
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 const router = express.Router();
 
 router.get("/", getProperties);

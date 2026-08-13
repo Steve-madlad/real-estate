@@ -172,7 +172,7 @@ export const getCurrentresidences = catchAsync(
 
 export const favoriteProperty = catchAsync(
   async (req: Request, res: Response) => {
-    const cognitoId = req.user.id;
+    const cognitoId = req.user?.id;
     const { propertyId } = req.params;
 
     const parsed = favoritePropertySchema.safeParse({ cognitoId, propertyId });
@@ -228,7 +228,7 @@ export const favoriteProperty = catchAsync(
 
 export const unfavoriteProperty = catchAsync(
   async (req: Request, res: Response) => {
-    const cognitoId = req.user.id;
+    const cognitoId = req.user?.id;
     const { propertyId } = req.params;
 
     const parsed = favoritePropertySchema.safeParse({ cognitoId, propertyId });

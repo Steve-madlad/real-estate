@@ -5,7 +5,8 @@ import { catchAsync } from "../lib/utils.js";
 
 export const listApplications = catchAsync(
   async (req: Request, res: Response) => {
-    const { id: userId, role } = req.user;
+    const userId = req.user?.id;
+    const role = req.user?.role;
 
     let whereClause = {};
 
