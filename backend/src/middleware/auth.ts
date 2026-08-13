@@ -46,14 +46,14 @@ export function authMiddleWare(allowedRoles: RoleList) {
         throw new AppError("Forbidden: Access Denied", 403);
       }
 
+      if (!allowedRoles.includes(userRole)) {
+        throw new AppError("Forbidden: Insufficient privileges", 403);
+      }
+
       req.user = {
         id: payload.sub,
         role: userRole,
       };
-
-      if (!allowedRoles.includes(userRole)) {
-        throw new AppError("Forbidden: Insufficient privileges", 403);
-      }
 
       next();
     } catch (error) {

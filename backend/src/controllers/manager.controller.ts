@@ -34,7 +34,7 @@ export const getManager = catchAsync(async (req: Request, res: Response) => {
   const { cognitoId } = req.params;
 
   const parsed = managerSchema.safeParse({ cognitoId });
-  handleValidationError<z.Infer<typeof managerSchema>>(parsed, res);
+  handleValidationError<z.Infer<typeof managerSchema>>(parsed);
   const { cognitoId: id } = parsed.data;
 
   const manager = await prisma.manager.findUnique({
@@ -63,7 +63,7 @@ export const createManager = catchAsync(async (req: Request, res: Response) => {
     email,
     phoneNumber,
   });
-  handleValidationError<z.Infer<typeof createManagerSchema>>(parsed, res);
+  handleValidationError<z.Infer<typeof createManagerSchema>>(parsed);
 
   const manager = await prisma.manager.create({
     data: parsed.data,
@@ -86,7 +86,7 @@ export const updateManager = catchAsync(async (req: Request, res: Response) => {
     email,
     phoneNumber,
   });
-  handleValidationError<z.Infer<typeof updateManagerSchema>>(parsed, res);
+  handleValidationError<z.Infer<typeof updateManagerSchema>>(parsed);
 
   if (!parsed.data.name && !parsed.data.email && !parsed.data.phoneNumber) {
     throw new AppError("At least one field must be updated", 400);
@@ -109,7 +109,7 @@ export const getManagerProperties = catchAsync(
     const { cognitoId } = req.params;
 
     const parsed = cognitoIdSchema.safeParse({ cognitoId });
-    handleValidationError<z.infer<typeof cognitoIdSchema>>(parsed, res);
+    handleValidationError<z.infer<typeof cognitoIdSchema>>(parsed);
     const { cognitoId: id } = parsed.data;
 
     const manager = await prisma.manager.findUnique({

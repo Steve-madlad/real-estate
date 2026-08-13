@@ -8,6 +8,7 @@
     "start": "bun ./dist/index.js",
     "dev": "bun --watch ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write .",
     "seed": "bun ./data/seed.ts",
     "prisma-gen": "prisma generate",
     "prisma-migrate": "prisma migrate dev"
