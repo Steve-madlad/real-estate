@@ -1,6 +1,6 @@
-import { NAVBAR_HEIGHT } from '@/asset-download/asset-download/client/lib/constants';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
+import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { ReactNode } from 'react';
 
 export default function layout({ children }: { children: ReactNode }) {

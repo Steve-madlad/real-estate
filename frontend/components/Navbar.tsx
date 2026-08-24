@@ -1,7 +1,7 @@
 'use client';
 
 import { useGetAuthUser } from '@/api/auth';
-import { NAVBAR_HEIGHT } from '@/asset-download/asset-download/client/lib/constants';
+import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { signOut } from 'aws-amplify/auth';
 import { Bell, MessageCircle, Plus, Search } from 'lucide-react';
 import Image from 'next/image';
@@ -124,7 +124,7 @@ export default function Navbar() {
                     <DropdownMenuItem
                       className="hover:bg-primary-700! hover:text-white!"
                       onClick={() => {
-                        router.push(`/${user.userRole}s/settings`, { scroll: false });
+                        router.push(`/${user.userRole}s/dashboard/settings`, { scroll: false });
                       }}
                     >
                       Settings

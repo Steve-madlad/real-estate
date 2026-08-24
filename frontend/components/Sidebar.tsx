@@ -1,6 +1,6 @@
 'use client';
 
-import { NAVBAR_HEIGHT } from '@/asset-download/asset-download/client/lib/constants';
+import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { Building, FileText, Home, Menu, Settings, X } from 'lucide-react';
 import Link from 'next/link';
