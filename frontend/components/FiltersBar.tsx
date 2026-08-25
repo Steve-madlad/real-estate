@@ -32,16 +32,16 @@ const maxPriceOpitons = [
 
 const bedOptions = [
   { label: 'Any Beds', value: 'any' },
-  { label: '1 bed', value: '1' },
-  { label: '2 beds', value: '2' },
-  { label: '3 beds', value: '3' },
+  { label: '1+ bed', value: '1' },
+  { label: '2+ beds', value: '2' },
+  { label: '3+ beds', value: '3' },
 ];
 
 const bathOptions = [
   { label: 'Any baths', value: 'any' },
-  { label: '1 bath', value: '1' },
-  { label: '2 baths', value: '2' },
-  { label: '3 baths', value: '3' },
+  { label: '1+ bath', value: '1' },
+  { label: '2+ baths', value: '2' },
+  { label: '3+ baths', value: '3' },
 ];
 
 const propertyTypeOptions = [
@@ -156,19 +156,18 @@ export default function FiltersBar() {
           <Input
             className="border-primary-400 w-40 rounded-l-xl rounded-r-none border-r-0"
             placeholder="Search Location"
-            value="searchInput"
             onChange={(e) => setSearchInput(e.target.value)}
           />
           <Button
             onClick={handleLoactionSearch}
-            className="none border-l-none border-primary-400 hover:bg-primary-700 hover:text-primary-50 rounded-l=none rounded-r-xl border shadow-none"
+            className="none hover:bg-primary-700 hover:text-primary-50 -translate-x-0.5 rounded-l-none rounded-r-xl py-4 shadow-none"
           >
             <Search className="size-4" />
           </Button>
         </div>
 
         {/* Price Range */}
-        <div className="flex gap-1">
+        <div className="flex gap-4">
           {/* Min Price */}
           <Select
             value={filters.priceRange[0]?.toString() || 'any'}

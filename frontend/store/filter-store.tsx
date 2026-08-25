@@ -1,3 +1,4 @@
+import { String } from 'lodash';
 import { create } from 'zustand';
 
 export interface FilterState {
@@ -6,7 +7,7 @@ export interface FilterState {
   baths: string;
   propertyType: string;
   amenities: string[];
-  availableFrom: string;
+  availableFrom: Date | 'any';
   priceRange: [number, number] | [null, null];
   squareFeet: [number, number] | [null, null];
   coordinates: [number, number];

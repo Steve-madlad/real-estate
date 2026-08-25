@@ -5,10 +5,9 @@ import FiltersSidebar from '@/components/FiltersSidebar';
 import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useFiltersStore } from '@/store/filter-store';
-import { useSearchParams } from 'next/navigation';
 
 export default function SearchPage() {
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const { filtersSidebarOpen } = useFiltersStore();
 
   return (

@@ -14,6 +14,10 @@ export const k = (value: number) => {
   return `${value / 1000}k`;
 };
 
+export function formatEnumString(str: string) {
+  return str.replace(/([A-Z])/g, ' $1').trim();
+}
+
 export function cleanParams(params: FilterState): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(params).filter(

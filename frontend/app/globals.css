@@ -188,6 +188,9 @@
   .just-center {
     @apply flex justify-center;
   }
+  .just-between {
+    @apply flex justify-between;
+  }
   .just-end {
     @apply flex justify-end;
   }
