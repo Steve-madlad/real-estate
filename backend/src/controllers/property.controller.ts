@@ -130,7 +130,9 @@ export const getProperties = catchAsync(async (req: Request, res: Response) => {
   `;
   const properties = await prisma.$queryRaw(fullQuery);
 
-  res.json(properties);
+  res.json({
+    data: properties,
+  });
 });
 
 export const getProperty = catchAsync(async (req: Request, res: Response) => {
