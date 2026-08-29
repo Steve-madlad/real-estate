@@ -1,17 +1,11 @@
 import { apiClient } from '@/lib/http-client';
-import { Property } from '@/types/prismaTypes';
-import { PropertiesResponse } from './types';
+import { PropertiesResponse, PropertyParams } from './types';
 
-const getProperties = async (): Promise<PropertiesResponse> => {
+const getProperties = async (params?: PropertyParams): Promise<PropertiesResponse> => {
   const route = `/property`;
-  try {
-    const propertiesResponse = await apiClient.get<{ data: Property[] }>(route);
-    return {
-      properties: propertiesResponse.data.data,
-    };
-  } catch (error) {
-    throw error;
-  }
+
+  const propertiesResponse = await apiClient.get<PropertiesResponse>(route, { params });
+  return propertiesResponse.data;
 };
 
 export { getProperties };

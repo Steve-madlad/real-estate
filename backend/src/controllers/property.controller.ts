@@ -20,7 +20,7 @@ export const getProperties = catchAsync(async (req: Request, res: Response) => {
     squareFeetMax,
     amenities,
     availableFrom,
-    latitiude,
+    latitude,
     longitude,
   } = req.query;
 
@@ -90,8 +90,8 @@ export const getProperties = catchAsync(async (req: Request, res: Response) => {
     }
   }
 
-  if (latitiude && longitude) {
-    const lat = parseFloat(latitiude as string);
+  if (latitude && longitude) {
+    const lat = parseFloat(latitude as string);
     const long = parseFloat(longitude as string);
     const radiusInKilometers = 1000;
     const degrees = radiusInKilometers / 111; // km to degree
@@ -131,7 +131,9 @@ export const getProperties = catchAsync(async (req: Request, res: Response) => {
   const properties = await prisma.$queryRaw(fullQuery);
 
   res.json({
+    success: true,
     data: properties,
+    message: "Successfully fetched propeties",
   });
 });
 
