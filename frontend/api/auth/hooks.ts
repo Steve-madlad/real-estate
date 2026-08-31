@@ -1,12 +1,10 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { getAuthUser } from './requests';
-import { AuthUserResponse } from './types';
 
-type UseAuthUserOptions = Omit<
-  UseQueryOptions<AuthUserResponse, AxiosError<{ message: string }>>,
-  'queryFn' | 'queryKey'
->;
+// Automatically infer the data type from getAuthUser's return signature
+type AuthUserData = Awaited<ReturnType<typeof getAuthUser>>;
+
+type UseAuthUserOptions = Omit<UseQueryOptions<AuthUserData>, 'queryFn' | 'queryKey'>;
 
 export const userKeys = {
   all: ['user'] as const,

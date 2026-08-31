@@ -2,6 +2,7 @@
 
 import FiltersBar from '@/components/FiltersBar';
 import FiltersSidebar from '@/components/FiltersSidebar';
+import Listings from '@/components/Listings';
 import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useFiltersStore } from '@/store/filter-store';
@@ -27,7 +28,9 @@ export default function SearchPage() {
           <FiltersSidebar />
         </div>
         <Map />
-        <div className="basis-4/12 overflow-y-auto">{/* <Listings/> */}</div>
+        <div className="basis-4/12 overflow-y-auto">
+          <Listings />
+        </div>
       </div>
     </div>
   );

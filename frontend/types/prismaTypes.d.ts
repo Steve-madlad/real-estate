@@ -38,3 +38,9 @@ export type PropertyWithRelations = Prisma.PropertyGetPayload<{
     tenants: true;
   };
 }>;
+
+export type TenantWithFavorites = Prisma.TenantGetPayload<{
+  include: {
+    favorites: true;
+  };
+}>;

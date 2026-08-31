@@ -16,8 +16,6 @@ export default function Map() {
   const { filters, filtersSidebarOpen } = useFiltersStore();
   const { data, isLoading, error } = useGetProperties();
 
-  console.log({ properties: data });
-
   useEffect(() => {
     if (isLoading || error || !data) return;
 

@@ -235,18 +235,25 @@ export const unfavoriteProperty = catchAsync(
     handleValidationError<z.infer<typeof favoritePropertySchema>>(parsed);
     const { cognitoId: id, propertyId: residenceId } = parsed.data;
 
-    const tenant = await prisma.tenant.findUnique({
-      where: { cognitoId: id },
-      select: {
-        id: true,
-        favorites: {
-          where: { id: residenceId },
-          select: { id: true },
+    const [tenant, property] = await Promise.all([
+      prisma.tenant.findUnique({
+        where: { cognitoId: id },
+        select: {
+          id: true,
+          favorites: {
+            where: { id: residenceId },
+            select: { id: true },
+          },
         },
-      },
-    });
+      }),
+      prisma.property.findUnique({
+        where: { id: residenceId },
+        select: { id: true },
+      }),
+    ]);
 
-    if (!tenant) throw new AppError("Tenant not found", 404);
+    if (!tenant || !property)
+      throw new AppError(`${!tenant ? "Tenant" : "Property"} not found`, 404);
 
     if (tenant.favorites.length > 0) {
       await prisma.tenant.update({

@@ -24,8 +24,6 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  console.log({ user });
-
   const isUserManager = user?.userRole === 'manager';
   const isDashboardRoute = pathname.startsWith('/managers') || pathname.startsWith('/tenants');
 

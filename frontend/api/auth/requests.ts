@@ -1,11 +1,12 @@
 import { apiClient } from '@/lib/http-client';
 import { isUserRole } from '@/lib/utils';
 import { UserRole } from '@/types';
-import { Manager, Tenant } from '@/types/prismaTypes';
+import { Manager, TenantWithFavorites } from '@/types/prismaTypes';
 import { AuthUser, fetchAuthSession, getCurrentUser, JWT } from 'aws-amplify/auth';
 import axios from 'axios';
+import { AuthUserResponse, CreateUserResponse } from './types';
 
-const getAuthUser = async (): Promise<User> => {
+const getAuthUser = async (): Promise<User<TenantWithFavorites>> => {
   const session = await fetchAuthSession();
   const { idToken } = session.tokens ?? {};
   const user = await getCurrentUser();
@@ -17,27 +18,47 @@ const getAuthUser = async (): Promise<User> => {
 
   const route = `/${userRole}s/${user.userId}`;
   try {
-    const userDetailsResponse = await apiClient.get<{ data: Tenant | Manager }>(route);
-    return {
-      cognitoInfo: { ...user },
-      userInfo: userDetailsResponse.data.data,
-      userRole,
-    };
+    const userDetailsResponse = await apiClient.get<AuthUserResponse>(route);
+    if (userRole === 'tenant') {
+      return {
+        userRole: 'tenant',
+        cognitoInfo: { ...user },
+        userInfo: userDetailsResponse.data.data as TenantWithFavorites,
+      };
+    } else {
+      return {
+        userRole: 'manager',
+        cognitoInfo: { ...user },
+        userInfo: userDetailsResponse.data.data as Manager,
+      };
+    }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 404 && idToken) {
       const newUser = await createUser(user, idToken, userRole);
-      return {
-        cognitoInfo: { ...user },
-        userInfo: newUser,
-        userRole,
-      };
+      if (userRole === 'tenant') {
+        return {
+          userRole: 'tenant',
+          cognitoInfo: { ...user },
+          userInfo: newUser.data as TenantWithFavorites,
+        };
+      } else {
+        return {
+          userRole: 'manager',
+          cognitoInfo: { ...user },
+          userInfo: newUser.data as Manager,
+        };
+      }
     }
 
     throw error;
   }
 };
 
-const createUser = async (user: AuthUser, idToken: JWT, userRole: UserRole) => {
+const createUser = async (
+  user: AuthUser,
+  idToken: JWT,
+  userRole: UserRole,
+): Promise<CreateUserResponse> => {
   const response = await apiClient.post(`/${userRole}s`, {
     cognitoId: user.userId,
     name: user.username,

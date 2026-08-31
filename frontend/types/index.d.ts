@@ -121,20 +121,26 @@ declare global {
   }
 
   interface AppSidebarProps {
-    userType: 'manager' | 'tenant';
+    userType: UserRole;
   }
 
   interface SettingsFormProps {
     initialData: SettingsFormData;
     onSubmit: (data: SettingsFormData) => Promise<void>;
-    userType: 'manager' | 'tenant';
+    userType: UserRole;
   }
 
-  interface User {
-    cognitoInfo: AuthUser;
-    userInfo: Tenant | Manager;
-    userRole: JsonObject | JsonPrimitive | JsonArray;
-  }
+  type User<TUserInfo = Tenant> =
+    | {
+        userRole: 'tenant';
+        cognitoInfo: AuthUser;
+        userInfo: TUserInfo;
+      }
+    | {
+        userRole: 'manager';
+        cognitoInfo: AuthUser;
+        userInfo: Manager;
+      };
 }
 
 export type UserRole = 'manager' | 'tenant';
