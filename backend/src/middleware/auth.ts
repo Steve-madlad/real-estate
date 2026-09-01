@@ -50,6 +50,10 @@ export function authMiddleWare(allowedRoles: RoleList) {
         throw new AppError("Forbidden: Insufficient privileges", 403);
       }
 
+      if (!payload.sub) {
+        throw new AppError("Unauthorized: User Id missing from token", 401);
+      }
+
       req.user = {
         id: payload.sub,
         role: userRole,

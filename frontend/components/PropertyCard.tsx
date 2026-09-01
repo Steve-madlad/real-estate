@@ -1,9 +1,10 @@
 import { cn } from '@/lib/utils';
 import { PropertyWithLocation } from '@/types/prismaTypes';
-import { Bath, Bed, Heart, House, Star } from 'lucide-react';
+import { BadgeCheck, Bath, Bed, Heart, House, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 
 export default function PropertyCard({
@@ -11,12 +12,14 @@ export default function PropertyCard({
   isFavorited,
   showFavoriteButton,
   propertyLink,
+  likeToggleLoading,
   onFavoriteToggle,
 }: {
   property: PropertyWithLocation;
   isFavorited: boolean;
   showFavoriteButton: boolean;
   propertyLink: string;
+  likeToggleLoading: boolean;
   onFavoriteToggle: (propertyId: number) => void;
 }) {
   const [imgSrc, setImgSrc] = useState<string>(property.photoUrls[0] || '/placehoder.jpg');
@@ -34,26 +37,28 @@ export default function PropertyCard({
             onError={() => setImgSrc('/placeholder.jpg')}
           />
         </div>
-        <div className="absolute-bottom-4 left-4 flex gap-2">
+        <div className="mt-2 ml-2 flex gap-2">
           {property.isPetsAllowed && (
-            <span className="bg-white-80 rounded-full px-2 py-1 text-xs font-semibold text-black capitalize">
+            <Badge className="bg-primary text-white">
+              <BadgeCheck data-icon="inline-start" />
               pets allowed
-            </span>
+            </Badge>
           )}
           {property.isParkingIncluded && (
-            <span className="bg-white-80 rounded-full px-2 py-1 text-xs font-semibold text-black capitalize">
-              parking included
-            </span>
+            <Badge className="bg-primary text-white">
+              <BadgeCheck data-icon="inline-start" /> parking included
+            </Badge>
           )}
         </div>
 
         {showFavoriteButton && (
           <Button
-            className="hover:bg-white-90 cursor absolute right-4 bottom-4 rounded-full bg-white p-2"
+            className="hover:bg-white-90 cursor absolute top-3 right-3 size-7 rounded-full bg-white p-4 shadow-sm"
             onClick={() => onFavoriteToggle(property.id)}
+            disabled={likeToggleLoading}
           >
             <Heart
-              className={cn('size-5', isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600')}
+              className={cn('size-5', isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-500')}
             />
           </Button>
         )}
@@ -72,32 +77,35 @@ export default function PropertyCard({
               property.name
             )}
           </h2>
-          <p className="text-gray 600 mb-2">
+          <p className="mb-2 text-gray-600">
             {property?.location?.address} {property?.location?.city}
           </p>
-          <div className="flex-center">
+          <div className="flex-between">
             <div className="align-center mb-2">
               <Star className="mr-1 size-4 text-yellow-400" />
               <span className="font-semibold">{property.averageRating?.toFixed(1)}</span>
-              <span className="ml-l text-gray-600">{property.pricePerMonth?.toFixed(1)}</span>
+              <span className="font-semibold">({property.numberOfReviews} Reviews)</span>
             </div>
             <p className="mb-3 text-lg font-bold">
-              {property.pricePerMonth.toFixed(0)}
+              ${property.pricePerMonth.toFixed(0)}
               <span className="text-base font-normal text-gray-600">/month</span>
             </p>
           </div>
 
           <hr />
 
-          <div className="flex-center mt-5 gap-4 text-gray-600">
+          <div className="flex-between mt-5 gap-4 text-gray-600">
             <span className="align-center">
-              <Bed className="mr-2 size-5">{property.beds} Beds</Bed>
+              <Bed className="mr-2 size-5 -translate-y-0.5" />
+              {property.beds} Beds
             </span>
             <span className="align-center">
-              <Bath className="mr-2 size-5">{property.baths} Baths</Bath>
+              <Bath className="mr-2 size-5 -translate-y-0.5" />
+              {property.baths} Baths
             </span>
             <span className="align-center">
-              <House className="mr-2 size-5">{property.squareFeet} sq ft</House>
+              <House className="mr-2 size-5 -translate-y-0.5" />
+              {property.squareFeet} sq ft
             </span>
           </div>
         </div>

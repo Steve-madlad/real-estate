@@ -9,8 +9,8 @@ import { AuthUserResponse, CreateUserResponse } from './types';
 const getAuthUser = async (): Promise<User<TenantWithFavorites>> => {
   const session = await fetchAuthSession();
   const { idToken } = session.tokens ?? {};
-  const user = await getCurrentUser();
   const userRole = idToken?.payload['custom:role'] as UserRole;
+  const user = await getCurrentUser();
 
   if (!isUserRole(userRole)) {
     throw new Error('Missing or invalid user role');

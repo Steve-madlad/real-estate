@@ -2,8 +2,9 @@ import { useGetProperties } from '@/api/properties';
 import { useFiltersStore } from '@/store/filter-store';
 import { PropertyWithLocationCoordinates } from '@/types/prismaTypes';
 import mapboxgl from 'mapbox-gl';
-import { useEffect, useRef } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 
 if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
   throw new Error('Missing Mapbox access token');
@@ -41,19 +42,22 @@ export default function Map() {
     return () => map.remove();
   }, [isLoading, error, data, filters.coordinates]);
 
-  if (isLoading) return <>Loading...</>;
-  if (error || !data) return <div>Failed to fetch properties</div>;
+  if (error || !data) toast.error('Failed to show listings. Please refresh the page.');
 
   return (
     <div className="relative grow basis-5/12 rounded-xl">
-      <div
-        className="map-container rounded-xl"
-        ref={mapContainerRef}
-        style={{
-          height: '100%',
-          width: '100%',
-        }}
-      />
+      {isLoading ? (
+        <div className="size-full animate-pulse rounded-xl bg-gray-200"></div>
+      ) : (
+        <div
+          className="map-container rounded-xl"
+          ref={mapContainerRef}
+          style={{
+            height: '100%',
+            width: '100%',
+          }}
+        />
+      )}
     </div>
   );
 }

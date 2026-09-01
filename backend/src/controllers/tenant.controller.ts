@@ -5,7 +5,7 @@ import { Prisma } from "../../prisma/generated/client.js";
 import { AppError } from "../lib/app-error.js";
 import { prisma } from "../lib/db.js";
 import handleValidationError, { catchAsync } from "../lib/utils.js";
-import { cognitoIdSchema, favoritePropertySchema } from "../schemas/schema.js";
+import { favoritePropertySchema } from "../schemas/schema.js";
 
 const tenantSchema = z
   .object({
@@ -106,15 +106,11 @@ export const updateTenant = catchAsync(async (req: Request, res: Response) => {
 
 export const getCurrentresidences = catchAsync(
   async (req: Request, res: Response) => {
-    const { cognitoId } = req.params;
-
-    const parsed = cognitoIdSchema.safeParse({ cognitoId });
-    handleValidationError<z.infer<typeof cognitoIdSchema>>(parsed);
-    const { cognitoId: id } = parsed.data;
+    const cognitoId = req.user?.id;
 
     const tenant = await prisma.tenant.findUnique({
       where: {
-        cognitoId: id,
+        cognitoId,
       },
     });
 
@@ -127,7 +123,7 @@ export const getCurrentresidences = catchAsync(
 
     const residences = await prisma.property.findMany({
       where: {
-        tenants: { some: { cognitoId: id } },
+        tenants: { some: { cognitoId } },
       },
       include: {
         location: true,
@@ -175,13 +171,14 @@ export const favoriteProperty = catchAsync(
     const cognitoId = req.user?.id;
     const { propertyId } = req.params;
 
-    const parsed = favoritePropertySchema.safeParse({ cognitoId, propertyId });
+    const parsed = favoritePropertySchema.safeParse({ propertyId });
     handleValidationError<z.infer<typeof favoritePropertySchema>>(parsed);
-    const { cognitoId: id, propertyId: residenceId } = parsed.data;
+    const { propertyId: residenceId } = parsed.data;
+    console.log("passed validation fam");
 
     const [tenant, property] = await Promise.all([
       prisma.tenant.findUnique({
-        where: { cognitoId: id },
+        where: { cognitoId },
         select: {
           id: true,
           favorites: {
@@ -204,7 +201,7 @@ export const favoriteProperty = catchAsync(
 
     try {
       await prisma.tenant.update({
-        where: { cognitoId: id },
+        where: { cognitoId },
         data: { favorites: { connect: { id: residenceId } } },
       });
 
@@ -231,13 +228,13 @@ export const unfavoriteProperty = catchAsync(
     const cognitoId = req.user?.id;
     const { propertyId } = req.params;
 
-    const parsed = favoritePropertySchema.safeParse({ cognitoId, propertyId });
+    const parsed = favoritePropertySchema.safeParse({ propertyId });
     handleValidationError<z.infer<typeof favoritePropertySchema>>(parsed);
-    const { cognitoId: id, propertyId: residenceId } = parsed.data;
+    const { propertyId: residenceId } = parsed.data;
 
     const [tenant, property] = await Promise.all([
       prisma.tenant.findUnique({
-        where: { cognitoId: id },
+        where: { cognitoId },
         select: {
           id: true,
           favorites: {
@@ -257,7 +254,7 @@ export const unfavoriteProperty = catchAsync(
 
     if (tenant.favorites.length > 0) {
       await prisma.tenant.update({
-        where: { cognitoId: id },
+        where: { cognitoId },
         data: { favorites: { disconnect: { id: residenceId } } },
       });
 

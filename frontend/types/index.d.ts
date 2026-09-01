@@ -144,3 +144,9 @@ declare global {
 }
 
 export type UserRole = 'manager' | 'tenant';
+
+export interface APIResonse<TResponse = unknown> {
+  message: string;
+  success: boolean;
+  data?: TResponse;
+}

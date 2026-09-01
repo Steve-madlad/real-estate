@@ -4,7 +4,6 @@ import z from "zod";
 import { AppError } from "../lib/app-error.js";
 import { prisma } from "../lib/db.js";
 import handleValidationError, { catchAsync } from "../lib/utils.js";
-import { cognitoIdSchema } from "../schemas/schema.js";
 
 const managerSchema = z
   .object({
@@ -106,15 +105,11 @@ export const updateManager = catchAsync(async (req: Request, res: Response) => {
 
 export const getManagerProperties = catchAsync(
   async (req: Request, res: Response) => {
-    const { cognitoId } = req.params;
-
-    const parsed = cognitoIdSchema.safeParse({ cognitoId });
-    handleValidationError<z.infer<typeof cognitoIdSchema>>(parsed);
-    const { cognitoId: id } = parsed.data;
+    const cognitoId = req.user?.id;
 
     const manager = await prisma.manager.findUnique({
       where: {
-        cognitoId: id,
+        cognitoId,
       },
     });
 
@@ -127,7 +122,7 @@ export const getManagerProperties = catchAsync(
 
     const properties = await prisma.property.findMany({
       where: {
-        managerCognitoId: id,
+        managerCognitoId: cognitoId,
       },
       include: {
         location: true,
