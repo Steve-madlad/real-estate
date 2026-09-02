@@ -1,9 +1,11 @@
+import { useGetLocation } from '@/api/properties';
 import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
 import { AmenityIcons, PropertyTypeIcons } from '@/lib/constants';
 import { cn, formatEnumString } from '@/lib/utils';
 import { FilterState, initialFilters, useFiltersStore } from '@/store/filter-store';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { DatePickerInput } from './form/DatePicker';
 import { Select } from './form/Select';
 import { SliderRange } from './form/Slider';
@@ -28,6 +30,21 @@ export default function FiltersSidebar() {
   const { filters, setFilters, filtersSidebarOpen, resetFilters } = useFiltersStore();
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
 
+  const {
+    data: location,
+    isLoading: locationLoading,
+    refetch,
+  } = useGetLocation(localFilters.location, {
+    enabled: false,
+    onSuccess: (data) => {
+      if (data) setFilters({ ...filters, coordinates: [data?.lat, data?.lng] });
+    },
+    onError: (error) => {
+      toast.error('Failed to fetch location coordinates. Please try again.');
+      console.error('Location fetch error:', error);
+    },
+  });
+
   const updateUrl = useUpdateFiltersUrl();
 
   const handleSubmit = () => {
@@ -49,6 +66,8 @@ export default function FiltersSidebar() {
     }));
   };
 
+  const handleLocationSearch = () => refetch();
+
   if (!filtersSidebarOpen) return null;
 
   return (
@@ -66,7 +85,7 @@ export default function FiltersSidebar() {
                 className="rounded-l-xl rounded-r-none border-r-0"
               />
               <Button
-                // onClick={handleSearchLocation}
+                onClick={handleLocationSearch}
                 className="border-l-none rounded-l-none rounded-r-xl border-black shadow-none"
               >
                 <Search className="size-4" />

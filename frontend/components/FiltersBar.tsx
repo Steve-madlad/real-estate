@@ -1,11 +1,13 @@
 'use client';
 
+import { useGetLocation } from '@/api/properties';
 import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
 import { cn, k } from '@/lib/utils';
 import { useFiltersStore } from '@/store/filter-store';
 import { Building, Funnel, Grid, House, List, Search, Trees } from 'lucide-react';
 import { useState } from 'react';
 import { MdOutlineHouse } from 'react-icons/md';
+import { toast } from 'sonner';
 import { Select } from './form/Select';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -98,9 +100,24 @@ const propertyTypeOptions = [
 export default function FiltersBar() {
   // const router = useRouter();
   // const pathname = usePathname();
-  const [searchInput, setSearchInput] = useState<string>();
   const { filters, setFilters, viewMode, setViewMode, filtersSidebarOpen, toggleFiltersSidebar } =
     useFiltersStore();
+  const [searchInput, setSearchInput] = useState<string>(filters.location);
+
+  const {
+    data: location,
+    isLoading: locationLoading,
+    refetch,
+  } = useGetLocation(searchInput, {
+    enabled: false,
+    onSuccess: (data) => {
+      if (data) setFilters({ ...filters, coordinates: [data?.lat, data?.lng] });
+    },
+    onError: (error) => {
+      toast.error('Failed to fetch location. Please try again.');
+      console.error('Location fetch error:', error);
+    },
+  });
 
   const updateUrl = useUpdateFiltersUrl();
 
@@ -133,7 +150,7 @@ export default function FiltersBar() {
     updateUrl(newFilters);
   };
 
-  const handleLoactionSearch = () => {};
+  const handleLoactionSearch = () => refetch();
 
   return (
     <div className="flex-center py-5">

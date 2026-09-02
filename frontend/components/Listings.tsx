@@ -11,9 +11,10 @@ import PropertyCard from './PropertyCard';
 export default function Listings() {
   const { mutate: favoriteProperty, isPending: favoriteLoading } = useFavoriteProperty();
   const { mutate: unfavoriteProperty, isPending: unfavoriteLoading } = useUnfavoriteProperty();
-  const { filters, viewMode } = useFiltersStore();
+  const { filters, setFilters, viewMode } = useFiltersStore();
 
   const { data: user } = useGetAuthUser();
+  console.log({ user });
   const { data: tenant } = useGetTenant();
   const { data: properties, isLoading: propertiesLoading } = useGetProperties();
 
@@ -58,23 +59,20 @@ export default function Listings() {
             ? [...Array(10)].map((_, i) => (
                 <div key={i} className="mb-5 h-88 animate-pulse rounded-xl bg-gray-200 shadow-sm" />
               ))
-            : properties?.data.map((property) =>
-                viewMode === 'grid' ? (
-                  <PropertyCard
-                    key={property.id}
-                    isFavorited={isFavorite(property.id)}
-                    property={property}
-                    propertyLink={`/properties/${property.id}`}
-                    onFavoriteToggle={handleFavoriteToggle}
-                    likeToggleLoading={
-                      likeLoadingProperty === property.id && (favoriteLoading || unfavoriteLoading)
-                    }
-                    showFavoriteButton
-                  />
-                ) : (
-                  <></>
-                ),
-              )}
+            : properties?.data.map((property) => (
+                <PropertyCard
+                  key={property.id}
+                  isFavorited={isFavorite(property.id)}
+                  property={property}
+                  propertyLink={`/properties/${property.id}`}
+                  onFavoriteToggle={handleFavoriteToggle}
+                  likeToggleLoading={
+                    likeLoadingProperty === property.id && (favoriteLoading || unfavoriteLoading)
+                  }
+                  showFavoriteButton
+                  compactMode={viewMode === 'list'}
+                />
+              ))}
         </div>
       </div>
     </div>

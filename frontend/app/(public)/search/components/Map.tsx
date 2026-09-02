@@ -15,10 +15,10 @@ mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 export default function Map() {
   const mapContainerRef = useRef(null);
   const { filters, filtersSidebarOpen } = useFiltersStore();
-  const { data, isLoading, error } = useGetProperties();
+  const { data: properties, isLoading, error } = useGetProperties();
 
   useEffect(() => {
-    if (isLoading || error || !data) return;
+    if (isLoading || error || !properties) return;
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current!,
@@ -27,7 +27,7 @@ export default function Map() {
       zoom: 9,
     });
 
-    data.data.forEach((property) => {
+    properties.data.forEach((property) => {
       const marker = createPropertyMarker(property, map);
       const markerElement = marker.getElement();
       const path = markerElement.querySelector("path[fill='#3FB1CE']");
@@ -40,9 +40,9 @@ export default function Map() {
     resizeMap();
 
     return () => map.remove();
-  }, [isLoading, error, data, filters.coordinates]);
+  }, [isLoading, error, properties, filters.coordinates]);
 
-  if (error || !data) toast.error('Failed to show listings. Please refresh the page.');
+  if (error || !properties) toast.error('Failed to show listings. Please refresh the page.');
 
   return (
     <div className="relative grow basis-5/12 rounded-xl">

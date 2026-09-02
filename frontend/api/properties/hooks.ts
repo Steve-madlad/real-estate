@@ -1,12 +1,21 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { getProperties } from './requests';
-import { PropertiesResponse, PropertyParams } from './types';
+import { useEffect } from 'react';
+import { getLocation, getProperties } from './requests';
+import { LocationResponse, PropertiesResponse, PropertyParams } from './types';
 
 type UsePropertiesOptions = Omit<
   UseQueryOptions<PropertiesResponse, AxiosError<{ message: string }>>,
   'queryFn' | 'queryKey'
 >;
+
+type UseLocationOptions = Omit<
+  UseQueryOptions<LocationResponse, AxiosError<{ message: string }>>,
+  'queryFn' | 'queryKey'
+> & {
+  onSuccess?: (data: LocationResponse) => void;
+  onError?: (error: AxiosError<{ message: string }>) => void;
+};
 
 export const userKeys = {
   all: ['properties'] as const,
@@ -18,4 +27,28 @@ export const useGetProperties = (params?: PropertyParams, options?: UsePropertie
     queryKey: userKeys.all,
     ...options,
   });
+};
+
+export const useGetLocation = (location: string, options?: UseLocationOptions) => {
+  const query = useQuery({
+    queryFn: () => getLocation(location),
+    queryKey: userKeys.all,
+    ...options,
+  });
+
+  const { onSuccess, onError } = options || {};
+
+  useEffect(() => {
+    if (query.isSuccess && query.data && onSuccess) {
+      onSuccess(query.data);
+    }
+  }, [query.isSuccess, query.data]);
+
+  useEffect(() => {
+    if (query.isError && query.error && onError) {
+      onError(query.error);
+    }
+  }, [query.isError, query.error]);
+
+  return query;
 };

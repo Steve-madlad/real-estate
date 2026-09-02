@@ -20,3 +20,5 @@ export interface PropertyParams {
   latitude?: number;
   longitude?: number;
 }
+
+export type LocationResponse = { lat: number; lng: number } | null;
