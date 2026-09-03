@@ -1,6 +1,13 @@
 import { apiClient } from '@/lib/http-client';
 import axios from 'axios';
-import { LocationResponse, PropertiesResponse, PropertyParams } from './types';
+import { LocationResponse, PropertiesResponse, PropertyParams, PropertyResponse } from './types';
+
+const getProperty = async (id: string): Promise<PropertyResponse> => {
+  const route = `/property/${id}`;
+
+  const propertiesResponse = await apiClient.get<PropertyResponse>(route);
+  return propertiesResponse.data;
+};
 
 const getProperties = async (params?: PropertyParams): Promise<PropertiesResponse> => {
   const route = `/property`;
@@ -20,4 +27,4 @@ const getLocation = async (location: string): Promise<LocationResponse> => {
   return null;
 };
 
-export { getProperties, getLocation };
+export { getLocation, getProperties, getProperty };

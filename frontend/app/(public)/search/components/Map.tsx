@@ -23,7 +23,7 @@ export default function Map() {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current!,
       style: 'mapbox://styles/steve-lad/cmtea6ly8004w01qtad8yfbsq',
-      center: filters.coordinates || [-74.5, 40],
+      center: [-74.5, 40],
       zoom: 9,
     });
 

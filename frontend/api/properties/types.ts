@@ -6,6 +6,12 @@ export type PropertiesResponse = {
   message: string;
 };
 
+export type PropertyResponse = {
+  success: boolean;
+  data: PropertyWithLocationCoordinates;
+  message: string;
+};
+
 export interface PropertyParams {
   favoriteIds?: string[];
   priceMin?: number;

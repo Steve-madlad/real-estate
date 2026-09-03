@@ -64,7 +64,7 @@ export default function Listings() {
                   key={property.id}
                   isFavorited={isFavorite(property.id)}
                   property={property}
-                  propertyLink={`/properties/${property.id}`}
+                  propertyLink={`/listing/${property.id}`}
                   onFavoriteToggle={handleFavoriteToggle}
                   likeToggleLoading={
                     likeLoadingProperty === property.id && (favoriteLoading || unfavoriteLoading)
