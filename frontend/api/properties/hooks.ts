@@ -1,11 +1,12 @@
+import { PropertyWithLocationCoordinates } from '@/types/prismaTypes';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useEffect } from 'react';
 import { getLocation, getProperties, getProperty } from './requests';
-import { LocationResponse, PropertiesResponse, PropertyParams, PropertyResponse } from './types';
+import { LocationResponse, PropertiesResponse, PropertyParams } from './types';
 
 type UsePropertyOptions = Omit<
-  UseQueryOptions<PropertyResponse, AxiosError<{ message: string }>>,
+  UseQueryOptions<PropertyWithLocationCoordinates, AxiosError<{ message: string }>>,
   'queryFn' | 'queryKey'
 >;
 

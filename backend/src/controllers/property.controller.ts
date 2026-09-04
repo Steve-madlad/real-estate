@@ -167,8 +167,11 @@ export const getProperty = catchAsync(async (req: Request, res: Response) => {
       },
     };
 
-    res.json(propertyWithCoordinates);
-    return;
+    return res.json({
+      success: true,
+      message: "Property fetched successfully",
+      data: propertyWithCoordinates,
+    });
   }
 
   res.status(404).json({

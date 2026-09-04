@@ -1,12 +1,13 @@
 import { apiClient } from '@/lib/http-client';
 import axios from 'axios';
 import { LocationResponse, PropertiesResponse, PropertyParams, PropertyResponse } from './types';
+import { PropertyWithLocationCoordinates } from '@/types/prismaTypes';
 
-const getProperty = async (id: string): Promise<PropertyResponse> => {
+const getProperty = async (id: string): Promise<PropertyWithLocationCoordinates> => {
   const route = `/property/${id}`;
 
   const propertiesResponse = await apiClient.get<PropertyResponse>(route);
-  return propertiesResponse.data;
+  return propertiesResponse.data.data;
 };
 
 const getProperties = async (params?: PropertyParams): Promise<PropertiesResponse> => {
