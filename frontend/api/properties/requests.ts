@@ -14,6 +14,7 @@ const getProperties = async (params?: PropertyParams): Promise<PropertiesRespons
   const route = `/property`;
 
   const propertiesResponse = await apiClient.get<PropertiesResponse>(route, { params });
+  console.log({ propertiesResponse });
   return propertiesResponse.data;
 };
 
