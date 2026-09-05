@@ -5,7 +5,7 @@ import { GetTenantResponse, PropertyFavoriteStatusResponse } from './types';
 const getTenant = async (): Promise<GetTenantResponse> => {
   const user = await getCurrentUser();
 
-  const response = await apiClient.get(`/tenant/${user.userId}`);
+  const response = await apiClient.get(`/tenants/${user.userId}`);
   return response.data;
 };
 

@@ -9,16 +9,16 @@ import { toast } from 'sonner';
 import PropertyCard from './PropertyCard';
 
 export default function Listings() {
+  const [likeLoadingProperty, setLikeLoadingProperty] = useState<number>();
   const { mutate: favoriteProperty, isPending: favoriteLoading } = useFavoriteProperty();
-  const { mutate: unfavoriteProperty, isPending: unfavoriteLoading } = useUnfavoriteProperty();
-  const { filters, setFilters, viewMode } = useFiltersStore();
+  const { mutate: unfavoriteProperty, isPending: unfavoriteLoading } = useUnfavoriteProperty({
+    onSuccess: () => setLikeLoadingProperty(undefined),
+  });
+  const { filters, viewMode } = useFiltersStore();
 
   const { data: user } = useGetAuthUser();
-  console.log({ user });
   const { data: tenant } = useGetTenant();
   const { data: properties, isLoading: propertiesLoading } = useGetProperties();
-
-  const [likeLoadingProperty, setLikeLoadingProperty] = useState<number>();
 
   const isFavorite = (propertyId: number) => {
     if (!user || !tenant?.data || user?.userRole === 'manager') {
@@ -64,7 +64,6 @@ export default function Listings() {
                   key={property.id}
                   isFavorited={isFavorite(property.id)}
                   property={property}
-                  propertyLink={`/listing/${property.id}`}
                   onFavoriteToggle={handleFavoriteToggle}
                   likeToggleLoading={
                     likeLoadingProperty === property.id && (favoriteLoading || unfavoriteLoading)

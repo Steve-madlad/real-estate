@@ -13,7 +13,7 @@ export default async function layout({ children }: { children: React.ReactNode }
           <div style={{ paddingTop: `${NAVBAR_HEIGHT}px` }}>
             <main className="flex">
               <Siderbar />
-              <div className="duriation-300 grow transition-all">{children}</div>
+              <div className="duriation-300 grow p-7 transition-all">{children}</div>
             </main>
           </div>
         </div>

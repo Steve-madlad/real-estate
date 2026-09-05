@@ -4,7 +4,7 @@ import { useGetAuthUser } from '@/api/auth';
 import SettingsForm from '@/components/form/SettingsForm';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function page() {
+export default function Settings() {
   const { data: user, isLoading, isError } = useGetAuthUser();
 
   if (isLoading) {
@@ -34,7 +34,7 @@ export default function page() {
   };
 
   return (
-    <div className="p-5">
+    <div>
       <SettingsForm initialValues={initialData} userRole={user?.userRole} />
     </div>
   );

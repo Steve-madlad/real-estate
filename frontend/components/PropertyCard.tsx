@@ -11,10 +11,11 @@ interface PropertyCardProps {
   property: PropertyWithLocation;
   isFavorited: boolean;
   showFavoriteButton: boolean;
-  propertyLink: string;
   likeToggleLoading: boolean;
   onFavoriteToggle: (propertyId: number) => void;
 }
+
+const propertyLink = (id: number) => `/listing/${id}`;
 
 export default function PropertyCard({
   compactMode,
@@ -33,12 +34,13 @@ function FullCard({
   property,
   isFavorited,
   showFavoriteButton,
-  propertyLink,
   likeToggleLoading,
   onFavoriteToggle,
   imgSrc,
   setImgSrc,
 }: PropertyCardProps & { imgSrc: string; setImgSrc: (src: string) => void }) {
+  const link = propertyLink(property.id);
+
   return (
     <div className="mb-5 w-full overflow-hidden rounded-xl shadow-xl">
       <div className="relative">
@@ -80,12 +82,8 @@ function FullCard({
 
         <div className="p-4">
           <h2 className="mb-1 text-xl font-bold">
-            {propertyLink ? (
-              <Link
-                href={propertyLink}
-                scroll={false}
-                className="hover:text-blue-600 hover:underline"
-              >
+            {link ? (
+              <Link href={link} scroll={false} className="hover:text-blue-600 hover:underline">
                 {property.name}
               </Link>
             ) : (
@@ -133,12 +131,13 @@ function CompactCard({
   property,
   isFavorited,
   showFavoriteButton,
-  propertyLink,
   likeToggleLoading,
   onFavoriteToggle,
   imgSrc,
   setImgSrc,
 }: PropertyCardProps & { imgSrc: string; setImgSrc: (src: string) => void }) {
+  const link = propertyLink(property.id);
+
   return (
     <div className="mb-5 flex h-40 w-full overflow-hidden rounded-xl shadow-xl">
       <div className="relative w-1/3">
@@ -181,12 +180,8 @@ function CompactCard({
         <div>
           <div className="just-between items-start">
             <h2 className="mb-1 text-xl font-bold">
-              {propertyLink ? (
-                <Link
-                  href={propertyLink}
-                  scroll={false}
-                  className="hover:text-blue-600 hover:underline"
-                >
+              {link ? (
+                <Link href={link} scroll={false} className="hover:text-blue-600 hover:underline">
                   {property.name}
                 </Link>
               ) : (
