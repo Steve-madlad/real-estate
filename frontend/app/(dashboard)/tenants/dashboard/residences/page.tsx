@@ -14,11 +14,22 @@ import { toast } from 'sonner';
 
 export default function Favorites() {
   const { data: user } = useGetAuthUser();
-  const { data: tenant } = useGetTenant();
+  const { data: tenant, isLoading: tenantLoading } = useGetTenant();
+  const {
+    data: residences,
+    isLoading: residencesLoading,
+    refetch,
+  } = useGetResidences({ enabled: false });
 
-  const { data: residences, refetch } = useGetResidences({ enabled: false });
+  console.log({ tenant, residences });
 
+  useEffect(() => {
+    if (tenant?.data) {
+      refetch();
+    }
+  }, [tenant?.data]);
   const [likeLoadingProperty, setLikeLoadingProperty] = useState<number>();
+
   const { mutate: favoriteProperty, isPending: favoriteLoading } = useFavoriteProperty({
     onSuccess: () => setLikeLoadingProperty(undefined),
   });
@@ -34,7 +45,7 @@ export default function Favorites() {
   };
 
   const handleFavoriteToggle = (propertyId: number) => {
-    if (!tenant) {
+    if (!user) {
       return toast.error('Please sign in to favorite a property');
     }
     if (user?.userRole === 'manager') {
@@ -46,26 +57,24 @@ export default function Favorites() {
     else favoriteProperty(propertyId);
   };
 
-  useEffect(() => {
-    if (tenant?.data) {
-      refetch();
-    }
-  }, [tenant?.data]);
-
   return (
     <div>
       <Header title="Current Residences" subTitle="View and manage your current living spaces" />
       <div className="grid grid-cols-1 gap-x-10 gap-y-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {residences?.data.map((property) => (
-          <PropertyCard
-            key={property.id}
-            isFavorited={isFavorite(property.id)}
-            likeToggleLoading={likeLoadingProperty === property.id}
-            onFavoriteToggle={handleFavoriteToggle}
-            property={property}
-            showFavoriteButton
-          />
-        ))}
+        {tenantLoading || residencesLoading ? (
+          <div className="animate-pulse bg-gray-300"></div>
+        ) : (
+          residences?.data.map((property) => (
+            <PropertyCard
+              key={property.id}
+              isFavorited={isFavorite(property.id)}
+              likeToggleLoading={likeLoadingProperty === property.id}
+              onFavoriteToggle={handleFavoriteToggle}
+              property={property}
+              showFavoriteButton
+            />
+          ))
+        )}
       </div>
     </div>
   );

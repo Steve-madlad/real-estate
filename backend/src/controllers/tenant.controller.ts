@@ -162,7 +162,7 @@ export const getCurrentresidences = catchAsync(
 
     return res.status(404).json({
       success: false,
-      message: "Property not found",
+      message: "No Property not found",
     });
   },
 );

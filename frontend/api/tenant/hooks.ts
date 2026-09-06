@@ -35,7 +35,7 @@ export const useGetTenant = (options?: UseGetTenantOptions) => {
 export const useGetResidences = (options?: UseGetResidencesOptions) => {
   return useQuery({
     ...options,
-    queryKey: tenantKeys.all,
+    queryKey: ['residences'],
     queryFn: getResidences,
   });
 };
