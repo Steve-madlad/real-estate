@@ -155,6 +155,7 @@ export const getCurrentresidences = catchAsync(
 
       return res.json({
         success: true,
+        message: "Residencies fetched successfuly",
         residences: residencesWithFormattedLocation,
       });
     }

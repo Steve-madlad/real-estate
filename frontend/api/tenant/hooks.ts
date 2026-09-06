@@ -1,12 +1,18 @@
 import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 // import { userKeys } from '../auth';
-import { favoriteProperty, getTenant, unfavoriteProperty } from './requests';
+import { PropertiesResponse, PropertyResponse } from '../properties';
+import { favoriteProperty, getResidences, getTenant, unfavoriteProperty } from './requests';
 import { GetTenantResponse, PropertyFavoriteStatusResponse } from './types';
 
 type UseUpdatePropertyOptions = Omit<
   UseMutationOptions<PropertyFavoriteStatusResponse, AxiosError<{ message: string }>, number>,
   'mutationFn'
+>;
+
+type UseGetResidencesOptions = Omit<
+  UseQueryOptions<PropertiesResponse, AxiosError<{ message: string }>>,
+  'queryFn' | 'queryKey'
 >;
 
 type UseGetTenantOptions = Omit<
@@ -23,6 +29,14 @@ export const useGetTenant = (options?: UseGetTenantOptions) => {
     ...options,
     queryKey: tenantKeys.all,
     queryFn: getTenant,
+  });
+};
+
+export const useGetResidences = (options?: UseGetResidencesOptions) => {
+  return useQuery({
+    ...options,
+    queryKey: tenantKeys.all,
+    queryFn: getResidences,
   });
 };
 
