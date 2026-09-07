@@ -9,10 +9,10 @@ import { Button } from './ui/button';
 
 interface PropertyCardProps {
   property: PropertyWithLocation;
-  isFavorited: boolean;
-  showFavoriteButton: boolean;
-  likeToggleLoading: boolean;
-  onFavoriteToggle: (propertyId: number) => void;
+  isFavorited?: boolean;
+  showFavoriteButton?: boolean;
+  likeToggleLoading?: boolean;
+  onFavoriteToggle?: (propertyId: number) => void;
 }
 
 const propertyLink = (id: number) => `/listing/${id}`;
@@ -68,7 +68,7 @@ function FullCard({
           )}
         </div>
 
-        {showFavoriteButton && (
+        {showFavoriteButton && onFavoriteToggle && (
           <Button
             className="hover:bg-white-90 cursor absolute top-3 right-3 size-7 rounded-full bg-white p-4 shadow-sm"
             onClick={() => onFavoriteToggle(property.id)}
@@ -163,7 +163,7 @@ function CompactCard({
           )}
         </div>
 
-        {showFavoriteButton && (
+        {showFavoriteButton && onFavoriteToggle && (
           <Button
             className="hover:bg-white-90 cursor absolute top-2 left-2 size-5 rounded-full bg-white p-4 shadow-sm"
             onClick={() => onFavoriteToggle(property.id)}

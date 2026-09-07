@@ -45,8 +45,9 @@ export type TenantWithFavorites = Prisma.TenantGetPayload<{
   };
 }>;
 
-export type LeaseWithPayments = Prisma.LeaseGetPayload<{
+export type LeaseWithTenantAndProperty = Prisma.LeaseGetPayload<{
   include: {
-    payments: true;
+    tenant: true;
+    property: true;
   };
 }>;

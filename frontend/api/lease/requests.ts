@@ -6,8 +6,10 @@ const getLeases = async (): Promise<LeasesResponse> => {
   return leaseResponse.data;
 };
 
-const getLeasePayments = async (): Promise<LeasePaymentsResponse> => {
-  const leasePaymentsResponse = await apiClient.get<LeasePaymentsResponse>('/lease/payments');
+const getLeasePayments = async (propertyId: string): Promise<LeasePaymentsResponse> => {
+  const leasePaymentsResponse = await apiClient.get<LeasePaymentsResponse>(
+    `/lease/${propertyId}/payments`,
+  );
   return leasePaymentsResponse.data;
 };
 

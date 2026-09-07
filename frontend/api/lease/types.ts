@@ -1,5 +1,5 @@
 import { APIResonse } from '@/types';
-import { Lease, LeaseWithPayments } from '@/types/prismaTypes';
+import { LeaseWithTenantAndProperty, Payment } from '@/types/prismaTypes';
 
-export type LeasesResponse = APIResonse<Lease[]>;
-export type LeasePaymentsResponse = APIResonse<LeaseWithPayments[]>;
+export type LeasesResponse = APIResonse<LeaseWithTenantAndProperty[]>;
+export type LeasePaymentsResponse = APIResonse<Payment[]>;

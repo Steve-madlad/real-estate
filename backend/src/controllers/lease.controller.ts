@@ -19,11 +19,11 @@ export const getLeases = catchAsync(async (_req: Request, res: Response) => {
 
 export const getLeasePayments = catchAsync(
   async (req: Request, res: Response) => {
-    const userId = req.user?.id;
+    const {id: leaseId} = req.params;
 
     const payments = await prisma.payment.findMany({
       where: {
-        leaseId: Number(userId),
+        leaseId: Number(leaseId),
       },
     });
 

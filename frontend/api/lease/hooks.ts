@@ -25,9 +25,9 @@ export const useGetLeases = (options?: UseLeaseOptions) => {
   });
 };
 
-export const useGetLeasePayments = (options?: UseLeasePaymentsOptions) => {
+export const useGetLeasePayments = (propertyId: string, options?: UseLeasePaymentsOptions) => {
   return useQuery({
-    queryFn: getLeasePayments,
+    queryFn: () => getLeasePayments(propertyId),
     queryKey: userKeys.all,
     ...options,
   });
