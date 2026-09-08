@@ -1,9 +1,15 @@
 import { PropertyWithLocationCoordinates } from '@/types/prismaTypes';
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useEffect } from 'react';
-import { getLocation, getProperties, getProperty } from './requests';
-import { LocationResponse, PropertiesResponse, PropertyParams } from './types';
+import { createProperty, getLocation, getProperties, getProperty } from './requests';
+import {
+  CreatePropertyBody,
+  LocationResponse,
+  PropertiesResponse,
+  PropertyParams,
+  PropertyResponse,
+} from './types';
 
 type UsePropertyOptions = Omit<
   UseQueryOptions<PropertyWithLocationCoordinates, AxiosError<{ message: string }>>,
@@ -22,6 +28,11 @@ type UseLocationOptions = Omit<
   onSuccess?: (data: LocationResponse) => void;
   onError?: (error: AxiosError<{ message: string }>) => void;
 };
+
+type UseCreatePopertyOptions = Omit<
+  UseMutationOptions<PropertyResponse, AxiosError<{ message: string }>, CreatePropertyBody>,
+  'mutationFn'
+>;
 
 export const userKeys = {
   all: ['properties'] as const,
@@ -65,4 +76,11 @@ export const useGetLocation = (location: string, options?: UseLocationOptions) =
   }, [query.isError, query.error]);
 
   return query;
+};
+
+export const useCreateProperty = (options?: UseCreatePopertyOptions) => {
+  return useMutation({
+    mutationFn: (body: CreatePropertyBody) => createProperty(body),
+    ...options,
+  });
 };

@@ -8,8 +8,8 @@ import { Building, Funnel, Grid, House, List, Search, Trees } from 'lucide-react
 import { useState } from 'react';
 import { MdOutlineHouse } from 'react-icons/md';
 import { toast } from 'sonner';
-import { Select } from './form/Select';
 import { Button } from './ui/button';
+import { Select } from './ui/custom/Select';
 import { Input } from './ui/input';
 
 const minPriceOpitons = [
@@ -188,7 +188,7 @@ export default function FiltersBar() {
           {/* Min Price */}
           <Select
             value={filters.priceRange[0]?.toString() || 'any'}
-            placeHolder="Any Min Price"
+            placeholder="Any Min Price"
             onChange={(val) => handleFilterChange('priceRange', val, true)}
             options={minPriceOpitons}
           />
@@ -196,7 +196,7 @@ export default function FiltersBar() {
           {/* Max Price */}
           <Select
             value={filters.priceRange[1]?.toString() || 'any'}
-            placeHolder="Any Max Price"
+            placeholder="Any Max Price"
             onChange={(val) => handleFilterChange('priceRange', val, false)}
             options={maxPriceOpitons}
           />
@@ -206,7 +206,7 @@ export default function FiltersBar() {
         <div className="flex gap-1">
           <Select
             value={filters.beds}
-            placeHolder="Beds"
+            placeholder="Beds"
             onChange={(val) => handleFilterChange('beds', val)}
             options={bedOptions}
           />
@@ -217,7 +217,7 @@ export default function FiltersBar() {
           {/* Min Price */}
           <Select
             value={filters.baths}
-            placeHolder="Baths"
+            placeholder="Baths"
             onChange={(val) => handleFilterChange('baths', val)}
             options={bathOptions}
           />
@@ -228,7 +228,7 @@ export default function FiltersBar() {
           {/* Min Price */}
           <Select
             value={filters.propertyType}
-            placeHolder="Property Type"
+            placeholder="Property Type"
             onChange={(val) => handleFilterChange('propertyType', val)}
             options={propertyTypeOptions}
           />

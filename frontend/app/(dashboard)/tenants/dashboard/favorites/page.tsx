@@ -43,7 +43,7 @@ export default function Favorites() {
   console.log({ tenant, favoriteProperties });
   return (
     <div>
-      <Header title="Favorite Properties" subTitle="Broswe and manage you saved listings" />
+      <Header title="Favorite Properties" subtitle="Broswe and manage you saved listings" />
       <div className="grid grid-cols-1 gap-x-10 gap-y-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {favoriteProperties?.data.map((property) => (
           <PropertyCard

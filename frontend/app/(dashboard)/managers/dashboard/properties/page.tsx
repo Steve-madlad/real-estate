@@ -22,7 +22,7 @@ export default function Properties() {
 
   return (
     <div>
-      <Header title="Your Properties" subTitle="View and manage your properties and tenants" />
+      <Header title="Your Properties" subtitle="View and manage your properties and tenants" />
       <div className="grid grid-cols-1 gap-x-10 gap-y-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {propertiesLoading ? (
           <div className="animate-pulse bg-gray-300"></div>

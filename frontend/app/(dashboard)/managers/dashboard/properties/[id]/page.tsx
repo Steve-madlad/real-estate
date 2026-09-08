@@ -65,7 +65,7 @@ export default function Properties() {
 
       <Header
         title={property?.name || 'Your Property'}
-        subTitle="Manage tenants and leases for this property"
+        subtitle="Manage tenants and leases for this property"
       />
       <div className="w-full space-y-6">
         <div className="mt-8 overflow-hidden rounded-xl bg-white p-6 shadow-md">

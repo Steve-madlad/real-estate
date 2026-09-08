@@ -59,7 +59,7 @@ export default function Favorites() {
 
   return (
     <div>
-      <Header title="Current Residences" subTitle="View and manage your current living spaces" />
+      <Header title="Current Residences" subtitle="View and manage your current living spaces" />
       <div className="grid grid-cols-1 gap-x-10 gap-y-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {tenantLoading || residencesLoading ? (
           <div className="animate-pulse bg-gray-300"></div>

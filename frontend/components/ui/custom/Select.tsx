@@ -17,7 +17,7 @@ export interface Option {
 export function Select({
   options,
   value,
-  placeHolder,
+  placeholder,
   label,
   className,
   onChange,
@@ -25,14 +25,14 @@ export function Select({
   options: Option[];
   value: string;
   onChange: (value: string | null) => void;
-  placeHolder?: string;
+  placeholder?: string;
   label?: string;
   className?: string;
 }) {
   return (
     <SelectComponent value={value} onValueChange={onChange}>
       <SelectTrigger className={cn('w-full max-w-48', className)}>
-        <SelectValue placeholder={placeHolder}>
+        <SelectValue placeholder={placeholder}>
           {options.find((option) => String(option.value) === value)?.label}
         </SelectValue>
       </SelectTrigger>

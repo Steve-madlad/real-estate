@@ -28,3 +28,12 @@ export interface PropertyParams {
 }
 
 export type LocationResponse = { lat: number; lng: number } | null;
+
+export interface CreatePropertyBody {
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  managerCognitoId: string;
+}

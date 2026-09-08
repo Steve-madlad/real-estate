@@ -186,16 +186,10 @@ const s3Client = new S3Client({
 
 export const createProperty = catchAsync(
   async (req: Request, res: Response) => {
+    const userId = req.user?.id;
     const files = req.files as Express.Multer.File[];
-    const {
-      address,
-      city,
-      state,
-      country,
-      postalCode,
-      managerCognitoId,
-      ...propertyData
-    } = req.body;
+    const { address, city, state, country, postalCode, ...propertyData } =
+      req.body;
 
     const photoUrls = await Promise.all(
       files.map(async (file) => {
@@ -247,7 +241,7 @@ export const createProperty = catchAsync(
         ...propertyData,
         photoUrls,
         locationId: location?.id,
-        managerCognitoId,
+        managerCognitoId: userId,
         amenities:
           typeof propertyData.amenities === "string"
             ? propertyData.amenities.split(",")

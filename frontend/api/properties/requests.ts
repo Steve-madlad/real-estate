@@ -1,6 +1,12 @@
 import { apiClient } from '@/lib/http-client';
 import axios from 'axios';
-import { LocationResponse, PropertiesResponse, PropertyParams, PropertyResponse } from './types';
+import {
+  CreatePropertyBody,
+  LocationResponse,
+  PropertiesResponse,
+  PropertyParams,
+  PropertyResponse,
+} from './types';
 import { PropertyWithLocationCoordinates } from '@/types/prismaTypes';
 
 const getProperty = async (id: string): Promise<PropertyWithLocationCoordinates> => {
@@ -29,4 +35,9 @@ const getLocation = async (location: string): Promise<LocationResponse> => {
   return null;
 };
 
-export { getLocation, getProperties, getProperty };
+const createProperty = async (body: CreatePropertyBody): Promise<PropertyResponse> => {
+  const response = await apiClient.post<PropertyResponse>('/property', body);
+  return response.data;
+};
+
+export { getLocation, getProperties, getProperty, createProperty };

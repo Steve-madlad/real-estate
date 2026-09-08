@@ -6,10 +6,10 @@ import { FilterState, initialFilters, useFiltersStore } from '@/store/filter-sto
 import { Search } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { DatePickerInput } from './form/DatePicker';
-import { Select } from './form/Select';
-import { SliderRange } from './form/Slider';
 import { Button } from './ui/button';
+import { DatePickerInput } from './ui/custom/DatePicker';
+import { Select } from './ui/custom/Select';
+import { SliderRange } from './ui/custom/Slider';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 
@@ -142,7 +142,7 @@ export default function FiltersSidebar() {
               <h4 className="mb-2 font-bold">Beds</h4>
               <Select
                 value={localFilters.beds}
-                placeHolder="Beds"
+                placeholder="Beds"
                 onChange={(val) => setLocalFilters((prev) => ({ ...prev, beds: val ?? prev.beds }))}
                 options={bedOptions}
               />
@@ -152,7 +152,7 @@ export default function FiltersSidebar() {
               <h4 className="mb-2 font-bold">Baths</h4>
               <Select
                 value={localFilters.baths}
-                placeHolder="Baths"
+                placeholder="Baths"
                 onChange={(val) =>
                   setLocalFilters((prev) => ({ ...prev, baths: val ?? prev.baths }))
                 }
