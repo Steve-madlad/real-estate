@@ -3,13 +3,7 @@ import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from '@tan
 import { AxiosError } from 'axios';
 import { useEffect } from 'react';
 import { createProperty, getLocation, getProperties, getProperty } from './requests';
-import {
-  CreatePropertyBody,
-  LocationResponse,
-  PropertiesResponse,
-  PropertyParams,
-  PropertyResponse,
-} from './types';
+import { LocationResponse, PropertiesResponse, PropertyParams, PropertyResponse } from './types';
 
 type UsePropertyOptions = Omit<
   UseQueryOptions<PropertyWithLocationCoordinates, AxiosError<{ message: string }>>,
@@ -30,7 +24,7 @@ type UseLocationOptions = Omit<
 };
 
 type UseCreatePopertyOptions = Omit<
-  UseMutationOptions<PropertyResponse, AxiosError<{ message: string }>, CreatePropertyBody>,
+  UseMutationOptions<PropertyResponse, AxiosError<{ message: string }>, FormData>,
   'mutationFn'
 >;
 
@@ -67,20 +61,20 @@ export const useGetLocation = (location: string, options?: UseLocationOptions) =
     if (query.isSuccess && query.data && onSuccess) {
       onSuccess(query.data);
     }
-  }, [query.isSuccess, query.data]);
+  }, [query.isSuccess, query.data, onSuccess]);
 
   useEffect(() => {
     if (query.isError && query.error && onError) {
       onError(query.error);
     }
-  }, [query.isError, query.error]);
+  }, [query.isError, query.error, onError]);
 
   return query;
 };
 
 export const useCreateProperty = (options?: UseCreatePopertyOptions) => {
   return useMutation({
-    mutationFn: (body: CreatePropertyBody) => createProperty(body),
+    mutationFn: (body: FormData) => createProperty(body),
     ...options,
   });
 };

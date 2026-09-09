@@ -13,7 +13,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@aws-amplify/ui-react": "^6.15.4",
+    "@aws-amplify/ui-react": "^6.15.6",
     "@base-ui/react": "^1.6.0",
     "@hookform/resolvers": "^5.7.1",
     "@tanstack/react-query": "^5.101.1",
@@ -22,6 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "cn": "^0.2.6",
     "date-fns": "^4.4.0",
     "dayjs": "^1.11.21",
     "dotenv": "^17.4.2",
@@ -60,7 +61,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "husky": "^9.1.7",
-    "jsdom-quokka-plugin": "^1.0.16",
+    "jsdom": "^30.0.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4",
     "typescript": "^5"

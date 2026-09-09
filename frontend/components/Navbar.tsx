@@ -60,7 +60,7 @@ export default function Navbar() {
           {isDashboardRoute && user && (
             <Button
               variant="secondary"
-              onClick={() => router.push(isUserManager ? '/managers/newproperty' : '/search')}
+              onClick={() => router.push(isUserManager ? '/managers/create-property' : '/search')}
               className="bg-primary-50 text-primary-700 hover:bg-secondary-500 hover:text-primary-50 md:ml-4"
             >
               {isUserManager ? (

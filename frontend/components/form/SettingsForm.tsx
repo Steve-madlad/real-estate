@@ -19,8 +19,8 @@ import {
   FieldLegend,
   FieldSet,
 } from '../ui/field';
-import InputField from './InputField';
 import { PhoneInput } from '../ui/phone-input';
+import InputField from './fields/InputField';
 
 const settingsSchema = z.object({
   name: z.string().optional(),
@@ -36,8 +36,6 @@ interface SettingsFormProps {
 }
 export default function SettingsForm({ initialValues, userRole }: SettingsFormProps) {
   const { mutateAsync, isPending } = useUpdateUser();
-
-  console.log({ isPending });
 
   const settingsForm = useForm({
     resolver: zodResolver(settingsSchema),

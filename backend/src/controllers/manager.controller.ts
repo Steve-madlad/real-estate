@@ -1,5 +1,6 @@
 import { wktToGeoJSON } from "@terraformer/wkt";
 import type { Request, Response } from "express";
+import { isValidPhoneNumber } from "libphonenumber-js";
 import z from "zod";
 import { AppError } from "../lib/app-error.js";
 import { prisma } from "../lib/db.js";
@@ -16,7 +17,13 @@ const createManagerSchema = z
     cognitoId: z.string().min(1, "Cognito ID is required"),
     name: z.string().min(1, "Name is required"),
     email: z.email("Invalid email address"),
-    phoneNumber: z.string().min(1, "Phone number is required"),
+    phoneNumber: z
+      .string()
+      .default("")
+      .refine(
+        (value) => value === "" || /^\+?[1-9]\d{7,14}$/.test(value),
+        "Invalid phone number",
+      ),
   })
   .strip();
 
@@ -25,7 +32,13 @@ const updateManagerSchema = z
     cognitoId: z.string().min(1, "Cognito ID is required"),
     name: z.string().optional(),
     email: z.email("Invalid email address").optional(),
-    phoneNumber: z.string().optional(),
+    phoneNumber: z
+      .string()
+      .default("")
+      .refine(
+        (value) => value === "" || isValidPhoneNumber(value, "ET"),
+        "Invalid phone number",
+      ),
   })
   .strip();
 
@@ -67,7 +80,6 @@ export const createManager = catchAsync(async (req: Request, res: Response) => {
   const manager = await prisma.manager.create({
     data: parsed.data,
   });
-
   res.status(201).json({
     success: true,
     message: "Manager created successfully",

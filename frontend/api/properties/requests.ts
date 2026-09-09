@@ -35,7 +35,7 @@ const getLocation = async (location: string): Promise<LocationResponse> => {
   return null;
 };
 
-const createProperty = async (body: CreatePropertyBody): Promise<PropertyResponse> => {
+const createProperty = async (body: FormData): Promise<PropertyResponse> => {
   const response = await apiClient.post<PropertyResponse>('/property', body);
   return response.data;
 };

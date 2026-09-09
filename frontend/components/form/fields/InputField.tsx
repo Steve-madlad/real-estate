@@ -4,10 +4,10 @@ import { cn } from '@/lib/utils';
 import { Eye, EyeOff } from 'lucide-react';
 import { HTMLInputTypeAttribute, InputHTMLAttributes, useState } from 'react';
 import { useController } from 'react-hook-form';
-import { Button } from '../ui/button';
-import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field';
-import { Input as BaseInput } from '../ui/input';
-import { Textarea } from '../ui/textarea';
+import { Button } from '../../ui/button';
+import { Field, FieldDescription, FieldError, FieldLabel } from '../../ui/field';
+import { Input as BaseInput } from '../../ui/input';
+import { Textarea } from '../../ui/textarea';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
   name: string;
@@ -35,7 +35,7 @@ export default function InputField({
   return (
     <Field data-invalid={fieldState.invalid}>
       {label && (
-        <FieldLabel className="font-medium" htmlFor={fieldId}>
+        <FieldLabel className="font-medium" htmlFor={props.id || fieldId}>
           {label}
         </FieldLabel>
       )}
@@ -45,7 +45,7 @@ export default function InputField({
             {...props}
             {...field}
             className={cn(props.className, 'rounded-sm')}
-            id={fieldId}
+            id={props.id || fieldId}
             aria-invalid={fieldState.invalid}
           />
         ) : (
@@ -54,7 +54,7 @@ export default function InputField({
             {...field}
             type={type === 'password' && show ? 'text' : type}
             className={cn(props.className, 'rounded-sm', { 'pr-12': type === 'password' })}
-            id={fieldId}
+            id={props.id || fieldId}
             aria-invalid={fieldState.invalid}
           />
         )}
@@ -62,6 +62,7 @@ export default function InputField({
           <Button
             className="abs-y-center right-0 active:-translate-y-1/2!"
             variant={'ghost'}
+            type="button"
             onClick={() => setShow(!show)}
           >
             {show ? <Eye /> : <EyeOff />}

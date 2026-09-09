@@ -1,6 +1,6 @@
 import { useGetLocation } from '@/api/properties';
 import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
-import { AmenityIcons, PropertyTypeIcons } from '@/lib/constants';
+import { AmenityEnum, AmenityIcons, PropertyTypeEnum, PropertyTypeIcons } from '@/lib/constants';
 import { cn, formatEnumString } from '@/lib/utils';
 import { FilterState, initialFilters, useFiltersStore } from '@/store/filter-store';
 import { Search } from 'lucide-react';

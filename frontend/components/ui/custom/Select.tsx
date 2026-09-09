@@ -14,24 +14,30 @@ export interface Option {
   value: string;
 }
 
-export function Select({
-  options,
-  value,
-  placeholder,
-  label,
-  className,
-  onChange,
-}: {
+export interface SelectProps {
   options: Option[];
   value: string;
   onChange: (value: string | null) => void;
+  id?: string;
   placeholder?: string;
+  invalid?: boolean;
   label?: string;
   className?: string;
-}) {
+}
+
+export function Select({
+  options,
+  value,
+  onChange,
+  id,
+  placeholder,
+  invalid,
+  label,
+  className,
+}: SelectProps) {
   return (
     <SelectComponent value={value} onValueChange={onChange}>
-      <SelectTrigger className={cn('w-full max-w-48', className)}>
+      <SelectTrigger aria-invalid={invalid} id={id} className={cn('w-full', className)}>
         <SelectValue placeholder={placeholder}>
           {options.find((option) => String(option.value) === value)?.label}
         </SelectValue>
