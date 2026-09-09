@@ -1,13 +1,7 @@
 import { apiClient } from '@/lib/http-client';
-import axios from 'axios';
-import {
-  CreatePropertyBody,
-  LocationResponse,
-  PropertiesResponse,
-  PropertyParams,
-  PropertyResponse,
-} from './types';
 import { PropertyWithLocationCoordinates } from '@/types/prismaTypes';
+import axios from 'axios';
+import { LocationResponse, PropertiesResponse, PropertyParams, PropertyResponse } from './types';
 
 const getProperty = async (id: string): Promise<PropertyWithLocationCoordinates> => {
   const route = `/property/${id}`;
@@ -40,4 +34,4 @@ const createProperty = async (body: FormData): Promise<PropertyResponse> => {
   return response.data;
 };
 
-export { getLocation, getProperties, getProperty, createProperty };
+export { createProperty, getLocation, getProperties, getProperty };
