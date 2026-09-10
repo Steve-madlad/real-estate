@@ -164,8 +164,11 @@ export const getManagerProperties = catchAsync(
         }),
       );
 
-      res.json({ success: true, properties: propertiesWithFormattedLocation });
-      return;
+      return res.json({
+        success: true,
+        data: propertiesWithFormattedLocation,
+        message: "Properties fetched successfully",
+      });
     }
 
     res.status(404).json({

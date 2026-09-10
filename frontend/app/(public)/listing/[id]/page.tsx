@@ -84,14 +84,14 @@ export default function Listing() {
                 <div>
                   <div className="text-sm text-gray-500">Bedrooms</div>
                   <div className="font-semi-bold">
-                    {property.beds != null ? `${property.beds} bd` : 'N/A'}
+                    {property.beds != null ? `${property.beds} beds` : 'N/A'}
                   </div>
                 </div>
                 <div className="h-10 border-l border-gray-300"></div>
                 <div>
                   <div className="text-sm text-gray-500">Bathrooms</div>
                   <div className="font-semi-bold">
-                    {property.baths != null ? `${property.baths} ba` : 'N/A'}
+                    {property.baths != null ? `${property.baths} baths` : 'N/A'}
                   </div>
                 </div>
                 <div className="h-10 border-l border-gray-300"></div>

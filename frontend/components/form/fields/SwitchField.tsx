@@ -3,6 +3,7 @@
 import Switch, { CustomSwitchProps } from '@/components/ui/custom/Switch';
 import { useController } from 'react-hook-form';
 import { Field, FieldDescription, FieldLabel } from '../../ui/field';
+import { cn } from 'cn';
 
 interface SwitchFieldProps extends Omit<CustomSwitchProps, 'value' | 'onChange'> {
   name: string;
@@ -17,7 +18,7 @@ export default function SwitchField({ name, description, label, ...props }: Swit
   const { field, fieldState } = useController({ name });
 
   return (
-    <Field data-invalid={fieldState.invalid}>
+    <Field data-invalid={fieldState.invalid} className="align-cener w-fit flex-row gap-3">
       <Switch
         {...field}
         {...props}

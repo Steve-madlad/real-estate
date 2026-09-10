@@ -5,7 +5,6 @@ import { prisma } from "../lib/db.js";
 import { catchAsync } from "../lib/utils.js";
 
 import { S3Client } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
 import axios from "axios";
 
 export const getProperties = catchAsync(async (req: Request, res: Response) => {
@@ -130,7 +129,7 @@ export const getProperties = catchAsync(async (req: Request, res: Response) => {
   `;
   const properties = await prisma.$queryRaw(fullQuery);
 
-  res.json({
+  return res.json({
     success: true,
     data: properties,
     message: "Successfully fetched propeties",
@@ -188,40 +187,51 @@ export const createProperty = catchAsync(
   async (req: Request, res: Response) => {
     const userId = req.user?.id;
     const files = req.files as Express.Multer.File[];
-    const { address, city, state, country, postalCode, ...propertyData } =
-      req.body;
-
-    const photoUrls = await Promise.all(
-      files.map(async (file) => {
-        const uploadParams = {
-          Bucket: process.env.S3_BUCKET_NAME,
-          Key: `properties/${Date.now()}-${file.originalname}`,
-          Body: file.buffer,
-          ContentType: file.mimetype,
-        };
-
-        const uploadResult = await new Upload({
-          client: s3Client,
-          params: uploadParams,
-        }).done();
-
-        return uploadResult.Location;
-      }),
-    );
-
-    const geocodingUrl = `https://nominatm.openstreetmap.org/searc
-    h?${new URLSearchParams({
-      street: address.city,
+    const {
+      address,
+      city,
+      state,
       country,
-      postalcode: postalCode,
-      format: "json",
-      limit: "1",
-    }).toString()}`;
+      postalCode,
+      photos,
+      ...propertyData
+    } = req.body;
+
+    // const photoUrls = await Promise.all(
+    //   files.map(async (file) => {
+    //     const uploadParams = {
+    //       Bucket: process.env.S3_BUCKET_NAME,
+    //       Key: `properties/${Date.now()}-${file.originalname}`,
+    //       Body: file.buffer,
+    //       ContentType: file.mimetype,
+    //     };
+
+    //     const uploadResult = await new Upload({
+    //       client: s3Client,
+    //       params: uploadParams,
+    //     }).done();
+
+    //     return uploadResult.Location;
+    //   }),
+    // );
+
+    const geocodingUrl = `https://nominatim.openstreetmap.org/search?${new URLSearchParams(
+      {
+        street: address,
+        city,
+        country,
+        postalcode: postalCode,
+        format: "json",
+        limit: "1",
+      },
+    ).toString()}`;
+
     const geocodingResponse = await axios.get(geocodingUrl, {
       headers: {
-        "User-Agent": "RealEstateApp (justsomedummyemail@gmail.com)",
+        "User-Agent": "RealEstateApp (justsomedummyemail@gmail.com",
       },
     });
+
     const [longitude, latitude] =
       geocodingResponse.data[0]?.lon && geocodingResponse.data[0]?.lat
         ? [
@@ -236,20 +246,20 @@ export const createProperty = catchAsync(
           RETURNING id, address, city, state, country, "postalCode", ST_AsText(coordinates) as coordinates;
         `;
 
+    console.log({
+      amenities: JSON.parse(propertyData.amenities),
+      highlights: JSON.parse(propertyData.highlights),
+      propertyData,
+    });
+
     const newProperty = await prisma.property.create({
       data: {
         ...propertyData,
-        photoUrls,
+        // photoUrls,
         locationId: location?.id,
         managerCognitoId: userId,
-        amenities:
-          typeof propertyData.amenities === "string"
-            ? propertyData.amenities.split(",")
-            : [],
-        highligts:
-          typeof propertyData.highligts === "string"
-            ? propertyData.highligts.split(",")
-            : [],
+        amenities: JSON.parse(propertyData.amenities),
+        highlights: JSON.parse(propertyData.highlights),
         isPetsAllowed: propertyData.isPetsAllowed === "true",
         isParkingIncluded: propertyData.isParkingIncluded === "true",
         pricePerMonth: parseFloat(propertyData.pricePerMonth),

@@ -12,6 +12,7 @@ import { FieldGroup } from '@/components/ui/field';
 import { AmenityEnum, HighlightEnum, PropertyTypeEnum } from '@/lib/constants';
 import { PropertyFormData, propertySchema } from '@/lib/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -32,7 +33,7 @@ const highlightOptions = Object.entries(HighlightEnum).map(([key, value]) => ({
 }));
 
 export default function CreatePropertyForm() {
-  const { data: property, mutate: createProperty } = useCreateProperty();
+  const { data: property, mutate: createProperty, isPending: createLoading } = useCreateProperty();
   const { data: user } = useGetAuthUser();
 
   const propertyForm = useForm<
@@ -50,8 +51,8 @@ export default function CreatePropertyForm() {
       isPetsAllowed: false,
       isParkingIncluded: false,
       photoUrls: [],
-      amenities: '',
-      highlights: '',
+      amenities: undefined,
+      highlights: undefined,
       beds: 1,
       baths: 1,
       squareFeet: 1000,
@@ -60,9 +61,11 @@ export default function CreatePropertyForm() {
       city: '',
       state: '',
       country: '',
-      postalCode: '',
+      postalCode: undefined,
     },
   });
+
+  // console.log(propertyForm.watch());
 
   const handleSubmit = (data: PropertyFormData) => {
     if (!user) {
@@ -72,6 +75,7 @@ export default function CreatePropertyForm() {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       const typedKey = key as keyof PropertyFormData;
+
       if (typedKey === 'photoUrls') {
         const files = value as File[];
         files.forEach((file) => {
@@ -84,9 +88,9 @@ export default function CreatePropertyForm() {
       }
     });
     formData.append('managerCognitoId', user.cognitoInfo.userId);
-
     createProperty(formData);
   };
+
   return (
     <FormProvider {...propertyForm}>
       <form onSubmit={propertyForm.handleSubmit(handleSubmit)}>
@@ -106,21 +110,26 @@ export default function CreatePropertyForm() {
 
           <FieldSet legend="Property Details" addSeparator>
             <div className="flex gap-3">
-              <InputField name="numberOfBeds" type="number" label="Number of Bed" />
-              <InputField name="securityDeposit" type="number" label="Number of Baths" />
+              <InputField name="beds" type="number" label="Number of Bed" />
+              <InputField name="baths" type="number" label="Number of Baths" />
               <InputField name="squareFeet" type="number" label="Square Feet" />
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-12">
               <SwitchField label="Pets Allowed" name="petsAllowed" />
               <SwitchField label="Parking Included" name="parkingIncluded" />
             </div>
-            <SelectField name="squareFeet" label="Square Feet" options={propertyOptions} />
+            <SelectField name="propertyType" label="Property Type" options={propertyOptions} />
           </FieldSet>
 
-          <FieldSet legend="Property Details" addSeparator>
+          <FieldSet legend="Amenities & Highlights" addSeparator>
             <div className="flex gap-3">
-              <SelectField name="amenities" label="Amenities" options={amenityOptions} />
-              <SelectField name="highlights" label="Highlights" options={highlightOptions} />
+              <SelectField multiple name="amenities" label="Amenities" options={amenityOptions} />
+              <SelectField
+                multiple
+                name="highlights"
+                label="Highlights"
+                options={highlightOptions}
+              />
             </div>
           </FieldSet>
 
@@ -138,14 +147,15 @@ export default function CreatePropertyForm() {
             <div className="flex gap-3">
               <InputField name="city" label="City" />
               <InputField name="state" label="State" />
-              <InputField name="postalCode " label="Postal Code" />
+              <InputField name="postalCode" label="Postal Code" />
             </div>
             <InputField name="country" label="Country" />
           </FieldSet>
         </FieldGroup>
 
-        <Button type="submit" className="mt-5 w-full py-5 text-base!">
+        <Button type="submit" disabled={createLoading} className="mt-5 w-full py-5 text-base!">
           Create Property
+          {createLoading && <Loader2 className="animate-spin" />}
         </Button>
       </form>
     </FormProvider>

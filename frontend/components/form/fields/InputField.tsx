@@ -2,63 +2,69 @@
 
 import { cn } from '@/lib/utils';
 import { Eye, EyeOff } from 'lucide-react';
-import { HTMLInputTypeAttribute, InputHTMLAttributes, useState } from 'react';
+import { InputHTMLAttributes, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { Button } from '../../ui/button';
 import { Field, FieldDescription, FieldError, FieldLabel } from '../../ui/field';
 import { Input as BaseInput } from '../../ui/input';
 import { Textarea } from '../../ui/textarea';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
+import { TextareaHTMLAttributes } from 'react';
+
+type BaseProps = {
   name: string;
   label?: string;
   description?: string;
-  type?: HTMLInputTypeAttribute | 'textarea';
+};
+
+type InputProps = BaseProps & InputHTMLAttributes<HTMLInputElement>;
+
+type TextareaProps = BaseProps &
+  TextareaHTMLAttributes<HTMLTextAreaElement> & {
+    type: 'textarea';
+  };
+
+type Props = InputProps | TextareaProps;
+
+function isTextarea(props: Props): props is TextareaProps {
+  return props.type === 'textarea';
 }
-export default function InputField({
-  name,
-  label,
-  description,
-  defaultValue,
-  disabled,
-  type,
-  ...props
-}: InputProps) {
-  const fieldId = `${name}-field`;
+
+export default function InputField(props: Props) {
+  const fieldId = `${props.name}-field`;
   const { field, fieldState } = useController({
-    name,
-    defaultValue,
-    disabled,
+    name: props.name,
+    defaultValue: props.defaultValue,
+    disabled: props.disabled,
   });
   const [show, setShow] = useState(false);
 
   return (
     <Field data-invalid={fieldState.invalid}>
-      {label && (
+      {props.label && (
         <FieldLabel className="font-medium" htmlFor={props.id || fieldId}>
-          {label}
+          {props.label}
         </FieldLabel>
       )}
       <div className="relative">
-        {type === 'textarea' ? (
-          <Textarea
-            {...props}
-            {...field}
-            className={cn(props.className, 'rounded-sm')}
-            id={props.id || fieldId}
-            aria-invalid={fieldState.invalid}
+        {isTextarea(props) ? (
+          <TextareaField
+            props={props}
+            field={field}
+            invalid={fieldState.invalid}
+            fieldId={fieldId}
           />
         ) : (
           <BaseInput
             {...props}
             {...field}
-            type={type === 'password' && show ? 'text' : type}
-            className={cn(props.className, 'rounded-sm', { 'pr-12': type === 'password' })}
+            type={props.type === 'password' && show ? 'text' : props.type}
+            className={cn(props.className, 'rounded-sm', { 'pr-12': props.type === 'password' })}
             id={props.id || fieldId}
             aria-invalid={fieldState.invalid}
           />
         )}
-        {type === 'password' && (
+        {props.type === 'password' && (
           <Button
             className="abs-y-center right-0 active:-translate-y-1/2!"
             variant={'ghost'}
@@ -69,8 +75,32 @@ export default function InputField({
           </Button>
         )}
       </div>
-      {description && <FieldDescription>{description}</FieldDescription>}
+      {props.description && <FieldDescription>{props.description}</FieldDescription>}
       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
     </Field>
+  );
+}
+
+function TextareaField({
+  props,
+  field,
+  invalid,
+  fieldId,
+}: {
+  props: TextareaProps;
+  field: ReturnType<typeof useController>['field'];
+  invalid: boolean;
+  fieldId: string;
+}) {
+  const { type: _type, ...textareaProps } = props;
+
+  return (
+    <Textarea
+      {...textareaProps}
+      {...field}
+      className={cn(props.className, 'rounded-sm')}
+      id={props.id || fieldId}
+      aria-invalid={invalid}
+    />
   );
 }

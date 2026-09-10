@@ -7,8 +7,9 @@ export interface CustomSwitchProps extends SwitchProps {
 
 export default function Switch({ label, ...rest }: CustomSwitchProps) {
   return (
-    <div className="align-center gap-2">
-      <SwitchBase {...rest} />;{label && <Label htmlFor={rest.id}>{label}</Label>}
+    <div className="align-center w-fit! gap-2">
+      <SwitchBase {...rest} />
+      {label && <Label htmlFor={rest.id}>{label}</Label>}
     </div>
   );
 }
