@@ -5,8 +5,7 @@ import { catchAsync } from "../lib/utils.js";
 
 export const listApplications = catchAsync(
   async (req: Request, res: Response) => {
-    const userId = req.user?.id;
-    const role = req.user?.role;
+    const { id: userId, role } = req.user ?? {};
 
     let whereClause = {};
 
@@ -203,7 +202,7 @@ export const processAplication = catchAsync(
         },
       });
 
-      await prisma.application.update({
+      const updatedApplication = await prisma.application.update({
         where: { id: Number(id) },
         data: { status, leaseId: newLease.id },
         include: {
@@ -216,7 +215,7 @@ export const processAplication = catchAsync(
       return res.status(200).json({
         success: true,
         message: "Application approved successfully",
-        data: appliaction,
+        data: updatedApplication,
       });
     } else {
       await prisma.application.update({
@@ -229,14 +228,5 @@ export const processAplication = catchAsync(
         message: "Application denied successfully",
       });
     }
-
-    const updatedAppliaction = await prisma.application.findUnique({
-      where: { id: Number(id) },
-      include: {
-        property: true,
-        tenant: true,
-        lease: true,
-      },
-    });
   },
 );
