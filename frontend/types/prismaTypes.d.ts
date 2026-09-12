@@ -51,3 +51,16 @@ export type LeaseWithTenantAndProperty = Prisma.LeaseGetPayload<{
     property: true;
   };
 }>;
+
+export type ApplicationWithRelations = Prisma.ApplicationGetPayload<{
+  include: {
+    property: {
+      include: {
+        location: true;
+      };
+    };
+    tenant: true;
+  };
+}> & {
+  manager: Manager;
+};

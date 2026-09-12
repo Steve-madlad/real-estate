@@ -1,8 +1,8 @@
 import { APIResonse } from '@/types';
-import { Application } from '@/types/prismaTypes';
+import { ApplicationWithRelations } from '@/types/prismaTypes';
 
-export type ApplicationsResponse = APIResonse<Application[]>;
-export type SingleApplicationResponse = APIResonse<Application>;
+export type ApplicationsResponse = APIResonse<ApplicationWithRelations[]>;
+export type SingleApplicationResponse = APIResonse<ApplicationWithRelations>;
 
 export type ApplicationStatus = 'Approved' | 'Denied';
 export type ProcessApplicationBody = { status: ApplicationStatus };
