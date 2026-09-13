@@ -82,14 +82,8 @@ export const listApplications = catchAsync(
 
 export const createApplication = catchAsync(
   async (req: Request, res: Response) => {
-    const userId = req.user?.id
-    const {
-      propertyId,
-      name,
-      email,
-      phoneNumber,
-      message,
-    } = req.body;
+    const userId = req.user?.id;
+    const { propertyId, name, email, phoneNumber, message } = req.body;
 
     const property = await prisma.property.findUnique({
       where: { id: propertyId },
