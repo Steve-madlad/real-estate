@@ -82,11 +82,9 @@ export const listApplications = catchAsync(
 
 export const createApplication = catchAsync(
   async (req: Request, res: Response) => {
+    const userId = req.user?.id
     const {
-      applicationDate,
-      status,
       propertyId,
-      tenantCognitoId,
       name,
       email,
       phoneNumber,
@@ -115,15 +113,15 @@ export const createApplication = catchAsync(
             connect: { id: propertyId },
           },
           tenant: {
-            connect: { cognitoId: tenantCognitoId },
+            connect: { cognitoId: userId },
           },
         },
       });
 
       const application = await prisma.application.create({
         data: {
-          applicationDate: new Date(applicationDate),
-          status,
+          applicationDate: new Date(),
+          status: "Pending",
           name,
           email,
           phoneNumber,
@@ -133,7 +131,7 @@ export const createApplication = catchAsync(
           },
           tenant: {
             connect: {
-              cognitoId: tenantCognitoId,
+              cognitoId: userId,
             },
           },
           lease: {
@@ -165,7 +163,7 @@ export const processAplication = catchAsync(
     const { id } = req.params;
     const { status } = req.body;
 
-    const appliaction = await prisma.application.findUnique({
+    const application = await prisma.application.findUnique({
       where: { id: Number(id) },
       include: {
         property: true,
@@ -173,7 +171,7 @@ export const processAplication = catchAsync(
       },
     });
 
-    if (!appliaction) {
+    if (!application) {
       throw new AppError("Application not found", 404);
     }
 
@@ -184,19 +182,19 @@ export const processAplication = catchAsync(
           endDate: new Date(
             new Date().setFullYear(new Date().getFullYear() + 1),
           ),
-          rent: appliaction.property.pricePerMonth,
-          deposit: appliaction.property.securityDeposit,
-          propertyId: appliaction.propertyId,
-          tenantCognitoId: appliaction.tenantCognitoId,
+          rent: application.property.pricePerMonth,
+          deposit: application.property.securityDeposit,
+          propertyId: application.propertyId,
+          tenantCognitoId: application.tenantCognitoId,
         },
       });
 
       await prisma.property.update({
-        where: { id: appliaction.propertyId },
+        where: { id: application.propertyId },
         data: {
           tenants: {
             connect: {
-              cognitoId: appliaction.tenantCognitoId,
+              cognitoId: application.tenantCognitoId,
             },
           },
         },

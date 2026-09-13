@@ -7,3 +7,11 @@ export type SingleApplicationResponse = APIResonse<ApplicationWithRelations>;
 export type ApplicationStatus = 'Approved' | 'Denied';
 export type ProcessApplicationBody = { status: ApplicationStatus };
 export type ProcessApplicationVariables = { id: number; body: ProcessApplicationBody };
+
+export interface CreateApplicationBody {
+  propertyId: number;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  message?: string;
+}

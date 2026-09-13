@@ -1,5 +1,10 @@
 import { apiClient } from '@/lib/http-client';
-import { ApplicationsResponse, ProcessApplicationBody, SingleApplicationResponse } from './types';
+import {
+  ApplicationsResponse,
+  CreateApplicationBody,
+  ProcessApplicationBody,
+  SingleApplicationResponse,
+} from './types';
 
 const getApplications = async (): Promise<ApplicationsResponse['data']> => {
   const applicationsResponse = await apiClient.get<ApplicationsResponse>('/applications');
@@ -16,20 +21,11 @@ const processApplication = async (
   return applicationResponse.data.data;
 };
 
-// const getLocation = async (location: string): Promise<LocationResponse> => {
-//   const response = await axios.get(
-//     `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&fuzzyMatch=true`,
-//   );
-//   if (response.data.features.length > 0) {
-//     const [lng, lat] = response.data.features[0].center;
-//     return { lat, lng };
-//   }
-//   return null;
-// };
+const createApplication = async (
+  body: CreateApplicationBody,
+): Promise<SingleApplicationResponse> => {
+  const response = await apiClient.post<SingleApplicationResponse>('/applications', body);
+  return response.data;
+};
 
-// const createProperty = async (body: FormData): Promise<PropertyResponse> => {
-//   const response = await apiClient.post<PropertyResponse>('/applications', body);
-//   return response.data;
-// };
-
-export { getApplications, processApplication };
+export { getApplications, processApplication, createApplication };

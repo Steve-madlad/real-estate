@@ -1,8 +1,9 @@
 import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { getApplications, processApplication } from './requests';
+import { createApplication, getApplications, processApplication } from './requests';
 import {
   ApplicationsResponse,
+  CreateApplicationBody,
   ProcessApplicationVariables,
   SingleApplicationResponse,
 } from './types';
@@ -17,6 +18,15 @@ type UseProcessApplicationOptions = Omit<
     SingleApplicationResponse['data'],
     AxiosError<{ message: string }>,
     ProcessApplicationVariables
+  >,
+  'mutationFn'
+>;
+
+type UseCreateApplicationOptions = Omit<
+  UseMutationOptions<
+    SingleApplicationResponse,
+    AxiosError<{ message: string }>,
+    CreateApplicationBody
   >,
   'mutationFn'
 >;
@@ -40,9 +50,9 @@ export const useProcessApplications = (options?: UseProcessApplicationOptions) =
   });
 };
 
-// export const useCreateProperty = (options?: UseCreatePopertyOptions) => {
-//   return useMutation({
-//     mutationFn: (body: FormData) => createProperty(body),
-//     ...options,
-//   });
-// };
+export const useCreateApplication = (options?: UseCreateApplicationOptions) => {
+  return useMutation({
+    mutationFn: (body: CreateApplicationBody) => createApplication(body),
+    ...options,
+  });
+};

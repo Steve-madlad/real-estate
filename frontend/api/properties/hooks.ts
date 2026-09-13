@@ -23,7 +23,7 @@ type UseLocationOptions = Omit<
   onError?: (error: AxiosError<{ message: string }>) => void;
 };
 
-type UseCreatePopertyOptions = Omit<
+type UseCreatepropertyOptions = Omit<
   UseMutationOptions<PropertyResponse, AxiosError<{ message: string }>, FormData>,
   'mutationFn'
 >;
@@ -72,7 +72,7 @@ export const useGetLocation = (location: string, options?: UseLocationOptions) =
   return query;
 };
 
-export const useCreateProperty = (options?: UseCreatePopertyOptions) => {
+export const useCreateProperty = (options?: UseCreatepropertyOptions) => {
   return useMutation({
     mutationFn: (body: FormData) => createProperty(body),
     ...options,

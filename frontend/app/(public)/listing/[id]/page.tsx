@@ -2,6 +2,7 @@
 
 import { useGetAuthUser } from '@/api/auth';
 import { useGetProperty } from '@/api/properties';
+import ApplicationModal from '@/components/ApplicationModal';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,15 +10,21 @@ import { AmenityIcons, HighlightIcons } from '@/lib/constants';
 import { formatEnumString } from '@/lib/utils';
 import { BadgeCheck, HelpCircle, MapPin, Phone, Star } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import ImagePreview from './components/ImagePreview';
 import ListingMap from './components/ListingMap';
 
 export default function Listing() {
   const router = useRouter();
+  const [applicationModalOpen, setApplicationModalOpen] = useState<boolean>(false);
   const { id } = useParams<{ id: string }>();
   const { data: property, isLoading } = useGetProperty(id);
 
   const { data: user } = useGetAuthUser();
+
+  const onClose = () => {
+    setApplicationModalOpen(false);
+  };
 
   if (isLoading) {
     return <ListingSkeleton />;
@@ -237,6 +244,14 @@ export default function Listing() {
           </div>
         </div>
       </div>
+
+      {user && (
+        <ApplicationModal
+          isOpen={applicationModalOpen}
+          onClose={onClose}
+          propertyId={property.id}
+        />
+      )}
     </div>
   );
 }
