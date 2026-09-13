@@ -15,7 +15,7 @@ export default function ApplicationModal({ isOpen, onClose, propertyId }: Applic
       title="Are you absolutely sure?"
       description="This action cannot be undone."
     >
-      <ApplicationForm propertyId={propertyId} />
+      <ApplicationForm propertyId={propertyId} onSuccess={onClose} />
     </Modal>
   );
 }
