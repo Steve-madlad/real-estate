@@ -7,7 +7,7 @@ const getApplications = async (): Promise<ApplicationsResponse['data']> => {
 };
 
 const processApplication = async (
-  id: string,
+  id: number,
   body: ProcessApplicationBody,
 ): Promise<SingleApplicationResponse['data']> => {
   const route = `/applications/${id}/process`;

@@ -60,7 +60,11 @@ export type ApplicationWithRelations = Prisma.ApplicationGetPayload<{
       };
     };
     tenant: true;
+    lease: true;
   };
 }> & {
   manager: Manager;
+  lease: {
+    nextPaymentDate: Date;
+  };
 };

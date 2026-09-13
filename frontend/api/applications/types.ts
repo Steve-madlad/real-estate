@@ -6,4 +6,4 @@ export type SingleApplicationResponse = APIResonse<ApplicationWithRelations>;
 
 export type ApplicationStatus = 'Approved' | 'Denied';
 export type ProcessApplicationBody = { status: ApplicationStatus };
-export type ProcessApplicationVariables = { id: string; body: ProcessApplicationBody };
+export type ProcessApplicationVariables = { id: number; body: ProcessApplicationBody };

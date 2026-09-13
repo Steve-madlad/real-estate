@@ -56,6 +56,31 @@ export default function ApplicationCard({ application, userType, children }: App
 
         <div className="border-primary-200 hidden h-48 border-[0.5px] lg:block"></div>
 
+        <div className="col-between w-full gap-3 py-2 lg:h-48 lg:basis-2/12 lg:gap-4">
+          <div>
+            <div className="flex-between">
+              <span className="text-gray-500">Status:</span>
+              <span className={`${statusColor} rounded-full px-2 py-1 text-sm text-white`}>
+                {application.status}
+              </span>
+            </div>
+            <h4 className="mt-3"></h4>
+          </div>
+          <div className="just-between">
+            <span className="text-gray-500">Start Date:</span>
+            {application?.lease && new Date(application?.lease?.startDate).toLocaleDateString()}
+          </div>
+          <div className="just-between">
+            <span className="text-gray-500">End Date:</span>
+            {application?.lease && new Date(application?.lease?.endDate).toLocaleDateString()}
+          </div>
+          <div className="just-between">
+            <span className="text-gray-500">Next Payment:</span>
+            {application?.lease?.nextPaymentDate &&
+              new Date(application?.lease?.nextPaymentDate).toLocaleDateString()}
+          </div>
+        </div>
+
         <div className="col just-start w-full gap-5 py-2 lg:h-48 lg:basis-3/12">
           <div>
             <div className="text-lg font-semibold">
@@ -71,7 +96,7 @@ export default function ApplicationCard({ application, userType, children }: App
                 alt={contactPerson.name}
                 width={40}
                 height={40}
-              ></Image>
+              />
             </div>
             <div className="col gap-2">
               <div className="font-semibold">{contactPerson.name}</div>
