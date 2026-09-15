@@ -51,7 +51,7 @@ export const useGetProperties = (params?: PropertyParams, options?: UsePropertie
 export const useGetLocation = (location: string, options?: UseLocationOptions) => {
   const query = useQuery({
     queryFn: () => getLocation(location),
-    queryKey: userKeys.all,
+    queryKey: [location],
     ...options,
   });
 

@@ -5,12 +5,23 @@ import FiltersSidebar from '@/components/FiltersSidebar';
 import Listings from '@/components/Listings';
 import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { useFiltersStore } from '@/store/filter-store';
+import { FilterState, useFiltersStore } from '@/store/filter-store';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import Map from './components/Map';
 
 export default function SearchPage() {
-  // const searchParams = useSearchParams();
-  const { filtersSidebarOpen } = useFiltersStore();
+  const params = useSearchParams();
+  const { filters, setFilters, filtersSidebarOpen } = useFiltersStore();
+  console.log('location', filters.location);
+  const location = params.get('location');
+
+  useEffect(() => {
+    if (location) {
+      console.log({ location });
+      setFilters({ ...filters, location });
+    }
+  }, [location, setFilters]);
 
   return (
     <div

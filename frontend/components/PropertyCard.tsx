@@ -21,7 +21,7 @@ export default function PropertyCard({
   compactMode,
   ...props
 }: PropertyCardProps & { compactMode?: boolean }) {
-  const [imgSrc, setImgSrc] = useState<string>(props.property.photoUrls[0] || '/placehoder.jpg');
+  const [imgSrc, setImgSrc] = useState<string>(props.property.photoUrls?.[0] || '/placehoder.jpg');
 
   if (compactMode) {
     return <CompactCard {...props} imgSrc={imgSrc} setImgSrc={setImgSrc} />;

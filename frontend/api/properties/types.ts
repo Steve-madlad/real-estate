@@ -27,4 +27,4 @@ export interface PropertyParams {
   longitude?: number;
 }
 
-export type LocationResponse = { lat: number; lng: number } | null;
+export type LocationResponse = { lat: number; lng: number; location: string } | null;

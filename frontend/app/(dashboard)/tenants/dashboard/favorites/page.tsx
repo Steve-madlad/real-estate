@@ -40,7 +40,6 @@ export default function Favorites() {
     }
   }, [tenant?.data]);
 
-  console.log({ tenant, favoriteProperties });
   return (
     <div>
       <Header title="Favorite Properties" subtitle="Broswe and manage you saved listings" />

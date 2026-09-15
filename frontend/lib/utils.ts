@@ -18,7 +18,7 @@ export function formatEnumString(str: string) {
   return str.replace(/([A-Z])/g, ' $1').trim();
 }
 
-export function cleanParams(params: FilterState): Record<string, unknown> {
+export function cleanParams(params: Partial<FilterState>): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(params).filter(
       ([_, value]) =>

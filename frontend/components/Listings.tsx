@@ -68,7 +68,7 @@ export default function Listings() {
                   likeToggleLoading={
                     likeLoadingProperty === property.id && (favoriteLoading || unfavoriteLoading)
                   }
-                  showFavoriteButton
+                  showFavoriteButton={user?.userRole !== 'manager'}
                   compactMode={viewMode === 'list'}
                 />
               ))}

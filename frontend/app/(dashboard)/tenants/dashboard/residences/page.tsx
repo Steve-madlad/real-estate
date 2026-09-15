@@ -21,8 +21,6 @@ export default function Favorites() {
     refetch,
   } = useGetResidences({ enabled: false });
 
-  console.log({ tenant, residences });
-
   useEffect(() => {
     if (tenant?.data) {
       refetch();

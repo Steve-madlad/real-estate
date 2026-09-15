@@ -1,10 +1,10 @@
-import { useGetLocation } from '@/api/properties';
+import { LocationResponse, useGetLocation } from '@/api/properties';
 import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
 import { AmenityEnum, AmenityIcons, PropertyTypeEnum, PropertyTypeIcons } from '@/lib/constants';
 import { cn, formatEnumString } from '@/lib/utils';
 import { FilterState, initialFilters, useFiltersStore } from '@/store/filter-store';
 import { Search } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { DatePickerInput } from './ui/custom/DatePicker';
@@ -30,15 +30,17 @@ export default function FiltersSidebar() {
   const { filters, setFilters, filtersSidebarOpen, resetFilters } = useFiltersStore();
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
 
+  const onSuccess = useCallback((data: LocationResponse) => {
+    if (data) setFilters({ ...filters, coordinates: [data?.lat, data?.lng] });
+  }, []);
+
   const {
     data: location,
     isLoading: locationLoading,
     refetch,
   } = useGetLocation(localFilters.location, {
     enabled: false,
-    onSuccess: (data) => {
-      if (data) setFilters({ ...filters, coordinates: [data?.lat, data?.lng] });
-    },
+    onSuccess,
     onError: (error) => {
       toast.error('Failed to fetch location coordinates. Please try again.');
       console.error('Location fetch error:', error);
@@ -80,7 +82,8 @@ export default function FiltersSidebar() {
             <div className="align-center">
               <Input
                 placeholder="Enter location"
-                value={filters.location}
+                defaultValue={filters.location}
+                value={localFilters.location}
                 onChange={(e) => setLocalFilters((prev) => ({ ...prev, location: e.target.value }))}
                 className="rounded-l-xl rounded-r-none border-r-0"
               />

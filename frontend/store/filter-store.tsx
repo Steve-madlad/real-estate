@@ -35,7 +35,7 @@ export const initialFilters: FilterState = {
   availableFrom: 'any',
   priceRange: [null, null],
   squareFeet: [null, null],
-  coordinates: [-118.25, 34.05],
+  coordinates: [34.05, -118.25],
 };
 
 export const useFiltersStore = create<FilterStoreProps>((set) => ({

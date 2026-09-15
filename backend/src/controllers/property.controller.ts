@@ -246,12 +246,6 @@ export const createProperty = catchAsync(
           RETURNING id, address, city, state, country, "postalCode", ST_AsText(coordinates) as coordinates;
         `;
 
-    console.log({
-      amenities: JSON.parse(propertyData.amenities),
-      highlights: JSON.parse(propertyData.highlights),
-      propertyData,
-    });
-
     const newProperty = await prisma.property.create({
       data: {
         ...propertyData,

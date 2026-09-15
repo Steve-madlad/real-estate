@@ -10,7 +10,7 @@ export function useUpdateFiltersUrl() {
 
   const updateUrl = useMemo(
     () =>
-      debounce((newFilters: FilterState) => {
+      debounce((newFilters: Partial<FilterState>) => {
         const cleanFilters = cleanParams(newFilters);
         const searchParams = new URLSearchParams();
 

@@ -14,7 +14,6 @@ const getProperties = async (params?: PropertyParams): Promise<PropertiesRespons
   const route = `/property`;
 
   const propertiesResponse = await apiClient.get<PropertiesResponse>(route, { params });
-  console.log({ propertiesResponse });
   return propertiesResponse.data;
 };
 
@@ -24,7 +23,7 @@ const getLocation = async (location: string): Promise<LocationResponse> => {
   );
   if (response.data.features.length > 0) {
     const [lng, lat] = response.data.features[0].center;
-    return { lat, lng };
+    return { lat, lng, location };
   }
   return null;
 };

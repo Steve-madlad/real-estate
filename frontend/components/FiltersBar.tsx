@@ -1,11 +1,12 @@
 'use client';
 
-import { useGetLocation } from '@/api/properties';
+import { LocationResponse, useGetLocation } from '@/api/properties';
 import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
 import { cn, k } from '@/lib/utils';
 import { useFiltersStore } from '@/store/filter-store';
 import { Building, Funnel, Grid, House, List, Search, Trees } from 'lucide-react';
-import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 import { MdOutlineHouse } from 'react-icons/md';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
@@ -98,11 +99,20 @@ const propertyTypeOptions = [
 ];
 
 export default function FiltersBar() {
-  // const router = useRouter();
-  // const pathname = usePathname();
+  const params = useSearchParams();
   const { filters, setFilters, viewMode, setViewMode, filtersSidebarOpen, toggleFiltersSidebar } =
     useFiltersStore();
-  const [searchInput, setSearchInput] = useState<string>(filters.location);
+  const locationParam = params.get('location');
+  const [searchInput, setSearchInput] = useState<string>(locationParam || filters.location);
+
+  const updateUrl = useUpdateFiltersUrl();
+  const onSuccess = useCallback((data: LocationResponse) => {
+    if (data) {
+      console.log('filters check', data.lng, data.lat);
+      setFilters({ ...filters, location: data.location, coordinates: [data?.lat, data?.lng] });
+      updateUrl({ location: data.location });
+    }
+  }, []);
 
   const {
     data: location,
@@ -110,47 +120,45 @@ export default function FiltersBar() {
     refetch,
   } = useGetLocation(searchInput, {
     enabled: false,
-    onSuccess: (data) => {
-      if (data) setFilters({ ...filters, coordinates: [data?.lat, data?.lng] });
-    },
+    onSuccess,
     onError: (error) => {
       toast.error('Failed to fetch location. Please try again.');
       console.error('Location fetch error:', error);
     },
   });
 
-  const updateUrl = useUpdateFiltersUrl();
-
-  type FilterKey = 'priceRange' | 'beds' | 'baths' | 'squareFeet' | 'coordinates' | 'propertyType';
-  const handleFilterChange = (
-    key: FilterKey,
-    value: string | Array<string | number | null> | null,
-    isMin?: boolean | null,
-  ) => {
+  type FilterKey =
+    'location' | 'beds' | 'baths' | 'squareFeet' | 'priceMin' | 'priceMax' | 'propertyType';
+  const handleFilterChange = (key: FilterKey, value: string | number | null) => {
     let newValue = value;
-
-    console.log({ value });
-
-    if (key === 'priceRange' || key === 'squareFeet') {
-      const currentArrayRange = [...filters[key]];
-      if (isMin !== null) {
-        const index = isMin ? 0 : 1;
-        currentArrayRange[index] = value === 'any' ? null : Number(value);
-      }
-      newValue = currentArrayRange;
-      console.log({ newValue });
-    } else if (key === 'coordinates') {
-      newValue = value === 'any' ? [0, 0] : Array.isArray(value) ? value.map(Number) : '';
+    const index = key === 'priceMin' ? 0 : 1;
+    if (key === 'priceMin' || key === 'priceMax') {
+      newValue = value === 'any' ? null : Number(value);
     } else {
       newValue = value === 'any' ? 'any' : value;
     }
 
-    const newFilters = { ...filters, [key]: newValue };
+    const newFilters = Object.fromEntries(
+      Object.entries({ ...filters, [key]: newValue }).filter(
+        ([key, value]) =>
+          key !== 'priceRange' &&
+          value !== '' &&
+          !(Array.isArray(value) && value.every((v) => v === null)),
+      ),
+    );
     setFilters(newFilters);
     updateUrl(newFilters);
   };
 
-  const handleLoactionSearch = () => refetch();
+  const handleLoactionSearch = () => {
+    refetch();
+  };
+
+  useEffect(() => {
+    if (locationParam === filters.location) {
+      handleLoactionSearch();
+    }
+  }, [filters.location, locationParam]);
 
   return (
     <div className="flex-center py-5">
@@ -173,6 +181,8 @@ export default function FiltersBar() {
           <Input
             className="border-primary-400 w-40 rounded-l-xl rounded-r-none border-r-0"
             placeholder="Search Location"
+            defaultValue={filters.location}
+            value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
           <Button
@@ -189,7 +199,7 @@ export default function FiltersBar() {
           <Select
             value={filters.priceRange[0]?.toString() || 'any'}
             placeholder="Any Min Price"
-            onChange={(val) => handleFilterChange('priceRange', val, true)}
+            onChange={(val) => handleFilterChange('priceMin', val)}
             options={minPriceOpitons}
           />
 
@@ -197,7 +207,7 @@ export default function FiltersBar() {
           <Select
             value={filters.priceRange[1]?.toString() || 'any'}
             placeholder="Any Max Price"
-            onChange={(val) => handleFilterChange('priceRange', val, false)}
+            onChange={(val) => handleFilterChange('priceMax', val)}
             options={maxPriceOpitons}
           />
         </div>

@@ -61,7 +61,7 @@ export function authMiddleWare(allowedRoles: RoleList) {
 
       next();
     } catch (error) {
-      console.log({ error });
+      console.error({ error });
       next(new AppError("Unauthorized: Invalid or expired token", 401));
     }
   };

@@ -14,16 +14,19 @@ mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
 export default function Map() {
   const mapContainerRef = useRef(null);
-  const { filters, filtersSidebarOpen } = useFiltersStore();
+  const { filters } = useFiltersStore();
   const { data: properties, isLoading, error } = useGetProperties();
 
   useEffect(() => {
     if (isLoading || error || !properties) return;
 
+    const [lng, lat] = filters.coordinates;
+    console.log('test', { lng, lat });
+
     const map = new mapboxgl.Map({
       container: mapContainerRef.current!,
       style: 'mapbox://styles/steve-lad/cmtea6ly8004w01qtad8yfbsq',
-      center: [-74.5, 40],
+      center: filters.coordinates[0] ? [lat, lng] : [-74.5, 40],
       zoom: 9,
     });
 
