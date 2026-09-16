@@ -52,7 +52,6 @@ export default function Listings() {
       }),
   );
 
-  console.log({ params });
   const { data: properties, isLoading: propertiesLoading } = useGetProperties(params);
 
   const isFavorite = (propertyId: number) => {

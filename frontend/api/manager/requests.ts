@@ -3,13 +3,6 @@ import { getCurrentUser } from 'aws-amplify/auth';
 import { LeasesResponse } from '../lease';
 import { PropertiesResponse } from '../properties';
 
-// const getTenant = async (): Promise<GetTenantResponse> => {
-//   const user = await getCurrentUser();
-
-//   const response = await apiClient.get(`/tenants/${user.userId}`);
-//   return response.data;
-// };
-
 const getProperties = async (): Promise<PropertiesResponse> => {
   const user = await getCurrentUser();
   const userId = user.userId;

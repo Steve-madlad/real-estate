@@ -175,7 +175,6 @@ export const favoriteProperty = catchAsync(
     const parsed = favoritePropertySchema.safeParse({ propertyId });
     handleValidationError<z.infer<typeof favoritePropertySchema>>(parsed);
     const { propertyId: residenceId } = parsed.data;
-    console.log("passed validation fam");
 
     const [tenant, property] = await Promise.all([
       prisma.tenant.findUnique({

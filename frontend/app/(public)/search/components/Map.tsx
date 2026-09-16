@@ -21,7 +21,6 @@ export default function Map() {
     if (isLoading || error || !properties) return;
 
     const [lng, lat] = filters.coordinates;
-    console.log('test', { lng, lat });
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current!,
