@@ -1,11 +1,9 @@
-import { LocationResponse, useGetLocation } from '@/api/properties';
 import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
-import { AmenityEnum, AmenityIcons, PropertyTypeEnum, PropertyTypeIcons } from '@/lib/constants';
+import { AmenityEnum, AmenityIcons, PropertyTypeIcons } from '@/lib/constants';
 import { cn, formatEnumString } from '@/lib/utils';
-import { FilterState, initialFilters, useFiltersStore } from '@/store/filter-store';
+import { FilterPartial, FilterState, initialFilters, useFiltersStore } from '@/store/filter-store';
 import { Search } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { DatePickerInput } from './ui/custom/DatePicker';
 import { Select } from './ui/custom/Select';
@@ -26,37 +24,57 @@ const bathOptions = [
   { label: '2+ baths', value: '2' },
   { label: '3+ baths', value: '3' },
 ];
-export default function FiltersSidebar() {
+
+const propertyTypeOptions = Object.entries(PropertyTypeIcons).map(([type, Icon], index) => ({
+  type,
+  value: index === 0 ? 'any' : String(index),
+  Icon,
+}));
+
+interface FiltersSidebarProps {
+  locationInput: string;
+  onLocationInputChange: (value: string) => void;
+  onLocationSearch: () => void;
+  initialFilterValues: FilterPartial;
+}
+
+export default function FiltersSidebar({
+  locationInput,
+  onLocationInputChange,
+  onLocationSearch,
+  initialFilterValues,
+}: FiltersSidebarProps) {
   const { filters, setFilters, filtersSidebarOpen, resetFilters } = useFiltersStore();
-  const [localFilters, setLocalFilters] = useState<FilterState>(filters);
-
-  const onSuccess = useCallback((data: LocationResponse) => {
-    if (data) setFilters({ ...filters, coordinates: [data?.lat, data?.lng] });
-  }, []);
-
-  const {
-    data: location,
-    isLoading: locationLoading,
-    refetch,
-  } = useGetLocation(localFilters.location, {
-    enabled: false,
-    onSuccess,
-    onError: (error) => {
-      toast.error('Failed to fetch location coordinates. Please try again.');
-      console.error('Location fetch error:', error);
-    },
+  const [localFilters, setLocalFilters] = useState<FilterState>({
+    ...filters,
+    ...initialFilterValues,
+    location: locationInput,
+    availableFrom:
+      initialFilterValues.availableFrom ??
+      (filters.availableFrom === 'any' ? new Date() : filters.availableFrom),
   });
 
   const updateUrl = useUpdateFiltersUrl();
 
   const handleSubmit = () => {
-    setFilters(localFilters);
-    updateUrl(localFilters);
+    const { location: _location, coordinates: _coordinates, ...sidebarFilters } = localFilters;
+    setFilters(sidebarFilters);
+    updateUrl({
+      ...sidebarFilters,
+      priceMin: sidebarFilters.priceRange[0],
+      priceMax: sidebarFilters.priceRange[1],
+      location: filters.location,
+    });
+
+    if (locationInput.trim()) {
+      onLocationSearch();
+    }
   };
 
   const handleReset = () => {
     resetFilters();
-    setLocalFilters(initialFilters);
+    onLocationInputChange(initialFilters.location);
+    setLocalFilters({ ...initialFilters, availableFrom: new Date() });
   };
 
   const handleAmenityChange = (amenity: AmenityEnum) => {
@@ -67,8 +85,6 @@ export default function FiltersSidebar() {
         : [...prev.amenities, amenity],
     }));
   };
-
-  const handleLocationSearch = () => refetch();
 
   if (!filtersSidebarOpen) return null;
 
@@ -82,13 +98,12 @@ export default function FiltersSidebar() {
             <div className="align-center">
               <Input
                 placeholder="Enter location"
-                defaultValue={filters.location}
-                value={localFilters.location}
-                onChange={(e) => setLocalFilters((prev) => ({ ...prev, location: e.target.value }))}
+                value={locationInput}
+                onChange={(e) => onLocationInputChange(e.target.value)}
                 className="rounded-l-xl rounded-r-none border-r-0"
               />
               <Button
-                onClick={handleLocationSearch}
+                onClick={onLocationSearch}
                 className="border-l-none rounded-l-none rounded-r-xl border-black shadow-none"
               >
                 <Search className="size-4" />
@@ -100,15 +115,13 @@ export default function FiltersSidebar() {
           <div>
             <h4 className="mb-2 font-bold">Property Type</h4>
             <div className="grid grid-cols-2 gap-4">
-              {Object.entries(PropertyTypeIcons).map(([type, Icon]) => (
+              {propertyTypeOptions.map(({ type, value, Icon }) => (
                 <div
-                  key={type}
-                  onClick={() =>
-                    setLocalFilters((prev) => ({ ...prev, propertyType: type as PropertyTypeEnum }))
-                  }
+                  key={value}
+                  onClick={() => setLocalFilters((prev) => ({ ...prev, propertyType: value }))}
                   className={cn(
                     'col-full-center rounded-xl border p-4',
-                    localFilters.propertyType === type ? 'border-black' : 'border-gray-200',
+                    localFilters.propertyType === value ? 'border-black' : 'border-gray-200',
                   )}
                 >
                   <Icon className="mb-2 size-6" />
@@ -122,10 +135,10 @@ export default function FiltersSidebar() {
           <div>
             <h4 className="mb-2 font-bold">Price Range Monthly</h4>
             <SliderRange
-              min={50}
+              min={500}
               max={10000}
               step={100}
-              value={[localFilters.priceRange[0] ?? 0, localFilters.priceRange[1] ?? 10000]}
+              value={[localFilters.priceRange[0] ?? 500, localFilters.priceRange[1] ?? 10000]}
               onChange={(value) =>
                 setLocalFilters((prev) => ({
                   ...prev,
@@ -171,7 +184,7 @@ export default function FiltersSidebar() {
               min={50}
               max={10000}
               step={100}
-              value={[localFilters.squareFeet[0] ?? 0, localFilters.squareFeet[1] ?? 10000]}
+              value={[localFilters.squareFeet[0] ?? 50, localFilters.squareFeet[1] ?? 10000]}
               onChange={(value) =>
                 setLocalFilters((prev) => ({
                   ...prev,

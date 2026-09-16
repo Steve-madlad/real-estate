@@ -1,21 +1,17 @@
 'use client';
 
-import { LocationResponse, useGetLocation } from '@/api/properties';
 import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
 import { cn, k } from '@/lib/utils';
-import { useFiltersStore } from '@/store/filter-store';
+import { FilterState, useFiltersStore } from '@/store/filter-store';
 import { Building, Funnel, Grid, House, List, Search, Trees } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
 import { MdOutlineHouse } from 'react-icons/md';
-import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { Select } from './ui/custom/Select';
 import { Input } from './ui/input';
 
 const minPriceOpitons = [
   { label: 'Any Min Price', value: 'any' },
-  { label: `${k(500)}+`, value: '500' },
+  { label: `${500}+`, value: '500' },
   { label: `${k(1000)}+`, value: '1000' },
   { label: `${k(1500)}+`, value: '1500' },
   { label: `${k(2000)}+`, value: '2000' },
@@ -26,7 +22,9 @@ const minPriceOpitons = [
 
 const maxPriceOpitons = [
   { label: 'Any Max Price', value: 'any' },
+  { label: `${500}+`, value: '500' },
   { label: `${k(1000)}+`, value: '1000' },
+  { label: `${k(1500)}+`, value: '1500' },
   { label: `${k(2000)}+`, value: '2000' },
   { label: `${k(3000)}+`, value: '3000' },
   { label: `${k(5000)}+`, value: '5000' },
@@ -98,44 +96,36 @@ const propertyTypeOptions = [
   },
 ];
 
-export default function FiltersBar() {
-  const params = useSearchParams();
+interface FiltersBarProps {
+  locationInput: string;
+  onLocationInputChange: (value: string) => void;
+  onLocationSearch: () => void;
+}
+
+export default function FiltersBar({
+  locationInput,
+  onLocationInputChange,
+  onLocationSearch,
+}: FiltersBarProps) {
   const { filters, setFilters, viewMode, setViewMode, filtersSidebarOpen, toggleFiltersSidebar } =
     useFiltersStore();
-  const locationParam = params.get('location');
-  const [searchInput, setSearchInput] = useState<string>(locationParam || filters.location);
-
   const updateUrl = useUpdateFiltersUrl();
-  const onSuccess = useCallback((data: LocationResponse) => {
-    if (data) {
-      console.log('filters check', data.lng, data.lat);
-      setFilters({ ...filters, location: data.location, coordinates: [data?.lat, data?.lng] });
-      updateUrl({ location: data.location });
-    }
-  }, []);
-
-  const {
-    data: location,
-    isLoading: locationLoading,
-    refetch,
-  } = useGetLocation(searchInput, {
-    enabled: false,
-    onSuccess,
-    onError: (error) => {
-      toast.error('Failed to fetch location. Please try again.');
-      console.error('Location fetch error:', error);
-    },
-  });
 
   type FilterKey =
     'location' | 'beds' | 'baths' | 'squareFeet' | 'priceMin' | 'priceMax' | 'propertyType';
   const handleFilterChange = (key: FilterKey, value: string | number | null) => {
-    let newValue = value;
-    const index = key === 'priceMin' ? 0 : 1;
-    if (key === 'priceMin' || key === 'priceMax') {
-      newValue = value === 'any' ? null : Number(value);
-    } else {
-      newValue = value === 'any' ? 'any' : value;
+    const newValue = value === 'any' ? null : value;
+    const nextPriceRange: [number | null, number | null] = [
+      filters.priceRange[0] ?? null,
+      filters.priceRange[1] ?? null,
+    ];
+
+    if (key === 'priceMin') {
+      nextPriceRange[0] = newValue === null ? null : Number(newValue);
+    }
+
+    if (key === 'priceMax') {
+      nextPriceRange[1] = newValue === null ? null : Number(newValue);
     }
 
     const newFilters = Object.fromEntries(
@@ -146,19 +136,18 @@ export default function FiltersBar() {
           !(Array.isArray(value) && value.every((v) => v === null)),
       ),
     );
-    setFilters(newFilters);
-    updateUrl(newFilters);
-  };
 
-  const handleLoactionSearch = () => {
-    refetch();
-  };
+    setFilters({
+      ...newFilters,
+      priceRange: nextPriceRange,
+    });
 
-  useEffect(() => {
-    if (locationParam === filters.location) {
-      handleLoactionSearch();
-    }
-  }, [filters.location, locationParam]);
+    updateUrl({
+      ...newFilters,
+      priceMin: nextPriceRange[0],
+      priceMax: nextPriceRange[1],
+    } as Partial<FilterState>);
+  };
 
   return (
     <div className="flex-center py-5">
@@ -177,21 +166,23 @@ export default function FiltersBar() {
         </Button>
 
         {/* Search Location */}
-        <div className="align-center">
-          <Input
-            className="border-primary-400 w-40 rounded-l-xl rounded-r-none border-r-0"
-            placeholder="Search Location"
-            defaultValue={filters.location}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-          <Button
-            onClick={handleLoactionSearch}
-            className="none hover:bg-primary-700 hover:text-primary-50 -translate-x-0.5 rounded-l-none rounded-r-xl py-4 shadow-none"
-          >
-            <Search className="size-4" />
-          </Button>
-        </div>
+        {!filtersSidebarOpen && (
+          <div className="align-center">
+            <Input
+              className="border-primary-400 w-40 rounded-l-xl rounded-r-none border-r-0"
+              placeholder="Search Location"
+              defaultValue={filters.location}
+              value={locationInput}
+              onChange={(e) => onLocationInputChange(e.target.value)}
+            />
+            <Button
+              onClick={onLocationSearch}
+              className="none hover:bg-primary-700 hover:text-primary-50 -translate-x-0.5 rounded-l-none rounded-r-xl py-4 shadow-none"
+            >
+              <Search className="size-4" />
+            </Button>
+          </div>
+        )}
 
         {/* Price Range */}
         <div className="flex gap-4">

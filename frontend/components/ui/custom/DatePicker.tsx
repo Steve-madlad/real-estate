@@ -1,16 +1,11 @@
 'use client';
 
-import * as React from 'react';
 import { CalendarIcon } from 'lucide-react';
+import * as React from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Field, FieldLabel } from '@/components/ui/field';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from '@/components/ui/input-group';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 function formatDate(date: Date | null | undefined) {
@@ -23,10 +18,6 @@ function formatDate(date: Date | null | undefined) {
     month: 'long',
     year: 'numeric',
   });
-}
-
-function isValidDate(date: Date) {
-  return !isNaN(date.getTime());
 }
 
 type DatePickerInputProps = {
@@ -43,32 +34,9 @@ export function DatePickerInput({
   placeholder = 'Select a date',
 }: DatePickerInputProps) {
   const [open, setOpen] = React.useState(false);
-  const [month, setMonth] = React.useState<Date | undefined>(value ?? undefined);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-
-    if (!input.trim()) {
-      onChange(null);
-      return;
-    }
-
-    const date = new Date(input);
-
-    if (isValidDate(date)) {
-      onChange(date);
-      setMonth(date);
-    }
-  };
 
   const handleDateSelect = (date: Date | undefined) => {
-    const nextDate = date ?? null;
-
-    onChange(nextDate);
-
-    if (nextDate) {
-      setMonth(nextDate);
-    }
+    onChange(date ?? null);
 
     setOpen(false);
   };
@@ -77,53 +45,30 @@ export function DatePickerInput({
     <Field>
       <FieldLabel htmlFor="date-required">{label}</FieldLabel>
 
-      <InputGroup>
-        <InputGroupInput
-          id="date-required"
-          value={formatDate(value)}
-          placeholder={placeholder}
-          onChange={handleInputChange}
-          onKeyDown={(e) => {
-            if (e.key === 'ArrowDown') {
-              e.preventDefault();
-              setOpen(true);
-            }
-          }}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger
+          render={
+            <Button
+              id="date-required"
+              variant="outline"
+              className="w-full justify-between font-normal"
+            >
+              {value ? formatDate(value) : placeholder}
+              <CalendarIcon />
+            </Button>
+          }
         />
 
-        <InputGroupAddon align="inline-end">
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger
-              render={
-                <InputGroupButton
-                  id="date-picker"
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label="Select date"
-                >
-                  <CalendarIcon />
-                  <span className="sr-only">Select date</span>
-                </InputGroupButton>
-              }
-            />
-
-            <PopoverContent
-              className="w-auto overflow-hidden p-0"
-              align="end"
-              alignOffset={-8}
-              sideOffset={10}
-            >
-              <Calendar
-                mode="single"
-                selected={value ?? undefined}
-                month={month}
-                onMonthChange={setMonth}
-                onSelect={handleDateSelect}
-              />
-            </PopoverContent>
-          </Popover>
-        </InputGroupAddon>
-      </InputGroup>
+        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={value ?? undefined}
+            defaultMonth={value ?? new Date()}
+            captionLayout="dropdown"
+            onSelect={handleDateSelect}
+          />
+        </PopoverContent>
+      </Popover>
     </Field>
   );
 }

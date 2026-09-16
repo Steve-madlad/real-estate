@@ -25,7 +25,9 @@ export function cleanParams(params: Partial<FilterState>): Record<string, unknow
         value !== undefined &&
         value !== 'any' &&
         value !== '' &&
-        (Array.isArray(value) ? value.some((v) => v! == null) : value !== null),
+        (Array.isArray(value)
+          ? value.length > 0 && value.some((item) => item !== null && item !== undefined)
+          : value !== null),
     ),
   );
 }

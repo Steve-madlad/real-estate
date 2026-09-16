@@ -1,26 +1,39 @@
 import { cleanParams } from '@/lib/utils';
 import { FilterState } from '@/store/filter-store';
 import debounce from 'lodash/debounce';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
+
+type UpdateFiltersUrlOptions = {
+  mode?: 'merge' | 'replace';
+};
 
 export function useUpdateFiltersUrl() {
   const router = useRouter();
-  const pathname = usePathname();
 
   const updateUrl = useMemo(
     () =>
-      debounce((newFilters: Partial<FilterState>) => {
-        const cleanFilters = cleanParams(newFilters);
-        const searchParams = new URLSearchParams();
+      debounce(
+        (
+          newFilters: Partial<FilterState> & { priceMin?: number | null; priceMax?: number | null },
+          options: UpdateFiltersUrlOptions = {},
+        ) => {
+          const { mode = 'merge' } = options;
+          const currentUrl = new URL(window.location.href);
+          const searchParams =
+            mode === 'merge' ? new URLSearchParams(currentUrl.searchParams) : new URLSearchParams();
 
-        Object.entries(cleanFilters).forEach(([key, value]) => {
-          searchParams.set(key, Array.isArray(value) ? value.join(',') : String(value));
-        });
+          const cleanFilters = cleanParams(newFilters);
 
-        router.push(`${pathname}?${searchParams.toString()}`);
-      }, 300),
-    [router, pathname],
+          Object.entries(cleanFilters).forEach(([key, value]) => {
+            searchParams.set(key, Array.isArray(value) ? value.join(',') : String(value));
+          });
+
+          router.push(`${currentUrl.pathname}?${searchParams.toString()}`);
+        },
+        300,
+      ),
+    [router],
   );
 
   useEffect(() => {
