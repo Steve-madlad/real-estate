@@ -9,11 +9,19 @@ import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { parseFilterParams, useFiltersStore } from '@/store/filter-store';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Map from './components/Map';
 
 export default function SearchPage() {
+  return (
+    <Suspense>
+      <Search />
+    </Suspense>
+  );
+}
+
+function Search() {
   const params = useSearchParams();
   const { filters, setFilters, filtersSidebarOpen } = useFiltersStore();
   const location = params.get('location');
