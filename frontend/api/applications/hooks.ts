@@ -1,4 +1,11 @@
-import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { ApplicationWithRelations } from '@/types/prismaTypes';
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { createApplication, getApplications, processApplication } from './requests';
 import {
@@ -31,28 +38,38 @@ type UseCreateApplicationOptions = Omit<
   'mutationFn'
 >;
 
-export const userKeys = {
-  all: ['properties'] as const,
+export const applicationKeys = {
+  all: ['applications'] as const,
 };
 
 export const useGetApplications = (options?: UseApplicationsOptions) => {
   return useQuery({
     queryFn: getApplications,
-    queryKey: userKeys.all,
+    queryKey: applicationKeys.all,
     ...options,
   });
 };
 
 export const useProcessApplications = (options?: UseProcessApplicationOptions) => {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, body }) => processApplication(id, body),
+    mutationFn: ({ id, body }) => processApplication(id, body) as Promise<ApplicationWithRelations>,
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: applicationKeys.all });
+      options?.onSuccess?.(...args);
+    },
     ...options,
   });
 };
 
 export const useCreateApplication = (options?: UseCreateApplicationOptions) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: CreateApplicationBody) => createApplication(body),
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: applicationKeys.all });
+      options?.onSuccess?.(...args);
+    },
     ...options,
   });
 };

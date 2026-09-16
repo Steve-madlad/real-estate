@@ -1,7 +1,12 @@
-import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-// import { userKeys } from '../auth';
-import { PropertiesResponse, PropertyResponse } from '../properties';
+import { PropertiesResponse, propertyKeys } from '../properties';
 import { favoriteProperty, getResidences, getTenant, unfavoriteProperty } from './requests';
 import { GetTenantResponse, PropertyFavoriteStatusResponse } from './types';
 
@@ -20,8 +25,8 @@ type UseGetTenantOptions = Omit<
   'queryFn' | 'queryKey'
 >;
 
-const tenantKeys = {
-  all: ['tenant'] as const,
+export const tenantKeys = {
+  all: ['tenants'] as const,
 };
 
 export const useGetTenant = (options?: UseGetTenantOptions) => {
@@ -32,36 +37,40 @@ export const useGetTenant = (options?: UseGetTenantOptions) => {
   });
 };
 
+export const residenceKeys = {
+  all: ['residences'] as const,
+};
+
 export const useGetResidences = (options?: UseGetResidencesOptions) => {
   return useQuery({
     ...options,
-    queryKey: ['residences'],
+    queryKey: residenceKeys.all,
     queryFn: getResidences,
   });
 };
 
 export const useFavoriteProperty = (options?: UseUpdatePropertyOptions) => {
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   return useMutation({
     ...options,
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: propertyKeys.lists() });
+      options?.onSuccess?.(...args);
+    },
     mutationFn: (propertyId: number) => favoriteProperty(propertyId),
-    // onSuccess: (...args) => {
-    //   queryClient.setQueryData(userKeys.all, args[0]);
-    //   options?.onSuccess?.(...args);
-    // },
   });
 };
 
 export const useUnfavoriteProperty = (options?: UseUpdatePropertyOptions) => {
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   return useMutation({
     ...options,
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: propertyKeys.lists() });
+      options?.onSuccess?.(...args);
+    },
     mutationFn: (propertyId: number) => unfavoriteProperty(propertyId),
-    // onSuccess: (...args) => {
-    //   queryClient.setQueryData(userKeys.all, args[0]);
-    //   options?.onSuccess?.(...args);
-    // },
   });
 };

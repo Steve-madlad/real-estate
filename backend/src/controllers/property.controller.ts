@@ -49,20 +49,20 @@ export const getProperties = catchAsync(async (req: Request, res: Response) => {
   }
 
   if (squareFeetMin) {
-    whereConditions.push(Prisma.sql`p.squarefeet >= ${Number(squareFeetMin)}`);
-  }
-
-  if (squareFeetMin) {
-    whereConditions.push(Prisma.sql`p.squarefeet >= ${Number(squareFeetMin)}`);
+    whereConditions.push(
+      Prisma.sql`p."squarefeet" >= ${Number(squareFeetMin)}`,
+    );
   }
 
   if (squareFeetMax) {
-    whereConditions.push(Prisma.sql`p.squarefeet <= ${Number(squareFeetMax)}`);
+    whereConditions.push(
+      Prisma.sql`p."squareFeet" <= ${Number(squareFeetMax)}`,
+    );
   }
 
   if (propertyType && propertyType !== "any") {
     whereConditions.push(
-      Prisma.sql`p.propertyType = ${propertyType}::"PropertyType"`,
+      Prisma.sql`p."propertyType" = ${propertyType}::"PropertyType"`,
     );
   }
 
@@ -74,16 +74,15 @@ export const getProperties = catchAsync(async (req: Request, res: Response) => {
   if (availableFrom && availableFrom !== "any") {
     const availableFromDate =
       typeof availableFrom === "string" ? availableFrom : null;
-
     if (availableFromDate) {
       const date = new Date(availableFromDate);
       if (!isNaN(date.getTime())) {
         whereConditions.push(
           Prisma.sql`EXISTS (
-            SELECT 1 FROM "Lease" l
-            WHERE l."propertyId" = p.id
-            AND l."startDate" <= ${date.toISOString()}
-          )`,
+              SELECT 1 FROM "Lease" l 
+              WHERE l."propertyId" = p.id 
+              AND l."startDate" <= ${date.toISOString()}
+            )`,
         );
       }
     }
@@ -91,43 +90,44 @@ export const getProperties = catchAsync(async (req: Request, res: Response) => {
 
   if (latitude && longitude) {
     const lat = parseFloat(latitude as string);
-    const long = parseFloat(longitude as string);
+    const lng = parseFloat(longitude as string);
     const radiusInKilometers = 1000;
-    const degrees = radiusInKilometers / 111; // km to degree
+    const degrees = radiusInKilometers / 111; // km to degrees
 
     whereConditions.push(
       Prisma.sql`ST_DWithin(
-        l.coordinates::geometry,
-        ST_SetSRID(ST_MakePoint(${lat}, ${long}), 4326), 
-        ${degrees}
-      )`,
+          l.coordinates::geometry,
+          ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326),
+          ${degrees}
+        )`,
     );
   }
 
-  const fullQuery = Prisma.sql`
-    SELECT
-    p.*,
-    json_build_object(
-      'id', l.id,
-      'address', l.address,
-      'city', l.city,
-      'state', l.state,
-      'country', l.country,
-      'postalCode', l."postalCode",
-      'coordinates', json_build_object(
-        'longitude', ST_X(l."coordinates"::geometry),
-        'latitude', ST_Y(l."coordinates"::geometry)
-      ) 
-    ) as location
+  const completeQuery = Prisma.sql`
+    SELECT 
+      p.*,
+      json_build_object(
+        'id', l.id,
+        'address', l.address,
+        'city', l.city,
+        'state', l.state,
+        'country', l.country,
+        'postalCode', l."postalCode",
+        'coordinates', json_build_object(
+          'longitude', ST_X(l."coordinates"::geometry),
+          'latitude', ST_Y(l."coordinates"::geometry)
+        )
+      ) as location
     FROM "Property" p
-    Join "Location" l ON p."locationId" = l.id
+    JOIN "Location" l ON p."locationId" = l.id
     ${
       whereConditions.length > 0
         ? Prisma.sql`WHERE ${Prisma.join(whereConditions, " AND ")}`
         : Prisma.empty
     }
   `;
-  const properties = await prisma.$queryRaw(fullQuery);
+
+  const properties = await prisma.$queryRaw(completeQuery);
 
   return res.json({
     success: true,

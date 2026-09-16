@@ -1,5 +1,11 @@
 import { PropertyWithLocationCoordinates } from '@/types/prismaTypes';
-import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useEffect } from 'react';
 import { createProperty, getLocation, getProperties, getProperty } from './requests';
@@ -28,14 +34,17 @@ type UseCreatepropertyOptions = Omit<
   'mutationFn'
 >;
 
-export const userKeys = {
+export const propertyKeys = {
   all: ['properties'] as const,
+  detail: (id: string) => [...propertyKeys.all, id],
+  list: (params?: PropertyParams) => [...propertyKeys.all, params],
+  lists: () => [...propertyKeys.all, 'list'] as const,
 };
 
 export const useGetProperty = (id: string, options?: UsePropertyOptions) => {
   return useQuery({
     queryFn: () => getProperty(id),
-    queryKey: userKeys.all,
+    queryKey: propertyKeys.detail(id),
     ...options,
   });
 };
@@ -43,15 +52,20 @@ export const useGetProperty = (id: string, options?: UsePropertyOptions) => {
 export const useGetProperties = (params?: PropertyParams, options?: UsePropertiesOptions) => {
   return useQuery({
     queryFn: () => getProperties(params),
-    queryKey: userKeys.all,
+    queryKey: propertyKeys.list(params),
     ...options,
   });
+};
+
+export const locationKeys = {
+  all: ['location'] as const,
+  detail: (location: string) => [...locationKeys.all, location],
 };
 
 export const useGetLocation = (location: string, options?: UseLocationOptions) => {
   const query = useQuery({
     queryFn: () => getLocation(location),
-    queryKey: [location],
+    queryKey: locationKeys.detail(location),
     ...options,
   });
 
@@ -73,8 +87,14 @@ export const useGetLocation = (location: string, options?: UseLocationOptions) =
 };
 
 export const useCreateProperty = (options?: UseCreatepropertyOptions) => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (body: FormData) => createProperty(body),
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: propertyKeys.lists() });
+      options?.onSuccess?.(...args);
+    },
     ...options,
   });
 };

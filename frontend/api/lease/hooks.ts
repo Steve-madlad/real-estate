@@ -13,22 +13,27 @@ type UseLeasePaymentsOptions = Omit<
   'queryFn' | 'queryKey'
 >;
 
-export const userKeys = {
-  all: ['properties'] as const,
+export const leaseKeys = {
+  all: ['leases'] as const,
 };
 
 export const useGetLeases = (options?: UseLeaseOptions) => {
   return useQuery({
     queryFn: getLeases,
-    queryKey: userKeys.all,
+    queryKey: leaseKeys.all,
     ...options,
   });
+};
+
+export const leasePaymentKeys = {
+  all: ['leasePayments'] as const,
+  list: (propertyId: string) => [...leasePaymentKeys.all, propertyId],
 };
 
 export const useGetLeasePayments = (propertyId: string, options?: UseLeasePaymentsOptions) => {
   return useQuery({
     queryFn: () => getLeasePayments(propertyId),
-    queryKey: userKeys.all,
+    queryKey: leasePaymentKeys.list(propertyId),
     ...options,
   });
 };
