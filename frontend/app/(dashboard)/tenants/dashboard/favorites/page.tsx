@@ -13,7 +13,7 @@ export default function Favorites() {
   const { data: tenant } = useGetTenant();
 
   const { data: favoriteProperties, refetch } = useGetProperties(
-    { favoriteIds: tenant?.data?.favorites.map((property) => property.id) },
+    { favoritesOnly: true },
     { enabled: false },
   );
 

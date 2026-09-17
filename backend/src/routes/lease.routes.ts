@@ -1,12 +1,12 @@
 import express from "express";
 import {
   getLeasePayments,
-  getLeases,
+  getPropertyLeases,
 } from "../controllers/lease.controller.js";
 
 const router = express.Router();
 
-router.get("/", getLeases);
+router.get("/property/:id", getPropertyLeases);
 router.get("/:id/payments", getLeasePayments);
 
 export default router;

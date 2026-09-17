@@ -17,7 +17,7 @@ const processApplication = async (
 ): Promise<SingleApplicationResponse['data']> => {
   const route = `/applications/${id}/process`;
 
-  const applicationResponse = await apiClient.post<SingleApplicationResponse>(route, body);
+  const applicationResponse = await apiClient.put<SingleApplicationResponse>(route, body);
   return applicationResponse.data.data;
 };
 

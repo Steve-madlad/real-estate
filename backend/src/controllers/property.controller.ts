@@ -4,12 +4,14 @@ import { Prisma, type Location } from "../../prisma/generated/client.js";
 import { prisma } from "../lib/db.js";
 import { catchAsync } from "../lib/utils.js";
 
-import { S3Client } from "@aws-sdk/client-s3";
+// import { S3Client } from "@aws-sdk/client-s3";
+import { CognitoJwtVerifier } from "aws-jwt-verify";
 import axios from "axios";
+import { AppError } from "../lib/app-error.js";
 
 export const getProperties = catchAsync(async (req: Request, res: Response) => {
   const {
-    favoriteIds,
+    favoritesOnly,
     priceMin,
     priceMax,
     beds,
@@ -23,12 +25,45 @@ export const getProperties = catchAsync(async (req: Request, res: Response) => {
     longitude,
   } = req.query;
 
+  let userId;
+
+  if (favoritesOnly) {
+    if (!process.env.COGNITO_USER_POOL_ID || !process.env.COGNITO_CLIENT_ID) {
+      throw new Error("Missing environment variables");
+    }
+
+    const idVerifier = CognitoJwtVerifier.create({
+      userPoolId: process.env.COGNITO_USER_POOL_ID,
+      tokenUse: "id",
+      clientId: process.env.COGNITO_CLIENT_ID,
+    });
+
+    const token = req.headers?.authorization?.split(" ")[1] || "";
+    const decoded = await idVerifier.verify(token);
+
+    userId = decoded?.sub;
+  }
+
   let whereConditions: Prisma.Sql[] = [];
 
-  if (favoriteIds) {
-    const favoriteIdsArray = (favoriteIds as string).split(",").map(Number);
+  if (favoritesOnly && !userId) {
+    throw new AppError(
+      "Authentication required to filter by favorites",
+      401,
+    );
+  }
+
+  if (favoritesOnly && userId) {
     whereConditions.push(
-      Prisma.sql`p.id IN (${Prisma.join(favoriteIdsArray)})`,
+      Prisma.sql`
+          EXISTS (
+            SELECT 1
+            FROM "_TenantFavorites" tf
+            JOIN "Tenant" t ON t.id = tf."B"
+            WHERE t."cognitoId" = ${userId}
+              AND tf."A" = p.id
+          )
+        `,
     );
   }
 
@@ -179,14 +214,14 @@ export const getProperty = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
-});
+// const s3Client = new S3Client({
+//   region: process.env.AWS_REGION,
+// });
 
 export const createProperty = catchAsync(
   async (req: Request, res: Response) => {
     const userId = req.user?.id;
-    const files = req.files as Express.Multer.File[];
+    // const files = req.files as Express.Multer.File[];
     const {
       address,
       city,

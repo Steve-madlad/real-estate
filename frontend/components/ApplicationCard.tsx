@@ -27,9 +27,9 @@ export default function ApplicationCard({ application, userType, children }: App
   return (
     <div className="mb-4 overflow-hidden rounded-xl border bg-white shadow-sm">
       <div className="col-start justify-between gap-6 px-6 py-6 md:px-4 lg:flex-row lg:gap-4">
-        <div className="col-start w-full gap-5 lg:w-auto lg:flex-row">
+        <div className="col-start w-full! gap-5 lg:flex-row">
           <Image
-            className="5 w-full rounded-xl object-cover lg:h-37 lg:w-50"
+            className="w-full rounded-xl object-cover lg:h-45 2xl:w-100"
             src={imgSrc}
             alt={application.property.name}
             width={200}
@@ -48,13 +48,13 @@ export default function ApplicationCard({ application, userType, children }: App
               </div>
             </div>
             <div className="text-xl font-semibold">
-              {application.property.pricePerMonth}
+              ${application.property.pricePerMonth}
               <span className="text-sm font-normal">/ month</span>
             </div>
           </div>
         </div>
 
-        <div className="border-primary-200 hidden h-48 border-[0.5px] lg:block"></div>
+        <div className="border-primary-200 hidden h-px w-full border-[0.5px] lg:block" />
 
         <div className="col-between w-full gap-3 py-2 lg:h-48 lg:basis-2/12 lg:gap-4">
           <div>
@@ -84,11 +84,11 @@ export default function ApplicationCard({ application, userType, children }: App
         <div className="col just-start w-full gap-5 py-2 lg:h-48 lg:basis-3/12">
           <div>
             <div className="text-lg font-semibold">
-              {userType === 'manager' ? 'Tenant' : 'Manager'}
+              {userType === 'manager' ? 'Manager' : 'Applicant'}
             </div>
             <hr className="mt-3" />
           </div>
-          <div className="flex-gap-4">
+          <div className="flex gap-4">
             <div>
               <Image
                 className="mr-2 min-h-10 min-w-10 rounded-full"
@@ -102,7 +102,7 @@ export default function ApplicationCard({ application, userType, children }: App
               <div className="font-semibold">{contactPerson.name}</div>
               <div className="align-center text-primary-600 text-sm">
                 <PhoneCall className="mr-2 size-5"></PhoneCall>
-                {contactPerson.phoneNumber}
+                {contactPerson.phoneNumber || '+1 (515) 555-5555'}
               </div>
               <div className="align-center text-primary-600 text-sm">
                 <Mail className="mr-2 size-5"></Mail>

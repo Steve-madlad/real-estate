@@ -13,6 +13,7 @@ interface PropertyCardProps {
   showFavoriteButton?: boolean;
   likeToggleLoading?: boolean;
   onFavoriteToggle?: (propertyId: number) => void;
+  propertyDetailLink?: string;
 }
 
 const propertyLink = (id: number) => `/listing/${id}`;
@@ -24,9 +25,23 @@ export default function PropertyCard({
   const [imgSrc, setImgSrc] = useState<string>(props.property.photoUrls?.[0] || '/placehoder.jpg');
 
   if (compactMode) {
-    return <CompactCard {...props} imgSrc={imgSrc} setImgSrc={setImgSrc} />;
+    return (
+      <CompactCard
+        {...props}
+        imgSrc={imgSrc}
+        setImgSrc={setImgSrc}
+        propertyDetailLink={props.propertyDetailLink}
+      />
+    );
   } else {
-    return <FullCard {...props} imgSrc={imgSrc} setImgSrc={setImgSrc} />;
+    return (
+      <FullCard
+        {...props}
+        imgSrc={imgSrc}
+        setImgSrc={setImgSrc}
+        propertyDetailLink={props.propertyDetailLink}
+      />
+    );
   }
 }
 
@@ -38,8 +53,9 @@ function FullCard({
   onFavoriteToggle,
   imgSrc,
   setImgSrc,
+  propertyDetailLink,
 }: PropertyCardProps & { imgSrc: string; setImgSrc: (src: string) => void }) {
-  const link = propertyLink(property.id);
+  const link = propertyDetailLink || propertyLink(property.id);
 
   return (
     <div className="mb-5 w-full overflow-hidden rounded-xl shadow-xl">
@@ -48,7 +64,7 @@ function FullCard({
           <Image
             className="object-cover"
             src={imgSrc}
-            alt="property.name"
+            alt={property.name}
             fill
             sizes="(max-width: 768px) 100vh, (max-width: 1200px) 50vw, 33vw"
             onError={() => setImgSrc('/placeholder.jpg')}
@@ -135,8 +151,9 @@ function CompactCard({
   onFavoriteToggle,
   imgSrc,
   setImgSrc,
+  propertyDetailLink,
 }: PropertyCardProps & { imgSrc: string; setImgSrc: (src: string) => void }) {
-  const link = propertyLink(property.id);
+  const link = propertyDetailLink || propertyLink(property.id);
 
   return (
     <div className="mb-5 flex h-40 w-full overflow-hidden rounded-xl shadow-xl">
@@ -144,7 +161,7 @@ function CompactCard({
         <Image
           className="object-cover"
           src={imgSrc}
-          alt="property.name"
+          alt={property.name}
           fill
           sizes="(max-width: 768px) 100vh, (max-width: 1200px) 50vw, 33vw"
           onError={() => setImgSrc('/placeholder.jpg')}

@@ -44,7 +44,7 @@ export default function Map() {
     return () => map.remove();
   }, [isLoading, error, properties, filters.coordinates]);
 
-  if (error || !properties) toast.error('Failed to show listings. Please refresh the page.');
+  if (error && !properties) toast.error('Failed to show listings. Please refresh the page.');
 
   return (
     <div className="relative grow basis-5/12 rounded-xl">
@@ -73,7 +73,7 @@ const createPropertyMarker = (property: PropertyWithLocationCoordinates, map: ma
         <div class="marker-popup">
           <div class="marker-popup-image"></div>
           <div>
-            <a href="/search/${property.id}" target="_blank" class="marker-popup-title">${property.name}</a>
+            <a href="/listing/${property.id}" target="_blank" class="marker-popup-title">${property.name}</a>
             <p class="marker-popup-price">
               $${property.pricePerMonth}
               <span class="marker-popup-price-unit"> / month</span>

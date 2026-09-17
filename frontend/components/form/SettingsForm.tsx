@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { isValidPhoneNumber } from 'react-phone-number-input';
 import z from 'zod';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -25,7 +26,9 @@ import InputField from './fields/InputField';
 const settingsSchema = z.object({
   name: z.string().optional(),
   email: z.email('Invalid email address'),
-  phone: z.string().min(1, 'min 1 num hoe'),
+  phone: z.string().refine((value) => !value || isValidPhoneNumber(value), {
+    message: 'Enter a valid phone number',
+  }),
 });
 
 type FormValues = z.infer<typeof settingsSchema>;

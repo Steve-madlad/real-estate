@@ -5,9 +5,9 @@ import { useGetLeasePayments } from '@/api/lease';
 import { useGetPropertyLeases } from '@/api/manager';
 import { useGetProperty } from '@/api/properties';
 import Header from '@/components/Header';
-import { TableBody, TableCell, TableHead, TableHeader } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader } from '@/components/ui/table';
 import { TableRow } from '@aws-amplify/ui-react';
-import { ArrowDownToLine, ArrowLeft, Check, Download, Table } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeft, Check, Download } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -54,29 +54,35 @@ export default function Properties() {
 
   return (
     <div>
+      {/* Back to properties page */}
       <Link
-        className="align-center hover:text-primary-500 mb-4"
-        href="/managers/properties"
+        href="/managers/dashboard/properties"
+        className="hover:text-primary-500 mb-4 flex items-center"
         scroll={false}
       >
-        <ArrowLeft className="mr-2 size-4"></ArrowLeft>
+        <ArrowLeft className="mr-2 h-4 w-4" />
         <span>Back to Properties</span>
       </Link>
 
       <Header
-        title={property?.name || 'Your Property'}
+        title={property?.name || 'My Property'}
         subtitle="Manage tenants and leases for this property"
       />
+
       <div className="w-full space-y-6">
         <div className="mt-8 overflow-hidden rounded-xl bg-white p-6 shadow-md">
-          <div className="flex-center mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="mb-1 text-2xl font-bold">Tenants Overview</h2>
-              <p className="text-sm text-gray-500">Manage and view all tenants for this property</p>
+              <p className="text-sm text-gray-500">
+                Manage and view all tenants for this property.
+              </p>
             </div>
             <div>
-              <button className="bg-white-border-border-gray-300 flex-center hover:bg-primary-700 hover:text-primary-50 rounded-md px-4 py-2 text-gray-700">
-                <Download className="mr-2 size-5" />
+              <button
+                className={`hover:bg-primary-700 hover:text-primary-50 flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700`}
+              >
+                <Download className="mr-2 h-5 w-5" />
                 <span>Download All</span>
               </button>
             </div>

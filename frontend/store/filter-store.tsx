@@ -121,7 +121,6 @@ export const useFiltersStore = create<FilterStoreProps>()(
       filtersSidebarOpen: false,
       viewMode: 'grid',
       setFilters: (filters) => {
-        console.trace('filter changed', filters.location);
         set((state) => ({
           filters: { ...state.filters, ...filters },
         }));

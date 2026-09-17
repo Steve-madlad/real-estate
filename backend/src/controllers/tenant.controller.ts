@@ -5,31 +5,12 @@ import { Prisma } from "../../prisma/generated/client.js";
 import { AppError } from "../lib/app-error.js";
 import { prisma } from "../lib/db.js";
 import handleValidationError, { catchAsync } from "../lib/utils.js";
-import { favoritePropertySchema } from "../schemas/schema.js";
-
-const tenantSchema = z
-  .object({
-    cognitoId: z.string().min(1, "Cognito ID is required"),
-  })
-  .strip();
-
-const createTenantSchema = z
-  .object({
-    cognitoId: z.string().min(1, "Cognito ID is required"),
-    name: z.string().min(1, "Name is required"),
-    email: z.email("Invalid email address"),
-    phoneNumber: z.string(),
-  })
-  .strip();
-
-const updateTenantSchema = z
-  .object({
-    cognitoId: z.string().min(1, "Cognito ID is required"),
-    name: z.string().min(3, "Name must be at least 3 characters").optional(),
-    email: z.email("Invalid email address"),
-    phoneNumber: z.string().optional(),
-  })
-  .strip();
+import {
+  createTenantSchema,
+  PropertyIdSchema,
+  tenantSchema,
+  updateTenantSchema,
+} from "../schemas/schema.js";
 
 export const getTenant = catchAsync(async (req: Request, res: Response) => {
   const { cognitoId } = req.params;
@@ -156,7 +137,7 @@ export const getCurrentresidences = catchAsync(
       return res.json({
         success: true,
         message: "Residencies fetched successfuly",
-        residences: residencesWithFormattedLocation,
+        data: residencesWithFormattedLocation,
       });
     }
 
@@ -172,8 +153,8 @@ export const favoriteProperty = catchAsync(
     const cognitoId = req.user?.id;
     const { propertyId } = req.params;
 
-    const parsed = favoritePropertySchema.safeParse({ propertyId });
-    handleValidationError<z.infer<typeof favoritePropertySchema>>(parsed);
+    const parsed = PropertyIdSchema.safeParse({ propertyId });
+    handleValidationError<z.infer<typeof PropertyIdSchema>>(parsed);
     const { propertyId: residenceId } = parsed.data;
 
     const [tenant, property] = await Promise.all([
@@ -228,8 +209,8 @@ export const unfavoriteProperty = catchAsync(
     const cognitoId = req.user?.id;
     const { propertyId } = req.params;
 
-    const parsed = favoritePropertySchema.safeParse({ propertyId });
-    handleValidationError<z.infer<typeof favoritePropertySchema>>(parsed);
+    const parsed = PropertyIdSchema.safeParse({ propertyId });
+    handleValidationError<z.infer<typeof PropertyIdSchema>>(parsed);
     const { propertyId: residenceId } = parsed.data;
 
     const [tenant, property] = await Promise.all([

@@ -4,10 +4,9 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { authMiddleWare } from "./middleware/auth.js";
 import { errorHandler } from "./middleware/error.js";
-import {
-  default as leaseRoutes,
-  default as managerRoutes,
-} from "./routes/manager.routes.js";
+import applicationRoutes from "./routes/application.routes.js";
+import leaseRoutes from "./routes/lease.routes.js";
+import managerRoutes from "./routes/manager.routes.js";
 import propertyRoutes from "./routes/property.route.js";
 import tenantRoutes from "./routes/tenant.routes.js";
 
@@ -27,7 +26,7 @@ app.use("/property", propertyRoutes);
 app.use("/tenants", authMiddleWare(["tenant"]), tenantRoutes);
 app.use("/managers", authMiddleWare(["manager"]), managerRoutes);
 app.use("/lease", authMiddleWare(["manager", "tenant"]), leaseRoutes);
-app.use("/applications", leaseRoutes);
+app.use("/applications", applicationRoutes);
 
 app.use(errorHandler);
 const port = process.env.PORT || 3000;

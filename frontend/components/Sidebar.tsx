@@ -20,13 +20,13 @@ const navLinks = (userType: string) =>
     ? [
         { icon: Building, label: 'Properties', href: '/managers/dashboard/properties' },
         { icon: FileText, label: 'Applications', href: '/managers/dashboard/applications' },
-        { icon: Settings, label: 'settings', href: '/managers/dashboard/settings' },
+        { icon: Settings, label: 'Settings', href: '/managers/dashboard/settings' },
       ]
     : [
         { icon: Building, label: 'Favorites', href: '/tenants/dashboard/favorites' },
         { icon: FileText, label: 'Applications', href: '/tenants/dashboard/applications' },
         { icon: Home, label: 'Residences', href: '/tenants/dashboard/residences' },
-        { icon: Settings, label: 'settings', href: '/tenants/dashboard/settings' },
+        { icon: Settings, label: 'Settings', href: '/tenants/dashboard/settings' },
       ];
 
 export default function Sidebar() {

@@ -14,7 +14,7 @@ export const listApplications = catchAsync(
         whereClause = { tenantCognitoId: String(userId) };
       } else if (role === "manager") {
         whereClause = {
-          property: { managerCognitoId: { id: String(userId) } },
+          property: { managerCognitoId: String(userId)  },
         };
       }
     }
@@ -144,7 +144,7 @@ export const createApplication = catchAsync(
       return application;
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Application created successfully",
       data: newApplication,

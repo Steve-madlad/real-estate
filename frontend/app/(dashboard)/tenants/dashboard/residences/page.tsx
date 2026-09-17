@@ -62,13 +62,14 @@ export default function Favorites() {
         {tenantLoading || residencesLoading ? (
           <div className="animate-pulse bg-gray-300"></div>
         ) : (
-          residences?.data.map((property) => (
+          residences?.map((property) => (
             <PropertyCard
               key={property.id}
               isFavorited={isFavorite(property.id)}
               likeToggleLoading={likeLoadingProperty === property.id}
               onFavoriteToggle={handleFavoriteToggle}
               property={property}
+              propertyDetailLink={`/tenants/dashboard/residences/${property.id}`}
               showFavoriteButton
             />
           ))

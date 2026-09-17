@@ -13,12 +13,6 @@ const idVerifier = CognitoJwtVerifier.create({
   clientId: process.env.COGNITO_CLIENT_ID,
 });
 
-const accessVerifier = CognitoJwtVerifier.create({
-  userPoolId: process.env.COGNITO_USER_POOL_ID,
-  tokenUse: "access",
-  clientId: process.env.COGNITO_CLIENT_ID,
-});
-
 export function authMiddleWare(allowedRoles: RoleList) {
   return async (req: Request, _res: Response, next: NextFunction) => {
     const authHeader = req.headers?.authorization;
@@ -35,7 +29,7 @@ export function authMiddleWare(allowedRoles: RoleList) {
         try {
           return await idVerifier.verify(token);
         } catch {
-          return await accessVerifier.verify(token);
+          throw new AppError("Couldn't verify token in middleware", 500);
         }
       })();
 
@@ -62,7 +56,21 @@ export function authMiddleWare(allowedRoles: RoleList) {
       next();
     } catch (error) {
       console.error({ error });
-      next(new AppError("Unauthorized: Invalid or expired token", 401));
+      const isServerError =
+        typeof error === "object" &&
+        error !== null &&
+        "statusCode" in error &&
+        "message" in error &&
+        error.statusCode === 500;
+        
+      next(
+        new AppError(
+          isServerError
+            ? String(error?.message)
+            : "Unauthorized: Invalid or expired token",
+          isServerError ? 500 : 401,
+        ),
+      );
     }
   };
 }

@@ -25,12 +25,14 @@ export default function Applications() {
   });
 
   return (
-    <div className="dashboard-container">
+    <div>
       <Header title="Applications" subtitle="View and manage applications for your properties" />
-      <Tabs className="my-5 w-full" value="activeTab" onValueChange={setActiveTab}>
+      <Tabs className="my-5 w-full" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-4">
           {statuses.map((tab) => (
-            <TabsTrigger key={tab} value={tab}></TabsTrigger>
+            <TabsTrigger key={tab} value={tab} className="capitalize">
+              {tab}
+            </TabsTrigger>
           ))}
         </TabsList>
         {statuses.map((tab) => (
@@ -52,31 +54,35 @@ export default function Applications() {
                         'bg-red-100!': application.status === 'Denied',
                       })}
                     >
-                      <div className="align-center flex-wrap">
-                        <File className="mr-2 size-5 shrink-0"></File>
-                        <span>
-                          Application submitted on{' '}
-                          {new Date(application.applicationDate).toDateString()} •
-                        </span>
-                        <CircleCheckBig className="mr-2 size-5 shrink-0"></CircleCheckBig>
-                        <span
-                          className={cn(`font-semibold text-yellow-800`, {
-                            'text-green-800!': application.status === 'Approved',
-                            'text-red-800!': application.status === 'Denied',
-                          })}
-                        >
-                          This application
-                          {application.status === 'Pending'
-                            ? 'is pending review'
-                            : 'has been ' + application.status.toLocaleLowerCase()}
-                        </span>
+                      <div className="col">
+                        <div className="align-center">
+                          <File className="mr-2 size-5 shrink-0"></File>
+                          <span>
+                            Application submitted on{' '}
+                            {new Date(application.applicationDate).toDateString()}
+                          </span>
+                        </div>
+                        <div className="align-center">
+                          <CircleCheckBig className="mr-2 size-5 shrink-0 translate-y-1"></CircleCheckBig>
+                          <span
+                            className={cn(`mt-2 font-semibold text-yellow-800`, {
+                              'text-green-800!': application.status === 'Approved',
+                              'text-red-800!': application.status === 'Denied',
+                            })}
+                          >
+                            This application
+                            {application.status === 'Pending'
+                              ? ' is pending review'
+                              : 'has been ' + application.status.toLocaleLowerCase()}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
                     <div className="flex gap-2">
                       <Link
                         className="flex-center hover:bg-primary-700 hover:text-primary-50 rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700"
-                        href="`/managers/properties/application.property.id`"
+                        href={`/managers/dashboard/properties/${application.property.id}`}
                         scroll={false}
                       >
                         <Hospital className="mr-2 size-5"></Hospital>

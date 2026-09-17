@@ -13,7 +13,7 @@ const getProperties = async (): Promise<PropertiesResponse> => {
 };
 
 const getPropertyLeases = async (propertyId: string): Promise<LeasesResponse> => {
-  const leaseResponse = await apiClient.get<LeasesResponse>(`/property/${propertyId}/leases`);
+  const leaseResponse = await apiClient.get<LeasesResponse>(`/lease/property/${propertyId}`);
   return leaseResponse.data;
 };
 

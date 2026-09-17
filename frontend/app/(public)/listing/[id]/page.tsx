@@ -2,15 +2,17 @@
 
 import { useGetAuthUser } from '@/api/auth';
 import { useGetProperty } from '@/api/properties';
+import { useFavoriteProperty, useGetTenant, useUnfavoriteProperty } from '@/api/tenant';
 import ApplicationModal from '@/components/ApplicationModal';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AmenityIcons, HighlightIcons } from '@/lib/constants';
 import { formatEnumString } from '@/lib/utils';
-import { BadgeCheck, HelpCircle, MapPin, Phone, Star } from 'lucide-react';
+import { BadgeCheck, Heart, HelpCircle, MapPin, Phone, Star } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import ImagePreview from './components/ImagePreview';
 import ListingMap from './components/ListingMap';
 
@@ -21,6 +23,9 @@ export default function Listing() {
   const { data: property, isLoading } = useGetProperty(id);
 
   const { data: user } = useGetAuthUser();
+  const { data: tenant } = useGetTenant();
+  const { mutate: favoriteProperty, isPending: favoriteLoading } = useFavoriteProperty();
+  const { mutate: unfavoriteProperty, isPending: unfavoriteLoading } = useUnfavoriteProperty();
 
   const onClose = () => {
     setApplicationModalOpen(false);
@@ -39,6 +44,24 @@ export default function Listing() {
 
   const handleContact = () => {
     if (!user) router.push('/signin');
+    else setApplicationModalOpen(true);
+  };
+
+  const isFavorited =
+    tenant?.data?.favorites.some((favorite) => favorite.id === property.id) ?? false;
+
+  const handleFavoriteToggle = () => {
+    if (!user) {
+      toast.error('Please sign in to favorite a property');
+      return;
+    }
+    if (user.userRole === 'manager') {
+      toast.error('Only tenants can favorite properties');
+      return;
+    }
+
+    if (isFavorited) unfavoriteProperty(property.id);
+    else favoriteProperty(property.id);
   };
 
   return (
@@ -236,6 +259,18 @@ export default function Listing() {
             >
               {user ? 'Submit Application' : 'Sign In to Apply'}
             </Button>
+            {user?.userRole !== 'manager' && (
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-3 w-full"
+                onClick={handleFavoriteToggle}
+                disabled={favoriteLoading || unfavoriteLoading}
+              >
+                <Heart className={isFavorited ? 'fill-red-500 text-red-500' : undefined} />
+                {isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+              </Button>
+            )}
             <hr className="my-4" />
             <div className="text-sm">
               <div className="text-primary600 mb-1">Language: English</div>
@@ -250,6 +285,7 @@ export default function Listing() {
           isOpen={applicationModalOpen}
           onClose={onClose}
           propertyId={property.id}
+          description={`Send application for ${property.name}?`}
         />
       )}
     </div>

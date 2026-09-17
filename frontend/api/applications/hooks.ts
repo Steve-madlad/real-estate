@@ -53,23 +53,23 @@ export const useGetApplications = (options?: UseApplicationsOptions) => {
 export const useProcessApplications = (options?: UseProcessApplicationOptions) => {
   const queryClient = useQueryClient();
   return useMutation({
+    ...options,
     mutationFn: ({ id, body }) => processApplication(id, body) as Promise<ApplicationWithRelations>,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: applicationKeys.all });
       options?.onSuccess?.(...args);
     },
-    ...options,
   });
 };
 
 export const useCreateApplication = (options?: UseCreateApplicationOptions) => {
   const queryClient = useQueryClient();
   return useMutation({
+    ...options,
     mutationFn: (body: CreateApplicationBody) => createApplication(body),
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: applicationKeys.all });
       options?.onSuccess?.(...args);
     },
-    ...options,
   });
 };

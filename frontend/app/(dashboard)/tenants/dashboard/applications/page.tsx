@@ -3,29 +3,29 @@
 import { useGetApplications } from '@/api/applications';
 import ApplicationCard from '@/components/ApplicationCard';
 import Header from '@/components/Header';
-import { CircleCheckBig, Clock, Download, XCircle } from 'lucide-react';
+import { Clock, Download, XCircle } from 'lucide-react';
 
 export default function Applications() {
   const { data: applications } = useGetApplications();
 
   return (
-    <div className="dashboard-container">
+    <div>
       <Header title="Applications" subtitle="Track and manage your property rental applications" />
       <div className="w-full">
         {applications?.map((application) => (
           <ApplicationCard key={application.id} application={application} userType={'tenant'}>
             <div className="just-between w-full gap-5 px-4 pb-4">
               {application.status === 'Approved' ? (
-                <button className="align-center grow bg-green-100 p-4 text-green-700">
-                  <CircleCheckBig className="mr-2 size-5" />
-                  Download Agreement
-                </button>
-              ) : application.status === 'Pending' ? (
                 <button className="align-center grow bg-yellow-100 p-4 text-yellow-700">
                   <Clock className="mr-2 size-5" />
-                  The property is being rented by you untli
+                  The property is being rented by you untli{' '}
                   {new Date(application.lease.endDate).toLocaleDateString()}
                 </button>
+              ) : application.status === 'Pending' ? (
+                <div className="align-center grow bg-yellow-100 p-4 text-yellow-700">
+                  <Clock className="mr-2 h-5 w-5" />
+                  Your application is pending approval
+                </div>
               ) : (
                 <button className="align-center grow bg-red-100 p-4 text-red-700">
                   <XCircle className="mr-2 size-5" />

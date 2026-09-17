@@ -1,21 +1,49 @@
 import type { Request, Response } from "express";
+import type z from "zod";
 import { prisma } from "../lib/db.js";
-import { catchAsync } from "../lib/utils.js";
+import handleValidationError, { catchAsync } from "../lib/utils.js";
+import { PropertyIdSchema } from "../schemas/schema.js";
 
-export const getLeases = catchAsync(async (_req: Request, res: Response) => {
-  const leases = await prisma.lease.findMany({
-    include: {
-      tenant: true,
-      property: true,
-    },
-  });
+export const getPropertyLeases = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
 
-  return res.json({
-    success: true,
-    message: "Leases fetched successfully",
-    data: leases,
-  });
-});
+    const parsed = PropertyIdSchema.safeParse({ propertyId: id });
+    handleValidationError<z.infer<typeof PropertyIdSchema>>(parsed);
+    
+    const leases = await prisma.lease.findMany({
+      where: {
+        propertyId: parsed.data.propertyId,
+        application: {
+          status: "Approved",
+        },
+        ...(userRole === "manager"
+          ? {
+              property: {
+                managerCognitoId: userId,
+              },
+            }
+          : {
+              tenant: {
+                cognitoId: userId,
+              },
+            }),
+      },
+      include: {
+        tenant: true,
+        property: true,
+      },
+    });
+
+    return res.json({
+      success: true,
+      message: "Property Leases fetched successfully",
+      data: leases,
+    });
+  },
+);
 
 export const getLeasePayments = catchAsync(
   async (req: Request, res: Response) => {

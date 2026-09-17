@@ -30,7 +30,16 @@ export default function Properties() {
           <div>No Properties found</div>
         ) : (
           properties?.data.map((property) => (
-            <PropertyCard key={property.id} property={property} showFavoriteButton={false} />
+            <PropertyCard
+              key={property.id}
+              property={property}
+              showFavoriteButton={false}
+              propertyDetailLink={
+                user?.userRole === 'manager'
+                  ? `/managers/dashboard/properties/${property.id}`
+                  : undefined
+              }
+            />
           ))
         )}
       </div>

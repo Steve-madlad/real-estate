@@ -13,7 +13,10 @@ const getProperty = async (id: string): Promise<PropertyWithLocationCoordinates>
 const getProperties = async (params?: PropertyParams): Promise<PropertiesResponse> => {
   const route = `/property`;
 
-  const propertiesResponse = await apiClient.get<PropertiesResponse>(route, { params });
+  const propertiesResponse = await apiClient.get<PropertiesResponse>(route, {
+    params,
+    paramsSerializer: { indexes: null },
+  });
   return propertiesResponse.data;
 };
 

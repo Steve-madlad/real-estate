@@ -13,7 +13,7 @@ export type PropertyResponse = {
 };
 
 export interface PropertyParams {
-  favoriteIds?: number[];
+  favoritesOnly?: boolean;
   priceMin?: number;
   priceMax?: number;
   beds?: string;

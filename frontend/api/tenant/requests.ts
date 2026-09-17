@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/http-client';
 import { getCurrentUser } from 'aws-amplify/auth';
-import { PropertiesResponse } from '../properties';
+import { PropertiesResponse, PropertyResponse } from '../properties';
 import { GetTenantResponse, PropertyFavoriteStatusResponse } from './types';
 
 const getTenant = async (): Promise<GetTenantResponse> => {
@@ -10,13 +10,13 @@ const getTenant = async (): Promise<GetTenantResponse> => {
   return response.data;
 };
 
-const getResidences = async (): Promise<PropertiesResponse> => {
+const getResidences = async (): Promise<PropertiesResponse['data']> => {
   const user = await getCurrentUser();
   const userId = user.userId;
   const route = `/tenants/${userId}/current-residences`;
 
-  const response = await apiClient.get(route);
-  return response.data;
+  const response = await apiClient.get<PropertiesResponse>(route);
+  return response.data.data as PropertiesResponse['data'];
 };
 
 const favoriteProperty = async (propertyId: number): Promise<PropertyFavoriteStatusResponse> => {

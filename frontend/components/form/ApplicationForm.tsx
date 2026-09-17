@@ -19,8 +19,8 @@ export default function ApplicationForm({
   const { data: user } = useGetAuthUser();
   const { mutate: createApplication, isPending } = useCreateApplication({
     onSuccess: () => {
-      onSuccess();
       toast.success('Application submitted successfully');
+      onSuccess();
     },
   });
 
@@ -43,13 +43,13 @@ export default function ApplicationForm({
   };
   return (
     <FormProvider {...applicationForm}>
-      <form action="" onSubmit={applicationForm.handleSubmit(handleSubmit)}>
+      <form className="space-y-3" onSubmit={applicationForm.handleSubmit(handleSubmit)}>
         <InputField name="name" label="Name" />
         <InputField name="email" type="email" label="Email" />
         <InputField name="phoneNumber" label="Phone Number" />
         <InputField name="message" label="Message (optional)" type="textarea" />
 
-        <Button type="submit" disabled={isPending}>
+        <Button className="mt-3 w-full py-2" type="submit" disabled={isPending}>
           {isPending && <Loader2 className="animate-spin" />}Submit Application
         </Button>
       </form>

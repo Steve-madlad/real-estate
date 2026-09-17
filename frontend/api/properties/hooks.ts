@@ -37,8 +37,8 @@ type UseCreatepropertyOptions = Omit<
 export const propertyKeys = {
   all: ['properties'] as const,
   detail: (id: string) => [...propertyKeys.all, id],
-  list: (params?: PropertyParams) => [...propertyKeys.all, params],
   lists: () => [...propertyKeys.all, 'list'] as const,
+  list: (params?: PropertyParams) => [...propertyKeys.lists(), params],
 };
 
 export const useGetProperty = (id: string, options?: UsePropertyOptions) => {

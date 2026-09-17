@@ -16,7 +16,7 @@ type UseUpdatePropertyOptions = Omit<
 >;
 
 type UseGetResidencesOptions = Omit<
-  UseQueryOptions<PropertiesResponse, AxiosError<{ message: string }>>,
+  UseQueryOptions<PropertiesResponse['data'], AxiosError<{ message: string }>>,
   'queryFn' | 'queryKey'
 >;
 
@@ -56,6 +56,7 @@ export const useFavoriteProperty = (options?: UseUpdatePropertyOptions) => {
     ...options,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: propertyKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tenantKeys.all });
       options?.onSuccess?.(...args);
     },
     mutationFn: (propertyId: number) => favoriteProperty(propertyId),
@@ -69,6 +70,7 @@ export const useUnfavoriteProperty = (options?: UseUpdatePropertyOptions) => {
     ...options,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: propertyKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tenantKeys.all });
       options?.onSuccess?.(...args);
     },
     mutationFn: (propertyId: number) => unfavoriteProperty(propertyId),

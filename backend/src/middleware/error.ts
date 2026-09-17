@@ -14,7 +14,7 @@ export function errorHandler(
 
   if (err instanceof AppError) {
     statusCode = err.statusCode;
-    message = err.message;
+    message = err.statusCode >= 500 ? "Internal Server Error" : err.message;
     success = err.success;
     errors = err.errors;
   } else {
