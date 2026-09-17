@@ -62,7 +62,7 @@ export function authMiddleWare(allowedRoles: RoleList) {
         "statusCode" in error &&
         "message" in error &&
         error.statusCode === 500;
-        
+
       next(
         new AppError(
           isServerError

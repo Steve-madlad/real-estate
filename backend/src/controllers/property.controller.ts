@@ -47,10 +47,7 @@ export const getProperties = catchAsync(async (req: Request, res: Response) => {
   let whereConditions: Prisma.Sql[] = [];
 
   if (favoritesOnly && !userId) {
-    throw new AppError(
-      "Authentication required to filter by favorites",
-      401,
-    );
+    throw new AppError("Authentication required to filter by favorites", 401);
   }
 
   if (favoritesOnly && userId) {

@@ -12,7 +12,7 @@ export const getPropertyLeases = catchAsync(
 
     const parsed = PropertyIdSchema.safeParse({ propertyId: id });
     handleValidationError<z.infer<typeof PropertyIdSchema>>(parsed);
-    
+
     const leases = await prisma.lease.findMany({
       where: {
         propertyId: parsed.data.propertyId,

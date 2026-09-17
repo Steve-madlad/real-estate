@@ -5,9 +5,11 @@ import z from "zod";
 import { AppError } from "../lib/app-error.js";
 import { prisma } from "../lib/db.js";
 import handleValidationError, { catchAsync } from "../lib/utils.js";
-import { createManagerSchema, managerSchema, updateManagerSchema } from "../schemas/schema.js";
-
-
+import {
+  createManagerSchema,
+  managerSchema,
+  updateManagerSchema,
+} from "../schemas/schema.js";
 
 export const getManager = catchAsync(async (req: Request, res: Response) => {
   const { cognitoId } = req.params;

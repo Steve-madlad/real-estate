@@ -14,7 +14,7 @@ export const listApplications = catchAsync(
         whereClause = { tenantCognitoId: String(userId) };
       } else if (role === "manager") {
         whereClause = {
-          property: { managerCognitoId: String(userId)  },
+          property: { managerCognitoId: String(userId) },
         };
       }
     }
