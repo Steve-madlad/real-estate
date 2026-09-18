@@ -1,35 +1,66 @@
 'use client';
 
+import { useGetPropertyApplications } from '@/api/applications';
 import { useGetAuthUser } from '@/api/auth';
 import { useGetProperty } from '@/api/properties';
 import { useFavoriteProperty, useGetTenant, useUnfavoriteProperty } from '@/api/tenant';
 import ApplicationModal from '@/components/ApplicationModal';
+import SigninPromptModal from '@/components/SigninPromptModal';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AmenityIcons, HighlightIcons } from '@/lib/constants';
 import { formatEnumString } from '@/lib/utils';
-import { BadgeCheck, Heart, HelpCircle, MapPin, Phone, Star } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import {
+  BadgeCheck,
+  Building,
+  Heart,
+  HelpCircle,
+  Loader2,
+  MapPin,
+  Phone,
+  Star,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import ImagePreview from './components/ImagePreview';
 import ListingMap from './components/ListingMap';
 
 export default function Listing() {
-  const router = useRouter();
   const [applicationModalOpen, setApplicationModalOpen] = useState<boolean>(false);
   const { id } = useParams<{ id: string }>();
   const { data: property, isLoading } = useGetProperty(id);
 
-  const { data: user } = useGetAuthUser();
-  const { data: tenant } = useGetTenant();
+  const { data: user, isLoading: userLoading } = useGetAuthUser();
+  const { data: tenant, refetch: refetchTenant } = useGetTenant({ enabled: false });
+
+  const {
+    data: propertyAppliactions,
+    refetch: refetchPropertyApplications,
+    isLoading: applicationsLoading,
+  } = useGetPropertyApplications(id, { enabled: false });
+
+  useEffect(() => {
+    if (user?.userRole === 'tenant') {
+      refetchTenant();
+      refetchPropertyApplications();
+    }
+  }, [user?.userRole]);
+
+  const appliactionSentAlready = propertyAppliactions?.some(
+    (a) => a.tenantCognitoId === user?.userInfo.cognitoId,
+  );
+
   const { mutate: favoriteProperty, isPending: favoriteLoading } = useFavoriteProperty();
   const { mutate: unfavoriteProperty, isPending: unfavoriteLoading } = useUnfavoriteProperty();
 
   const onClose = () => {
     setApplicationModalOpen(false);
   };
+
+  const [promptModalOpen, setPromptModalOpen] = useState(false);
 
   if (isLoading) {
     return <ListingSkeleton />;
@@ -43,21 +74,27 @@ export default function Listing() {
   const hasHighlights = Array.isArray(property.highlights) && property.highlights.length > 0;
 
   const handleContact = () => {
-    if (!user) router.push('/signin');
-    else setApplicationModalOpen(true);
+    if (!user) toast.error('You must be signed in to apply');
+    else if (user?.userRole === 'manager') toast.error('Only tenants can apply');
+    else {
+      if (propertyAppliactions?.some((a) => a.tenantCognitoId === user.userInfo.cognitoId))
+        toast.error('You have already applied for this property');
+      else setApplicationModalOpen(true);
+    }
   };
 
   const isFavorited =
     tenant?.data?.favorites.some((favorite) => favorite.id === property.id) ?? false;
 
+  const onChange = (state: boolean) => {
+    setPromptModalOpen(state);
+  };
   const handleFavoriteToggle = () => {
     if (!user) {
-      toast.error('Please sign in to favorite a property');
-      return;
+      return setPromptModalOpen(true);
     }
     if (user.userRole === 'manager') {
-      toast.error('Only tenants can favorite properties');
-      return;
+      return toast.error('Only tenants can favorite properties');
     }
 
     if (isFavorited) unfavoriteProperty(property.id);
@@ -255,21 +292,38 @@ export default function Listing() {
             </div>
             <Button
               onClick={handleContact}
+              disabled={userLoading || applicationsLoading || appliactionSentAlready}
               className="bg-primary-700 hover:bg-primary-600 w-full text-white"
             >
-              {user ? 'Submit Application' : 'Sign In to Apply'}
+              {userLoading || applicationsLoading ? (
+                <Loader2 className="animate-spin" />
+              ) : user ? (
+                appliactionSentAlready ? (
+                  'Application Sent'
+                ) : (
+                  'Submit Application'
+                )
+              ) : (
+                'Sign In to Apply'
+              )}
             </Button>
-            {user?.userRole !== 'manager' && (
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-3 w-full"
-                onClick={handleFavoriteToggle}
-                disabled={favoriteLoading || unfavoriteLoading}
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-3 w-full"
+              onClick={handleFavoriteToggle}
+              disabled={favoriteLoading || unfavoriteLoading}
+            >
+              <Heart className={isFavorited ? 'fill-red-500 text-red-500' : undefined} />
+              {isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+            </Button>
+            {property.managerCognitoId === user?.userInfo.cognitoId && (
+              <Link
+                href={`/managers/dashboard/properties/${property.id}`}
+                className="border-border hover:bg-muted flex-center mt-3 w-full gap-3 rounded-lg border py-1 text-center"
               >
-                <Heart className={isFavorited ? 'fill-red-500 text-red-500' : undefined} />
-                {isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-              </Button>
+                <Building size={16} /> Manage your property
+              </Link>
             )}
             <hr className="my-4" />
             <div className="text-sm">
@@ -288,6 +342,8 @@ export default function Listing() {
           description={`Send application for ${property.name}?`}
         />
       )}
+
+      <SigninPromptModal open={promptModalOpen} onChange={onChange} />
     </div>
   );
 }

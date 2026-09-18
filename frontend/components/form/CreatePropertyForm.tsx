@@ -51,12 +51,12 @@ export default function CreatePropertyForm() {
       isPetsAllowed: false,
       isParkingIncluded: false,
       photoUrls: [],
-      amenities: undefined,
-      highlights: undefined,
+      amenities: [],
+      highlights: [],
       beds: 1,
       baths: 1,
       squareFeet: 1000,
-      propertyType: undefined,
+      propertyType: null,
       address: '',
       city: '',
       state: '',
@@ -115,8 +115,8 @@ export default function CreatePropertyForm() {
               <InputField name="squareFeet" type="number" label="Square Feet" />
             </div>
             <div className="flex gap-12">
-              <SwitchField label="Pets Allowed" name="petsAllowed" />
-              <SwitchField label="Parking Included" name="parkingIncluded" />
+              <SwitchField label="Pets Allowed" name="isPetsAllowed" />
+              <SwitchField label="Parking Included" name="isParkingIncluded" />
             </div>
             <SelectField name="propertyType" label="Property Type" options={propertyOptions} />
           </FieldSet>

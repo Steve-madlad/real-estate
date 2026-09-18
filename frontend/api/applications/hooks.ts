@@ -7,7 +7,12 @@ import {
   UseQueryOptions,
 } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { createApplication, getApplications, processApplication } from './requests';
+import {
+  createApplication,
+  getApplications,
+  getPropertyApplications,
+  processApplication,
+} from './requests';
 import {
   ApplicationsResponse,
   CreateApplicationBody,
@@ -40,12 +45,27 @@ type UseCreateApplicationOptions = Omit<
 
 export const applicationKeys = {
   all: ['applications'] as const,
+  lists: () => [...applicationKeys.all, 'list'] as const,
+  list: (propertyId?: string) => [...applicationKeys.lists(), propertyId] as const,
+  byProperty: (propertyId: string | number) =>
+    [...applicationKeys.lists(), 'property', String(propertyId)] as const,
 };
 
 export const useGetApplications = (options?: UseApplicationsOptions) => {
   return useQuery({
     queryFn: getApplications,
     queryKey: applicationKeys.all,
+    ...options,
+  });
+};
+
+export const useGetPropertyApplications = (
+  propertyId: string,
+  options?: UseApplicationsOptions,
+) => {
+  return useQuery({
+    queryFn: () => getPropertyApplications(propertyId),
+    queryKey: applicationKeys.byProperty(propertyId),
     ...options,
   });
 };

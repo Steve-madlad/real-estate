@@ -17,6 +17,8 @@ export function errorHandler(
     message = err.statusCode >= 500 ? "Internal Server Error" : err.message;
     success = err.success;
     errors = err.errors;
+
+    console.error("Throw ERROR:", err);
   } else {
     console.error("💥 UNHANDLED ERROR:", err);
 

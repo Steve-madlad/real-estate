@@ -5,9 +5,10 @@ import { useGetProperties } from '@/api/properties';
 import { useFavoriteProperty, useGetTenant, useUnfavoriteProperty } from '@/api/tenant';
 import { cn } from '@/lib/utils';
 import { useFiltersStore } from '@/store/filter-store';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import PropertyCard from './PropertyCard';
+import SigninPromptModal from './SigninPromptModal';
 import { Empty } from './ui/custom/Empty';
 
 export default function Listings() {
@@ -19,7 +20,11 @@ export default function Listings() {
   const { filters, viewMode } = useFiltersStore();
 
   const { data: user } = useGetAuthUser();
-  const { data: tenant } = useGetTenant();
+  const { data: tenant, refetch } = useGetTenant({ enabled: false });
+
+  useEffect(() => {
+    if (user?.userRole === 'tenant') refetch();
+  }, [user?.userRole]);
 
   const params = Object.fromEntries(
     Object.entries(filters)
@@ -54,6 +59,11 @@ export default function Listings() {
 
   const { data: properties, isLoading: propertiesLoading } = useGetProperties(params);
 
+  const [promptModalOpen, setPromptModalOpen] = useState(false);
+  const onChange = (state: boolean) => {
+    setPromptModalOpen(state);
+  };
+
   const isFavorite = (propertyId: number) => {
     if (!user || !tenant?.data || user?.userRole === 'manager') {
       return false;
@@ -63,7 +73,7 @@ export default function Listings() {
 
   const handleFavoriteToggle = (propertyId: number) => {
     if (!user) {
-      return toast.error('Please sign in to favorite a property');
+      return setPromptModalOpen(true);
     }
     if (user?.userRole === 'manager') {
       return toast.error('Only tenants can favorite properties');
@@ -122,6 +132,8 @@ export default function Listings() {
           <p>Adjust filters or Look for properties in a new location</p>
         </Empty>
       )}
+
+      <SigninPromptModal open={promptModalOpen} onChange={onChange} />
     </div>
   );
 }

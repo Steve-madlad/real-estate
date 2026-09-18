@@ -167,7 +167,13 @@ export default function FiltersBar({
 
         {/* Search Location */}
         {!filtersSidebarOpen && (
-          <div className="align-center">
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              onLocationSearch();
+            }}
+            className="align-center"
+          >
             <Input
               className="border-primary-400 w-40 rounded-l-xl rounded-r-none border-r-0"
               placeholder="Search Location"
@@ -176,12 +182,12 @@ export default function FiltersBar({
               onChange={(e) => onLocationInputChange(e.target.value)}
             />
             <Button
-              onClick={onLocationSearch}
+              type="submit"
               className="none hover:bg-primary-700 hover:text-primary-50 -translate-x-0.5 rounded-l-none rounded-r-xl py-4 shadow-none"
             >
               <Search className="size-4" />
             </Button>
-          </div>
+          </form>
         )}
 
         {/* Price Range */}

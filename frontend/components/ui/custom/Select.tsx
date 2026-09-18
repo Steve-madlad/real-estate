@@ -18,6 +18,7 @@ import {
   ComboboxEmpty,
   ComboboxItem,
   ComboboxList,
+  ComboboxTrigger,
   ComboboxValue,
   useComboboxAnchor,
 } from '../combobox';
@@ -118,17 +119,20 @@ function Combobox({
       <ComboboxChips ref={anchor} className="w-full">
         <ComboboxValue>
           {(values) => (
-            <React.Fragment>
-              {values?.map((value: string) => (
-                <ComboboxChip key={value}>{value}</ComboboxChip>
+            <>
+              {values?.map((value: string, index: number) => (
+                <ComboboxChip key={value ?? index}>{value}</ComboboxChip>
               ))}
+
               <ComboboxChipsInput
                 className={className}
                 id={id}
                 aria-invalid={invalid}
                 placeholder={placeholder}
               />
-            </React.Fragment>
+
+              <ComboboxTrigger aria-label="Open options" className="ml-auto shrink-0" />
+            </>
           )}
         </ComboboxValue>
       </ComboboxChips>

@@ -62,7 +62,13 @@ export default function HeroSection() {
             Explore our wide range of rental properties tailored to fit your lifestyle and needs!
           </p>
 
-          <div className="just-center">
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void handleRouter();
+            }}
+            className="just-center"
+          >
             <Input
               value={searchQuery}
               onChange={(event) => {
@@ -73,12 +79,12 @@ export default function HeroSection() {
             />
 
             <Button
-              onClick={handleRouter}
+              type="submit"
               className="bg-secondary-500 hover:bg-secondary-600 h-12 rounded-none rounded-r-xl border-none text-white"
             >
               Search
             </Button>
-          </div>
+          </form>
         </div>
       </motion.div>
     </section>

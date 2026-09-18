@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { PropertyWithLocation } from '@/types/prismaTypes';
-import { BadgeCheck, Bath, Bed, Heart, House, Star } from 'lucide-react';
+import { BadgeCheck, Bath, Bed, ExternalLink, Heart, House, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -11,6 +11,7 @@ interface PropertyCardProps {
   property: PropertyWithLocation;
   isFavorited?: boolean;
   showFavoriteButton?: boolean;
+  showListingLink?: boolean;
   likeToggleLoading?: boolean;
   onFavoriteToggle?: (propertyId: number) => void;
   propertyDetailLink?: string;
@@ -49,6 +50,7 @@ function FullCard({
   property,
   isFavorited,
   showFavoriteButton,
+  showListingLink,
   likeToggleLoading,
   onFavoriteToggle,
   imgSrc,
@@ -59,8 +61,8 @@ function FullCard({
 
   return (
     <div className="mb-5 w-full overflow-hidden rounded-xl shadow-xl">
-      <div className="relative">
-        <div className="relative h-48 w-full">
+      <div className="group relative">
+        <div className="relative h-48 w-full overflow-hidden">
           <Image
             className="object-cover"
             src={imgSrc}
@@ -69,6 +71,15 @@ function FullCard({
             sizes="(max-width: 768px) 100vh, (max-width: 1200px) 50vw, 33vw"
             onError={() => setImgSrc('/placeholder.jpg')}
           />
+          {showListingLink && (
+            <Link
+              href={`/listing/${property.id}`}
+              target="_blank"
+              className="bg-background align-center absolute right-2 -bottom-10 gap-3 rounded-full px-2 text-black duration-150 ease-in group-hover:bottom-2"
+            >
+              Open Public Listing <ExternalLink size={14} />
+            </Link>
+          )}
         </div>
         <div className="mt-2 ml-2 flex gap-2">
           {property.isPetsAllowed && (

@@ -22,6 +22,7 @@ import {
 } from '../ui/field';
 import { PhoneInput } from '../ui/phone-input';
 import InputField from './fields/InputField';
+import PhoneInputField from './fields/PhoneInputField';
 
 const settingsSchema = z.object({
   name: z.string().optional(),
@@ -78,27 +79,12 @@ export default function SettingsForm({ initialValues, userRole }: SettingsFormPr
             <FieldGroup>
               <InputField name="name" label="Name" />
               <InputField name="email" type="email" label="Email" />
-              <Controller
-                control={settingsForm.control}
+              <PhoneInputField
                 name="phone"
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel className="font-medium" htmlFor={field.name}>
-                      Phone Number
-                    </FieldLabel>
-                    <PhoneInput
-                      {...field}
-                      id={field.name}
-                      disabled={!editEnabled}
-                      placeholder="+44 xxx xxx xxx"
-                      aria-invalid={fieldState.invalid}
-                    />
-                    <FieldDescription>
-                      Include your phone number with country code.
-                    </FieldDescription>
-                    <FieldError errors={[fieldState.error]} />
-                  </Field>
-                )}
+                label="Phone Number"
+                description="Country code is included by default"
+                defaultCountry="US"
+                disabled={!editEnabled}
               />
             </FieldGroup>
           </FieldSet>

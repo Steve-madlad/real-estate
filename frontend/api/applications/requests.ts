@@ -11,6 +11,15 @@ const getApplications = async (): Promise<ApplicationsResponse['data']> => {
   return applicationsResponse.data.data;
 };
 
+const getPropertyApplications = async (
+  propertyId: string,
+): Promise<ApplicationsResponse['data']> => {
+  const applicationsResponse = await apiClient.get<ApplicationsResponse>(
+    `/applications/property/${propertyId}`,
+  );
+  return applicationsResponse.data.data;
+};
+
 const processApplication = async (
   id: number,
   body: ProcessApplicationBody,
@@ -28,4 +37,4 @@ const createApplication = async (
   return response.data;
 };
 
-export { getApplications, processApplication, createApplication };
+export { createApplication, getApplications, getPropertyApplications, processApplication };

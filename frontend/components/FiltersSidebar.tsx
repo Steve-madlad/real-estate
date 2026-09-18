@@ -95,7 +95,13 @@ export default function FiltersSidebar({
           {/* Location */}
           <div>
             <h4 className="mb-2 font-bold">Location</h4>
-            <div className="align-center">
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                onLocationSearch();
+              }}
+              className="align-center"
+            >
               <Input
                 placeholder="Enter location"
                 value={locationInput}
@@ -103,12 +109,12 @@ export default function FiltersSidebar({
                 className="rounded-l-xl rounded-r-none border-r-0"
               />
               <Button
-                onClick={onLocationSearch}
+                type="submit"
                 className="border-l-none rounded-l-none rounded-r-xl border-black shadow-none"
               >
                 <Search className="size-4" />
               </Button>
-            </div>
+            </form>
           </div>
 
           {/* Property Type */}

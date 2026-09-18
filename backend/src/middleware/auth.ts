@@ -21,56 +21,37 @@ export function authMiddleWare(allowedRoles: RoleList) {
       : null;
 
     if (!token) {
-      return next(new AppError("Unauthorized: Missing token", 401));
+      throw new AppError("Unauthorized: Missing token", 401);
     }
+
+    let payload;
 
     try {
-      const payload = await (async () => {
-        try {
-          return await idVerifier.verify(token);
-        } catch {
-          throw new AppError("Couldn't verify token in middleware", 500);
-        }
-      })();
-
-      const userRole = (payload["custom:role"] ??
-        payload["cognito:groups"]) as Role;
-
-      if (!userRole) {
-        throw new AppError("Forbidden: Access Denied", 403);
-      }
-
-      if (!allowedRoles.includes(userRole)) {
-        throw new AppError("Forbidden: Insufficient privileges", 403);
-      }
-
-      if (!payload.sub) {
-        throw new AppError("Unauthorized: User Id missing from token", 401);
-      }
-
-      req.user = {
-        id: payload.sub,
-        role: userRole,
-      };
-
-      next();
-    } catch (error) {
-      console.error({ error });
-      const isServerError =
-        typeof error === "object" &&
-        error !== null &&
-        "statusCode" in error &&
-        "message" in error &&
-        error.statusCode === 500;
-
-      next(
-        new AppError(
-          isServerError
-            ? String(error?.message)
-            : "Unauthorized: Invalid or expired token",
-          isServerError ? 500 : 401,
-        ),
-      );
+      payload = await idVerifier.verify(token);
+    } catch {
+      throw new AppError('Could not verify token', 401);
     }
+
+    const userRole = (payload["custom:role"] ??
+      payload["cognito:groups"]) as Role;
+
+    if (!userRole) {
+      throw new AppError("Forbidden: Access Denied", 403);
+    }
+
+    if (!allowedRoles.includes(userRole)) {
+      throw new AppError("Forbidden: Insufficient privileges", 403);
+    }
+
+    if (!payload.sub) {
+      throw new AppError("Unauthorized: User Id missing from token", 401);
+    }
+
+    req.user = {
+      id: payload.sub,
+      role: userRole,
+    };
+
+    next();
   };
 }

@@ -16,7 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
-type PhoneInputProps = Omit<React.ComponentProps<'input'>, 'onChange' | 'value' | 'ref'> &
+export type PhoneInputProps = Omit<React.ComponentProps<'input'>, 'onChange' | 'value' | 'ref'> &
   Omit<RPNInput.Props<typeof RPNInput.default>, 'onChange'> & {
     onChange?: (value: RPNInput.Value) => void;
   };
@@ -69,8 +69,10 @@ const CountrySelect = ({
   options: countryList,
   onChange,
 }: CountrySelectProps) => {
+  const [open, setOpen] = React.useState(false);
+
   return (
-    <Popover>
+    <Popover modal open={open} onOpenChange={setOpen}>
       <PopoverTrigger type="button" disabled={disabled}>
         <div
           className={cn(
@@ -97,6 +99,7 @@ const CountrySelect = ({
                       country={value}
                       countryName={label}
                       selectedCountry={selectedCountry}
+                      onSelectComplete={() => setOpen(false)}
                       onChange={onChange}
                     />
                   ) : null,
@@ -112,6 +115,7 @@ const CountrySelect = ({
 
 interface CountrySelectOptionProps extends RPNInput.FlagProps {
   selectedCountry: RPNInput.Country;
+  onSelectComplete: () => void;
   onChange: (country: RPNInput.Country) => void;
 }
 
@@ -119,10 +123,15 @@ const CountrySelectOption = ({
   country,
   countryName,
   selectedCountry,
+  onSelectComplete,
   onChange,
 }: CountrySelectOptionProps) => {
+  const handleSelect = () => {
+    onChange(country);
+    onSelectComplete();
+  };
   return (
-    <CommandItem className="gap-2" onSelect={() => onChange(country)}>
+    <CommandItem className="gap-2" onSelect={handleSelect}>
       <FlagComponent country={country} countryName={countryName} />
       <span className="flex-1 text-sm">{countryName}</span>
       <span className="text-foreground/50 text-sm">{`+${RPNInput.getCountryCallingCode(country)}`}</span>

@@ -3,7 +3,6 @@
 import Switch, { CustomSwitchProps } from '@/components/ui/custom/Switch';
 import { useController } from 'react-hook-form';
 import { Field, FieldDescription, FieldLabel } from '../../ui/field';
-import { cn } from 'cn';
 
 interface SwitchFieldProps extends Omit<CustomSwitchProps, 'value' | 'onChange'> {
   name: string;

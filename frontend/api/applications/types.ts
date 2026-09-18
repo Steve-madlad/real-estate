@@ -12,6 +12,6 @@ export interface CreateApplicationBody {
   propertyId: number;
   name: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
   message?: string;
 }

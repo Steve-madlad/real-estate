@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import z from 'zod';
 import { Button } from '../ui/button';
 import InputField from './fields/InputField';
+import PhoneInputField from './fields/PhoneInputField';
 
 export default function ApplicationForm({
   propertyId,
@@ -29,7 +30,7 @@ export default function ApplicationForm({
     defaultValues: {
       name: user?.userInfo.name || '',
       email: user?.userInfo.email || '',
-      phoneNumber: user?.userInfo.phoneNumber || '',
+      phone: user?.userInfo.phoneNumber || '',
       message: '',
     },
   });
@@ -46,7 +47,7 @@ export default function ApplicationForm({
       <form className="space-y-3" onSubmit={applicationForm.handleSubmit(handleSubmit)}>
         <InputField name="name" label="Name" />
         <InputField name="email" type="email" label="Email" />
-        <InputField name="phoneNumber" label="Phone Number" />
+        <PhoneInputField name="phone" label="Phone Number" defaultCountry="US" />
         <InputField name="message" label="Message (optional)" type="textarea" />
 
         <Button className="mt-3 w-full py-2" type="submit" disabled={isPending}>

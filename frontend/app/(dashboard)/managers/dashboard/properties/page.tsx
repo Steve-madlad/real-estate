@@ -34,6 +34,7 @@ export default function Properties() {
               key={property.id}
               property={property}
               showFavoriteButton={false}
+              showListingLink={user?.userRole === 'manager'}
               propertyDetailLink={
                 user?.userRole === 'manager'
                   ? `/managers/dashboard/properties/${property.id}`

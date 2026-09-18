@@ -31,13 +31,13 @@ function isTextarea(props: Props): props is TextareaProps {
 }
 
 export default function InputField(props: Props) {
-  const fieldId = `${props.name}-field`;
   const { field, fieldState } = useController({
     name: props.name,
     defaultValue: props.defaultValue,
     disabled: props.disabled,
   });
   const [show, setShow] = useState(false);
+  const fieldId = `${props.name}-field`;
 
   return (
     <Field data-invalid={fieldState.invalid}>
