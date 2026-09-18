@@ -89,7 +89,7 @@ export const getApplicationsByProperty = catchAsync(
     const { id: userId, role } = req.user ?? {};
     const { propertyId } = req.params;
 
-    const parsed = PropertyIdSchema.safeParse({ propertyId});
+    const parsed = PropertyIdSchema.safeParse({ propertyId });
     handleValidationError<z.infer<typeof PropertyIdSchema>>(parsed);
     let whereClause: ApplicationWhereInput = {
       propertyId: parsed.data.propertyId,

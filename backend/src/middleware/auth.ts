@@ -29,7 +29,7 @@ export function authMiddleWare(allowedRoles: RoleList) {
     try {
       payload = await idVerifier.verify(token);
     } catch {
-      throw new AppError('Could not verify token', 401);
+      throw new AppError("Could not verify token", 401);
     }
 
     const userRole = (payload["custom:role"] ??
