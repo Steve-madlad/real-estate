@@ -264,13 +264,19 @@ export const createProperty = catchAsync(
       },
     });
 
-    const [longitude, latitude] =
-      geocodingResponse.data[0]?.lon && geocodingResponse.data[0]?.lat
-        ? [
-            parseFloat(geocodingResponse.data[0]?.lon),
-            parseFloat(geocodingResponse.data[0]?.lon),
-          ]
-        : [0, 0];
+    let longitude;
+    let latitude;
+    if (geocodingResponse.data[0]?.lon && geocodingResponse.data[0]?.lat)
+      [
+        (longitude = parseFloat(geocodingResponse.data[0]?.lon)),
+        (latitude = parseFloat(geocodingResponse.data[0]?.lat)),
+      ];
+    else {
+      return res.status(400).json({
+        success: false,
+        message: "Could not find the location for the provided address.",
+      });
+    }
 
     const [location] = await prisma.$queryRaw<Location[]>`
           INSERT INTO "Location" (address, city, state, country, "postalCode", coordinates)

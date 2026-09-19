@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
@@ -9,8 +10,11 @@ import { FilePond, registerPlugin, type FilePondProps } from 'react-filepond';
 import { useController } from 'react-hook-form';
 import { Field, FieldDescription, FieldError, FieldLabel } from '../../ui/field';
 
-registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
-
+registerPlugin(
+  FilePondPluginImageExifOrientation,
+  FilePondPluginImagePreview,
+  FilePondPluginFileValidateType,
+);
 interface FilePondFieldProps extends Omit<FilePondProps, 'files' | 'name' | 'onupdatefiles'> {
   name: string;
   label?: string;
@@ -42,7 +46,7 @@ export default function FilePondField({
         name={name}
         id={fieldId}
         files={files}
-        acceptedFileTypes={['images/*']}
+        acceptedFileTypes={['image/*']}
         allowMultiple={allowMultiple}
         className={cn(className, { 'filepond--error': fieldState.invalid })}
         labelIdle={'Drag & Drop your images or <span class="filepond--label-action">Browse</span>'}

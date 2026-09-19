@@ -61,7 +61,7 @@ export default function CreatePropertyForm() {
       city: '',
       state: '',
       country: '',
-      postalCode: undefined,
+      postalCode: '',
     },
   });
 

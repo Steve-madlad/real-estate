@@ -24,7 +24,7 @@ export default function Map() {
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current!,
-      style: 'mapbox://styles/steve-lad/cmtea6ly8004w01qtad8yfbsq',
+      style: 'mapbox://styles/steve-lad/cmu8bj3u4005c01qt7ul17f5q',
       center: filters.coordinates[0] ? [lat, lng] : [-74.5, 40],
       zoom: 9,
     });

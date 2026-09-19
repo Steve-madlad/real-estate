@@ -182,8 +182,20 @@ export const createApplication = catchAsync(
       select: { pricePerMonth: true, securityDeposit: true },
     });
 
+    
     if (!property) {
       throw new AppError("Property not found", 404);
+    }
+    
+    const exsitingApplication = await prisma.application.findFirst({
+      where: {
+        tenantCognitoId: userId,
+        propertyId,
+      },
+    });
+    
+    if (exsitingApplication) {
+      throw new AppError("You have already applied to this property", 409);
     }
 
     const newApplication = await prisma.$transaction(async (prisma) => {

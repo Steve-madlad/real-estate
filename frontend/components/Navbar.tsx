@@ -18,17 +18,21 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { SidebarTrigger } from './ui/sidebar';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function Navbar() {
   const { data: user } = useGetAuthUser();
   const router = useRouter();
   const pathname = usePathname();
 
+  const queryClient = useQueryClient();
+
   const isUserManager = user?.userRole === 'manager';
   const isDashboardRoute = pathname.startsWith('/managers') || pathname.startsWith('/tenants');
 
   const handlSignout = async () => {
     await signOut();
+    queryClient.clear();
     window.location.href = '/';
   };
 

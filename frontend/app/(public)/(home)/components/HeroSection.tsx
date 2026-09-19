@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useFiltersStore } from '@/store/filter-store';
 import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -12,12 +13,14 @@ import { toast } from 'sonner';
 export default function HeroSection() {
   const { filters, setFilters } = useFiltersStore();
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [locationLoading, setLocationLoading] = useState(false);
   const router = useRouter();
 
   const handleRouter = async () => {
     if (!searchQuery) return;
 
     try {
+      setLocationLoading(true);
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery.trim())}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&fuzzyMatch=true`,
       );
@@ -33,6 +36,8 @@ export default function HeroSection() {
     } catch (error) {
       console.error('Location search failed', error);
       toast.error('Location search failed');
+    } finally {
+      setLocationLoading(false);
     }
   };
 
@@ -80,9 +85,10 @@ export default function HeroSection() {
 
             <Button
               type="submit"
-              className="bg-secondary-500 hover:bg-secondary-600 h-12 rounded-none rounded-r-xl border-none text-white"
+              disabled={locationLoading}
+              className="bg-secondary-500 hover:bg-secondary-600 h-12 min-w-15 rounded-none rounded-r-xl border-none text-white"
             >
-              Search
+              {locationLoading ? <Loader2 className="animate-spin" /> : 'Search'}
             </Button>
           </form>
         </div>

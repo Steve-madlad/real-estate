@@ -5,7 +5,7 @@ import { useGetProperties } from '@/api/properties';
 import { useFavoriteProperty, useGetTenant, useUnfavoriteProperty } from '@/api/tenant';
 import { cn } from '@/lib/utils';
 import { useFiltersStore } from '@/store/filter-store';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import PropertyCard from './PropertyCard';
 import SigninPromptModal from './SigninPromptModal';
@@ -20,11 +20,7 @@ export default function Listings() {
   const { filters, viewMode } = useFiltersStore();
 
   const { data: user } = useGetAuthUser();
-  const { data: tenant, refetch } = useGetTenant({ enabled: false });
-
-  useEffect(() => {
-    if (user?.userRole === 'tenant') refetch();
-  }, [user?.userRole]);
+  const { data: tenant } = useGetTenant({ enabled: user?.userRole === 'tenant' });
 
   const params = Object.fromEntries(
     Object.entries(filters)
