@@ -29,7 +29,7 @@ app.use("/lease", authMiddleWare(["manager", "tenant"]), leaseRoutes);
 app.use("/applications", applicationRoutes);
 
 app.use(errorHandler);
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const port = Number(process.env.PORT) || 3000;
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server is running on port ${port}`);
 });
