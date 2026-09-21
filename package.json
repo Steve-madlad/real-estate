@@ -2,7 +2,6 @@
   "name": "root-workspace",
   "private": true,
   "scripts": {
-    "preinstall": "node -e \"if (process.env.INIT_CWD === __dirname) { console.error('\\n❌ Do not install packages in the root directory! Change into /frontend or /backend first.\\n'); process.exit(1); }\"",
-    "postinstall": "node -e \"const fs = require('fs'); if (fs.existsSync('node_modules')) fs.rmSync('node_modules', { recursive: true, force: true }); if (fs.existsSync('bun.lockb')) fs.rmSync('bun.lockb', { force: true }); if (fs.existsSync('bun.lock')) fs.rmSync('bun.lock', { force: true });\""
+    "preinstall": "node -e \"const fs = require('fs'); const path = require('path'); if (path.resolve(process.env.INIT_CWD || '') === process.cwd()) { if (fs.existsSync('package-lock.json')) fs.rmSync('package-lock.json', { force: true }); console.error('\\nDo not install packages in the root directory! Change into /frontend or /backend first.\\n'); process.exit(1); }\""
   }
 }
