@@ -1,5 +1,5 @@
 {
-  "name": "realestate-backend",
+  "name": "Real-Estate-Backend",
   "module": "index.ts",
   "type": "module",
   "private": true,

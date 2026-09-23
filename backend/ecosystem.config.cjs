@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "Real-Esatate-Backend",
+      name: "Real-Estate-Backend",
       script: "npm",
       args: "run dev",
       env: {
