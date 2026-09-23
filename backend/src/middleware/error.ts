@@ -18,7 +18,7 @@ export function errorHandler(
     success = err.success;
     errors = err.errors;
 
-    console.error("Throw ERROR:", err);
+    console.error("THROW ERROR:", err);
   } else {
     console.error("💥 UNHANDLED ERROR:", err);
 
