@@ -2,12 +2,16 @@
 
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { Prisma, PrismaClient } from "../prisma/generated/client";
 import { prisma } from "../src/lib/db";
+
+const seedDirectory = path.dirname(fileURLToPath(import.meta.url));
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
 
 function toPascalCase(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -75,7 +79,7 @@ async function deleteAllData(orderedFileNames: string[]) {
 }
 
 async function main() {
-  const dataDirectory = path.join(__dirname, "seedData");
+  const dataDirectory = path.join(seedDirectory, "seedData");
 
   const orderedFileNames = [
     "location.json", // No dependencies

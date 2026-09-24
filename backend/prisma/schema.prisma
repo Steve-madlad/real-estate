@@ -4,6 +4,11 @@ generator client {
   previewFeatures = ["postgresqlExtensions"]
 }
 
+generator frontendClient {
+  provider = "prisma-client"
+  output   = "../../frontend/prisma/generated/client"
+}
+
 datasource db {
   provider   = "postgresql"
   extensions = [postgis]

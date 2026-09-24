@@ -89,7 +89,7 @@ export default function Listings() {
     <div
       className={cn(
         'w-full',
-        !propertiesLoading && !properties?.data.length && 'flex-center h-full',
+        !propertiesLoading && !properties?.data.length && 'flex-center bg-accent h-full',
       )}
     >
       {properties && properties?.data.length > 0 && (

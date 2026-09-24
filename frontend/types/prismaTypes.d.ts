@@ -1,15 +1,6 @@
-import type { Location, Prisma } from '../../backend/prisma/generated/client';
+import type { Location, Prisma } from '@/prisma/generated/client/browser';
 
-export type {
-  Application,
-  Lease,
-  Location,
-  Manager,
-  Payment,
-  Prisma,
-  Property,
-  Tenant,
-} from '../../backend/prisma/generated/client';
+export type { Lease, Location, Manager, Payment, Tenant } from '@/prisma/generated/client/browser';
 
 export type PropertyWithLocation = Prisma.PropertyGetPayload<{
   include: {

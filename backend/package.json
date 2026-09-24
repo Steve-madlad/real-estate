@@ -9,6 +9,7 @@
     "dev": "tsx --env-file=.env ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write .",
+    "seed": "tsx --env-file=.env data/seed.ts",
     "prisma:gen": "prisma generate",
     "prisma:mgt": "prisma migrate dev",
     "prisma:mgt:dep": "prisma migrate deploy"

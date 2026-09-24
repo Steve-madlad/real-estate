@@ -20,7 +20,7 @@ export function Empty({ emptyTitle, emptyDescription, children }: EmptyProps) {
   return (
     <EmptyBase>
       <EmptyHeader>
-        <EmptyMedia variant="icon">
+        <EmptyMedia variant="icon" className="rounded-full bg-gray-600/40 p-5">
           <Building />
         </EmptyMedia>
         <EmptyTitle>{emptyTitle}</EmptyTitle>

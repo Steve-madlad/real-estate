@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "npm --prefix backend exec -- concurrently \"npm --prefix frontend run dev\" \"npm --prefix backend run dev\"",
+    "prisma:gen": "cd backend || exit 1; npm run prisma:gen",
     "preinstall": "node -e \"const fs = require('fs'); const path = require('path'); if (path.resolve(process.env.INIT_CWD || '') === process.cwd()) { if (fs.existsSync('package-lock.json')) fs.rmSync('package-lock.json', { force: true }); console.error('\\nDo not install packages in the root directory! Change into /frontend or /backend first.\\n'); process.exit(1); }\""
   }
 }
