@@ -12,7 +12,6 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-
 function toPascalCase(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
