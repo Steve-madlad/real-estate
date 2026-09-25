@@ -1,5 +1,4 @@
 import type { Location, Prisma } from '@/prisma/generated/client/browser';
-
 export type { Lease, Location, Manager, Payment, Tenant } from '@/prisma/generated/client/browser';
 
 export type PropertyWithLocation = Prisma.PropertyGetPayload<{
