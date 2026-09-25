@@ -1,13 +1,13 @@
+import { S3Client } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
 import { wktToGeoJSON } from "@terraformer/wkt";
-import type { Request, Response } from "express";
-import { Prisma, type Location } from "../../prisma/generated/client.js";
-import { prisma } from "../lib/db.js";
-import { catchAsync } from "../lib/utils.js";
-
-// import { S3Client } from "@aws-sdk/client-s3";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 import axios from "axios";
+import type { Request, Response } from "express";
+import { Prisma, type Location } from "../../prisma/generated/client.js";
 import { AppError } from "../lib/app-error.js";
+import { prisma } from "../lib/db.js";
+import { catchAsync } from "../lib/utils.js";
 
 export const getProperties = catchAsync(async (req: Request, res: Response) => {
   const {
@@ -211,14 +211,14 @@ export const getProperty = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// const s3Client = new S3Client({
-//   region: process.env.AWS_REGION,
-// });
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+});
 
 export const createProperty = catchAsync(
   async (req: Request, res: Response) => {
     const userId = req.user?.id;
-    // const files = req.files as Express.Multer.File[];
+    const files = req.files as Express.Multer.File[];
     const {
       address,
       city,
@@ -229,23 +229,23 @@ export const createProperty = catchAsync(
       ...propertyData
     } = req.body;
 
-    // const photoUrls = await Promise.all(
-    //   files.map(async (file) => {
-    //     const uploadParams = {
-    //       Bucket: process.env.S3_BUCKET_NAME,
-    //       Key: `properties/${Date.now()}-${file.originalname}`,
-    //       Body: file.buffer,
-    //       ContentType: file.mimetype,
-    //     };
+    const photoUrls = await Promise.all(
+      files.map(async (file) => {
+        const uploadParams = {
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: `properties/${Date.now()}-${file.originalname}`,
+          Body: file.buffer,
+          ContentType: file.mimetype,
+        };
 
-    //     const uploadResult = await new Upload({
-    //       client: s3Client,
-    //       params: uploadParams,
-    //     }).done();
+        const uploadResult = await new Upload({
+          client: s3Client,
+          params: uploadParams,
+        }).done();
 
-    //     return uploadResult.Location;
-    //   }),
-    // );
+        return uploadResult.Location;
+      }),
+    );
 
     const geocodingUrl = `https://nominatim.openstreetmap.org/search?${new URLSearchParams(
       {
@@ -287,7 +287,7 @@ export const createProperty = catchAsync(
     const newProperty = await prisma.property.create({
       data: {
         ...propertyData,
-        // photoUrls,
+        photoUrls,
         locationId: location?.id,
         managerCognitoId: userId,
         amenities: JSON.parse(propertyData.amenities),
