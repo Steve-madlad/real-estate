@@ -68,6 +68,7 @@ function FullCard({
             src={imgSrc}
             alt={property.name}
             fill
+            unoptimized
             sizes="(max-width: 768px) 100vh, (max-width: 1200px) 50vw, 33vw"
             onError={() => setImgSrc('/placeholder.jpg')}
           />
@@ -174,6 +175,7 @@ function CompactCard({
           src={imgSrc}
           alt={property.name}
           fill
+          unoptimized
           sizes="(max-width: 768px) 100vh, (max-width: 1200px) 50vw, 33vw"
           onError={() => setImgSrc('/placeholder.jpg')}
         />

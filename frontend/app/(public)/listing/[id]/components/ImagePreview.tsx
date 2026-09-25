@@ -27,7 +27,7 @@ export default function ImagePreview({ images }: ImagePreviewsProps) {
             alt={`Property Image ${index + 1}`}
             fill
             priority={index === 0}
-            // unoptimized
+            unoptimized
             className="cursor-pointer object-cover transition-transform duration-500 ease-in-out"
           />
         </div>
