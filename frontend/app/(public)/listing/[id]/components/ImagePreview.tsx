@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
@@ -28,6 +27,7 @@ export default function ImagePreview({ images }: ImagePreviewsProps) {
             alt={`Property Image ${index + 1}`}
             fill
             priority={index === 0}
+            // unoptimized
             className="cursor-pointer object-cover transition-transform duration-500 ease-in-out"
           />
         </div>

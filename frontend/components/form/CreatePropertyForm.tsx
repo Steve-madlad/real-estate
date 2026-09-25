@@ -79,7 +79,7 @@ export default function CreatePropertyForm() {
       if (typedKey === 'photoUrls') {
         const files = value as File[];
         files.forEach((file) => {
-          formData.append('photos', file);
+          formData.append('files', file);
         });
       } else if (Array.isArray(value)) {
         formData.append(key, JSON.stringify(value));

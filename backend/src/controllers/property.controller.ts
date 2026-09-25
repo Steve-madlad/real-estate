@@ -218,34 +218,10 @@ const s3Client = new S3Client({
 export const createProperty = catchAsync(
   async (req: Request, res: Response) => {
     const userId = req.user?.id;
-    const files = req.files as Express.Multer.File[];
-    const {
-      address,
-      city,
-      state,
-      country,
-      postalCode,
-      photos,
-      ...propertyData
-    } = req.body;
+    const { address, city, state, country, postalCode, ...propertyData } =
+      req.body;
+    const files = (req.files as Express.Multer.File[] | undefined) ?? [];
 
-    const photoUrls = await Promise.all(
-      files.map(async (file) => {
-        const uploadParams = {
-          Bucket: process.env.S3_BUCKET_NAME,
-          Key: `properties/${Date.now()}-${file.originalname}`,
-          Body: file.buffer,
-          ContentType: file.mimetype,
-        };
-
-        const uploadResult = await new Upload({
-          client: s3Client,
-          params: uploadParams,
-        }).done();
-
-        return uploadResult.Location;
-      }),
-    );
 
     const geocodingUrl = `https://nominatim.openstreetmap.org/search?${new URLSearchParams(
       {
@@ -278,6 +254,24 @@ export const createProperty = catchAsync(
       });
     }
 
+    const photoUrls = await Promise.all(
+      files.map(async (file) => {
+        const uploadParams = {
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: `properties/${Date.now()}-${file.originalname}`,
+          Body: file.buffer,
+          ContentType: file.mimetype,
+        };
+
+        const uploadResult = await new Upload({
+          client: s3Client,
+          params: uploadParams,
+        }).done();
+
+        return uploadResult.Location;
+      }),
+    );
+    
     const [location] = await prisma.$queryRaw<Location[]>`
           INSERT INTO "Location" (address, city, state, country, "postalCode", coordinates)
           VALUES (${address}, ${city}, ${state}, ${country}, ${postalCode}, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326))

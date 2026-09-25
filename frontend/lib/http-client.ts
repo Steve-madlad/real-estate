@@ -10,6 +10,10 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   async (config) => {
+    if (config.data instanceof FormData) {
+      config.headers?.delete('Content-Type');
+    }
+
     const session = await fetchAuthSession();
     const { idToken } = session.tokens ?? {};
     if (idToken) {

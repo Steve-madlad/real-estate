@@ -103,7 +103,9 @@ export default function Listing() {
 
   return (
     <div>
-      <ImagePreview images={['/singlelisting-2.jpg', '/singlelisting-3.jpg']} />
+      <ImagePreview
+        images={property.photoUrls || ['/singlelisting-2.jpg', '/singlelisting-3.jpg']}
+      />
       <div className="col just-center mx-10 my-10 gap-10 md:mx-auto md:w-2/3 md:flex-row!">
         <div className="order-2 flex-1 md:order-1">
           <div className="md:w-fit">
