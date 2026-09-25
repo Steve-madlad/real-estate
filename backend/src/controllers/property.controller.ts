@@ -222,7 +222,6 @@ export const createProperty = catchAsync(
       req.body;
     const files = (req.files as Express.Multer.File[] | undefined) ?? [];
 
-
     const geocodingUrl = `https://nominatim.openstreetmap.org/search?${new URLSearchParams(
       {
         street: address,
@@ -271,7 +270,7 @@ export const createProperty = catchAsync(
         return uploadResult.Location;
       }),
     );
-    
+
     const [location] = await prisma.$queryRaw<Location[]>`
           INSERT INTO "Location" (address, city, state, country, "postalCode", coordinates)
           VALUES (${address}, ${city}, ${state}, ${country}, ${postalCode}, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326))
