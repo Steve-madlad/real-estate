@@ -1,5 +1,4 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { wktToGeoJSON } from "@terraformer/wkt";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 import axios from "axios";
@@ -257,17 +256,14 @@ export const createProperty = catchAsync(
       files.map(async (file) => {
         const uploadParams = {
           Bucket: process.env.S3_BUCKET_NAME,
-          Key: `properties/${Date.now()}-${file.originalname}`,
+          Key: `properties/${Date.now()}-${Math.random().toString(36).substring(7)}-${file.originalname}`,
           Body: file.buffer,
           ContentType: file.mimetype,
         };
 
-        const uploadResult = await new Upload({
-          client: s3Client,
-          params: uploadParams,
-        }).done();
+        await s3Client.send(new PutObjectCommand(uploadParams));
 
-        return uploadResult.Location;
+        return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
       }),
     );
 
