@@ -221,6 +221,21 @@ export const createProperty = catchAsync(
       req.body;
     const files = (req.files as Express.Multer.File[] | undefined) ?? [];
 
+    console.log("[CreateProperty] Request received from user:", userId);
+    console.log("[CreateProperty] Number of files received by Multer:", files.length);
+
+    files.forEach((file, index) => {
+      console.log(`[CreateProperty] File #${index + 1}:`, {
+        fieldname: file.fieldname,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size,
+        bufferLength: file.buffer ? file.buffer.length : 0,
+        isBuffer: Buffer.isBuffer(file.buffer),
+        firstBytesHex: file.buffer ? file.buffer.subarray(0, 8).toString("hex") : "N/A",
+      });
+    });
+
     const geocodingUrl = `https://nominatim.openstreetmap.org/search?${new URLSearchParams(
       {
         street: address,
@@ -240,30 +255,39 @@ export const createProperty = catchAsync(
 
     let longitude;
     let latitude;
-    if (geocodingResponse.data[0]?.lon && geocodingResponse.data[0]?.lat)
-      [
-        (longitude = parseFloat(geocodingResponse.data[0]?.lon)),
-        (latitude = parseFloat(geocodingResponse.data[0]?.lat)),
-      ];
-    else {
+    if (geocodingResponse.data[0]?.lon && geocodingResponse.data[0]?.lat) {
+      longitude = parseFloat(geocodingResponse.data[0]?.lon);
+      latitude = parseFloat(geocodingResponse.data[0]?.lat);
+    } else {
       return res.status(400).json({
         success: false,
         message: "Could not find the location for the provided address.",
       });
     }
 
+    console.log("[CreateProperty] S3 Config:", {
+      Bucket: process.env.S3_BUCKET_NAME,
+      Region: process.env.AWS_REGION,
+    });
+
     const photoUrls = await Promise.all(
-      files.map(async (file) => {
+      files.map(async (file, index) => {
+        const key = `properties/${Date.now()}-${Math.random().toString(36).substring(7)}-${file.originalname}`;
         const uploadParams = {
           Bucket: process.env.S3_BUCKET_NAME,
-          Key: `properties/${Date.now()}-${Math.random().toString(36).substring(7)}-${file.originalname}`,
+          Key: key,
           Body: file.buffer,
           ContentType: file.mimetype,
         };
 
-        await s3Client.send(new PutObjectCommand(uploadParams));
+        console.log(`[CreateProperty] Uploading file #${index + 1} to S3 Key:`, key, `Body size:`, file.buffer?.length, `ContentType:`, file.mimetype);
 
-        return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+        const s3Response = await s3Client.send(new PutObjectCommand(uploadParams));
+        console.log(`[CreateProperty] S3 Upload response for #${index + 1}:`, s3Response.$metadata);
+
+        const url = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+        console.log(`[CreateProperty] Generated S3 URL:`, url);
+        return url;
       }),
     );
 
