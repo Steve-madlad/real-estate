@@ -222,7 +222,10 @@ export const createProperty = catchAsync(
     const files = (req.files as Express.Multer.File[] | undefined) ?? [];
 
     console.log("[CreateProperty] Request received from user:", userId);
-    console.log("[CreateProperty] Number of files received by Multer:", files.length);
+    console.log(
+      "[CreateProperty] Number of files received by Multer:",
+      files.length,
+    );
 
     files.forEach((file, index) => {
       console.log(`[CreateProperty] File #${index + 1}:`, {
@@ -232,7 +235,9 @@ export const createProperty = catchAsync(
         size: file.size,
         bufferLength: file.buffer ? file.buffer.length : 0,
         isBuffer: Buffer.isBuffer(file.buffer),
-        firstBytesHex: file.buffer ? file.buffer.subarray(0, 8).toString("hex") : "N/A",
+        firstBytesHex: file.buffer
+          ? file.buffer.subarray(0, 8).toString("hex")
+          : "N/A",
       });
     });
 
@@ -280,10 +285,22 @@ export const createProperty = catchAsync(
           ContentType: file.mimetype,
         };
 
-        console.log(`[CreateProperty] Uploading file #${index + 1} to S3 Key:`, key, `Body size:`, file.buffer?.length, `ContentType:`, file.mimetype);
+        console.log(
+          `[CreateProperty] Uploading file #${index + 1} to S3 Key:`,
+          key,
+          `Body size:`,
+          file.buffer?.length,
+          `ContentType:`,
+          file.mimetype,
+        );
 
-        const s3Response = await s3Client.send(new PutObjectCommand(uploadParams));
-        console.log(`[CreateProperty] S3 Upload response for #${index + 1}:`, s3Response.$metadata);
+        const s3Response = await s3Client.send(
+          new PutObjectCommand(uploadParams),
+        );
+        console.log(
+          `[CreateProperty] S3 Upload response for #${index + 1}:`,
+          s3Response.$metadata,
+        );
 
         const url = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
         console.log(`[CreateProperty] Generated S3 URL:`, url);
