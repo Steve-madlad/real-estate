@@ -33,7 +33,7 @@ const highlightOptions = Object.entries(HighlightEnum).map(([key, value]) => ({
 }));
 
 export default function CreatePropertyForm() {
-  const { data: property, mutate: createProperty, isPending: createLoading } = useCreateProperty();
+  const { mutate: createProperty, isPending: createLoading } = useCreateProperty();
   const { data: user } = useGetAuthUser();
 
   const propertyForm = useForm<

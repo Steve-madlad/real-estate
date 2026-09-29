@@ -9,7 +9,8 @@
     "dev": "tsx --env-file=.env --watch ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write .",
-    "seed": "tsx --env-file=.env data/seed.ts",
+    "seed": "tsx --env-file=.env src/data/seed.ts",
+    "properties:delete": "tsx --env-file=.env src/data/deleteProperties.ts",
     "prisma:gen": "prisma generate",
     "prisma:mgt": "prisma migrate dev",
     "prisma:mgt:dep": "prisma migrate deploy"
@@ -39,6 +40,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/mime-types": "^3.0.1",
     "@types/morgan": "^1.9.10",
     "@types/multer": "^2.2.0",
     "@types/node": "^26.1.1",
