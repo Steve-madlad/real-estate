@@ -2,7 +2,12 @@ import Navbar from '@/components/Navbar';
 import Siderbar from '@/components/Sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { NAVBAR_HEIGHT } from '@/lib/constants';
+import type { Metadata } from 'next';
 import DashboardGuard from './DashboardGuard';
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function layout({ children }: { children: React.ReactNode }) {
   return (

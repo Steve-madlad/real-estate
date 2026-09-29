@@ -6,6 +6,7 @@ import properties from "../data/seedData/property.json" with { type: "json" };
 import { S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 
+import { randomUUID } from "node:crypto";
 import type {
   Amenity,
   Highlight,
@@ -13,8 +14,6 @@ import type {
   PropertyType,
 } from "../../prisma/generated/client.js";
 import { prisma } from "../lib/db.js";
-import { uuid } from "zod";
-import { randomUUID } from "node:crypto";
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
@@ -54,11 +53,6 @@ async function main() {
   for (const property of properties) {
     console.log(`Creating property: ${property.name}`);
 
-    // Upload all property images
-    const photoUrls = await Promise.all(
-      property.photoUrls.map((image) => uploadImage(image)),
-    );
-
     const { address, city, state, country, postalCode, coordinates } =
       property.locationDetails;
 
@@ -76,6 +70,11 @@ async function main() {
         `Failed to create location for property: ${property.name}`,
       );
     }
+    
+    // Upload all property images
+    const photoUrls = await Promise.all(
+      property.photoUrls.map((image) => uploadImage(image)),
+    );
 
     // Remove fields that don't belong directly on Property
     const {
