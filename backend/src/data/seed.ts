@@ -6,7 +6,12 @@ import properties from "../data/seedData/property.json" with { type: "json" };
 import { S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 
-import type { Amenity, Highlight, Location, PropertyType } from "../../prisma/generated/client.js";
+import type {
+  Amenity,
+  Highlight,
+  Location,
+  PropertyType,
+} from "../../prisma/generated/client.js";
 import { prisma } from "../lib/db.js";
 import { uuid } from "zod";
 import { randomUUID } from "node:crypto";
@@ -73,7 +78,11 @@ async function main() {
     }
 
     // Remove fields that don't belong directly on Property
-    const { locationDetails: _locationDetails, id: _id, ...propertyData } = property;
+    const {
+      locationDetails: _locationDetails,
+      id: _id,
+      ...propertyData
+    } = property;
 
     await prisma.property.create({
       data: {
