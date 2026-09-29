@@ -70,7 +70,7 @@ async function main() {
         `Failed to create location for property: ${property.name}`,
       );
     }
-    
+
     // Upload all property images
     const photoUrls = await Promise.all(
       property.photoUrls.map((image) => uploadImage(image)),
