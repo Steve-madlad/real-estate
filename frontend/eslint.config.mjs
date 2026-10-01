@@ -9,8 +9,11 @@ const eslintConfig = defineConfig([
   // Override default ignores of eslint-config-next.
   {
     plugins: {
-      "unused-imports": unusedImports,
-    }
+      'unused-imports': unusedImports,
+    },
+    rules: {
+      'unused-imports/no-unused-imports': 'error',
+    },
   },
   globalIgnores([
     // Default ignores of eslint-config-next:
