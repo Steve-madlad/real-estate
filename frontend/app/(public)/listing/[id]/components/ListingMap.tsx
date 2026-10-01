@@ -12,73 +12,63 @@ mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
 export default function ListingMap({
   property,
+  className,
 }: {
   property?: PropertyWithLocationCoordinates | null;
+  className?: string;
 }) {
-  const mapContainerRef = useRef(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!property) return;
+    if (!property || !mapContainerRef.current) return;
 
     const map = new mapboxgl.Map({
-      container: mapContainerRef.current!,
+      container: mapContainerRef.current,
       style: 'mapbox://styles/steve-lad/cmtea6ly8004w01qtad8yfbsq',
       center: [property.location.coordinates.longitude, property.location.coordinates.latitude],
-      zoom: 9,
+      zoom: 12,
     });
+
+    // Add navigation controls (zoom in / zoom out)
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
 
     const marker = createPropertyMarker(property, map);
     const markerElement = marker.getElement();
     const path = markerElement.querySelector("path[fill='#3FB1CE']");
     if (path) path.setAttribute('fill', '#000000');
 
-    const resizeMap = () => {
-      if (map) setTimeout(() => map.resize(), 700);
-    };
-    resizeMap();
+    map.on('load', () => {
+      map.resize();
+    });
 
-    return () => map.remove();
+    const resizeTimer = setTimeout(() => {
+      map.resize();
+    }, 300);
+
+    const handleWindowResize = () => map.resize();
+    window.addEventListener('resize', handleWindowResize);
+
+    return () => {
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleWindowResize);
+      map.remove();
+    };
   }, [property]);
 
   if (!property) {
     return (
-      <div>
-        <h3 className="text-primary-800 dark:text-primary-100 mb-5 text-xl font-semibold">
-          Location
-        </h3>
-        <p className="text-primary-600 dark:text-primary-300 align-center mt-2 gap-3 text-sm">
-          <MapPin />
-          <span>Address unavailable</span>
-        </p>
-        <div className="mt-3 max-w-md rounded-xl border border-dashed border-gray-300 p-6 text-sm text-gray-500">
-          Map data is not available yet.
-        </div>
+      <div className="border-border bg-muted/30 text-muted-foreground flex h-72 w-full items-center justify-center rounded-2xl border border-dashed p-6 text-sm">
+        <MapPin className="text-muted-foreground mr-2 size-4" />
+        Map data is not available for this listing.
       </div>
     );
   }
 
   return (
-    <div className="mt-12">
-      <h3 className="text-primary-800 dark:text-primary-100 mb-5 text-xl font-semibold">
-        Location
-      </h3>
-      <div className="flex-between w-full sm:max-w-lg">
-        <span className="text-primary-600 dark:text-primary-300 align-center mt-2 gap-2 text-sm">
-          <MapPin size={16} />
-          <p>Address: {property.location.address ?? 'Address unavailable'}</p>
-        </span>
-        <a
-          href={`https://maps.google.com/?q=${property.location.address || ''}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary-600 dark:text-primary-300 align-center hover:text-primary-800 gap-2 text-sm hover:font-semibold hover:underline"
-        >
-          <Compass size={16} /> Get Directions
-        </a>
-      </div>
-
-      <div ref={mapContainerRef} className="mt-3 aspect-square w-full rounded-md sm:max-w-lg" />
-    </div>
+    <div
+      ref={mapContainerRef}
+      className={className || 'h-[360px] w-full overflow-hidden rounded-2xl sm:h-[420px]'}
+    />
   );
 }
 

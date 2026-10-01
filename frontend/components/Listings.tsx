@@ -5,11 +5,13 @@ import { useGetProperties } from '@/api/properties';
 import { useFavoriteProperty, useGetTenant, useUnfavoriteProperty } from '@/api/tenant';
 import { cn } from '@/lib/utils';
 import { useFiltersStore } from '@/store/filter-store';
+import { Sparkles, MapPin, SearchX } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import PropertyCard from './PropertyCard';
 import SigninPromptModal from './SigninPromptModal';
-import { Empty } from './ui/custom/Empty';
+import { Skeleton } from './ui/skeleton';
+import { Button } from './ui/button';
 
 export default function Listings() {
   const [likeLoadingProperty, setLikeLoadingProperty] = useState<number>();
@@ -17,7 +19,7 @@ export default function Listings() {
   const { mutate: unfavoriteProperty, isPending: unfavoriteLoading } = useUnfavoriteProperty({
     onSuccess: () => setLikeLoadingProperty(undefined),
   });
-  const { filters, viewMode } = useFiltersStore();
+  const { filters, viewMode, resetFilters } = useFiltersStore();
 
   const { data: user } = useGetAuthUser();
   const { data: tenant } = useGetTenant({ enabled: user?.userRole === 'tenant' });
@@ -49,22 +51,18 @@ export default function Listings() {
         return [[key, value]];
       })
       .filter(([_, v]) => {
-        return !(v == null || v == 'any' || (Array.isArray(v) && !v.length));
+        return !(v == null || v === 'any' || (Array.isArray(v) && !v.length));
       }),
   );
 
   const { data: properties, isLoading: propertiesLoading } = useGetProperties(params);
-
   const [promptModalOpen, setPromptModalOpen] = useState(false);
-  const onChange = (state: boolean) => {
-    setPromptModalOpen(state);
-  };
 
   const isFavorite = (propertyId: number) => {
     if (!user || !tenant?.data || user?.userRole === 'manager') {
       return false;
     }
-    return tenant.data.favorites.some((f) => f.id === propertyId);
+    return tenant.data.favorites?.some((f) => f.id === propertyId);
   };
 
   const handleFavoriteToggle = (propertyId: number) => {
@@ -86,50 +84,92 @@ export default function Listings() {
   };
 
   return (
-    <div
-      className={cn(
-        'w-full',
-        !propertiesLoading && !properties?.data.length && 'flex-center bg-accent h-full',
-      )}
-    >
-      {properties && properties?.data.length > 0 && (
-        <h3 className="flex gap-2 px-4 text-sm font-bold">
-          {properties?.data.length}
-          <span className="font-normal text-gray-700">Places in {filters.location}</span>
-        </h3>
-      )}
-      <div className="flex">
-        <div className="w-full p-4">
-          {propertiesLoading
-            ? [...Array(10)].map((_, i) => (
-                <div key={i} className="mb-5 h-88 animate-pulse rounded-xl bg-gray-200 shadow-sm" />
-              ))
-            : properties?.data.map((property) => (
-                <PropertyCard
-                  key={property.id}
-                  isFavorited={isFavorite(property.id)}
-                  property={property}
-                  onFavoriteToggle={handleFavoriteToggle}
-                  likeToggleLoading={
-                    likeLoadingProperty === property.id && (favoriteLoading || unfavoriteLoading)
-                  }
-                  showFavoriteButton={user?.userRole !== 'manager'}
-                  compactMode={viewMode === 'list'}
-                />
-              ))}
+    <div className="flex h-full w-full flex-col">
+      {/* Search Header counter */}
+      {!propertiesLoading && properties?.data !== undefined && (
+        <div className="border-border/60 flex items-center justify-between border-b px-3 py-2 text-xs">
+          <div className="text-foreground flex items-center gap-1.5 font-bold">
+            <span>{properties.data.length}</span>
+            <span className="text-muted-foreground font-normal">
+              {properties.data.length === 1 ? 'property' : 'properties'}{' '}
+              {filters.location ? `in ${filters.location}` : 'available'}
+            </span>
+          </div>
+          {filters.propertyType && filters.propertyType !== 'any' && (
+            <span className="bg-secondary/10 text-secondary rounded-full px-2.5 py-0.5 text-[10px] font-bold">
+              {filters.propertyType}
+            </span>
+          )}
         </div>
+      )}
+
+      {/* Listings Stream */}
+      <div className="flex-1 space-y-4 overflow-y-auto p-3">
+        {propertiesLoading ? (
+          <div
+            className={cn(
+              'grid gap-4',
+              viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1',
+            )}
+          >
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="border-border bg-card space-y-3 rounded-2xl border p-3">
+                <Skeleton className="aspect-[4/3] w-full rounded-xl" />
+                <div className="space-y-2 pt-1">
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : properties?.data && properties.data.length > 0 ? (
+          <div
+            className={cn(
+              'grid gap-4',
+              viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1',
+            )}
+          >
+            {properties.data.map((property) => (
+              <PropertyCard
+                key={property.id}
+                isFavorited={isFavorite(property.id)}
+                property={property}
+                onFavoriteToggle={handleFavoriteToggle}
+                likeToggleLoading={
+                  likeLoadingProperty === property.id && (favoriteLoading || unfavoriteLoading)
+                }
+                showFavoriteButton={user?.userRole !== 'manager'}
+                compactMode={viewMode === 'list'}
+              />
+            ))}
+          </div>
+        ) : (
+          /* Empty state */
+          <div className="border-border bg-card/50 flex flex-col items-center justify-center space-y-4 rounded-2xl border border-dashed px-4 py-16 text-center">
+            <div className="bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-2xl">
+              <SearchX className="size-6" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-foreground text-base font-bold">No matches found</h4>
+              <p className="text-muted-foreground max-w-xs text-xs">
+                Try widening your price range, clearing filters, or exploring a different
+                neighborhood.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => resetFilters()}
+              className="rounded-full text-xs"
+            >
+              Reset all filters
+            </Button>
+          </div>
+        )}
       </div>
 
-      {!propertiesLoading && !properties?.data.length && (
-        <Empty
-          emptyTitle={`No properties found`}
-          emptyDescription={`We couldn't find any properties in ${filters.location}`}
-        >
-          <p>Adjust filters or Look for properties in a new location</p>
-        </Empty>
-      )}
-
-      <SigninPromptModal open={promptModalOpen} onChange={onChange} />
+      <SigninPromptModal open={promptModalOpen} onOpenChange={setPromptModalOpen} />
     </div>
   );
 }

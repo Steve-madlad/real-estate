@@ -17,8 +17,19 @@ export interface FilterState {
 type ViewModes = 'grid' | 'list';
 export type FilterPartial = Partial<FilterState>;
 
-const bedAndBathValues = new Set(['any', '1', '2', '3']);
-const propertyTypeValues = new Set(['any', '1', '2', '3', '4', '5']);
+const bedAndBathValues = new Set(['any', '1', '2', '3', '4']);
+const propertyTypeValues = new Set([
+  'any',
+  'Apartment',
+  'Villa',
+  'Townhouse',
+  'Cottage',
+  'Rooms',
+  'Tinyhouse',
+  'Tiny House',
+  'Town House',
+  ...Object.values(AmenityEnum),
+]);
 const amenityValues = new Set(Object.values(AmenityEnum));
 
 const parseNumber = (value: string | null) => {

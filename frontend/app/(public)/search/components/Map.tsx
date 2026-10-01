@@ -36,29 +36,35 @@ export default function Map() {
       if (path) path.setAttribute('fill', '#000000');
     });
 
-    const resizeMap = () => {
-      if (map) setTimeout(() => map.resize(), 700);
-    };
-    resizeMap();
+    const resizeObserver = new ResizeObserver(() => {
+      if (map) {
+        map.resize();
+      }
+    });
 
-    return () => map.remove();
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
+    // Force an immediate and a slightly delayed resize on mount
+    map.resize();
+    const timer = setTimeout(() => map.resize(), 100);
+
+    return () => {
+      clearTimeout(timer);
+      resizeObserver.disconnect();
+      map.remove();
+    };
   }, [isLoading, error, properties, filters.coordinates]);
 
   if (error && !properties) toast.error('Failed to show listings. Please refresh the page.');
 
   return (
-    <div className="relative grow basis-5/12 rounded-xl">
+    <div className="relative h-full w-full overflow-hidden rounded-2xl">
       {isLoading ? (
-        <div className="size-full animate-pulse rounded-xl bg-gray-200"></div>
+        <div className="bg-muted size-full animate-pulse rounded-2xl" />
       ) : (
-        <div
-          className="map-container rounded-xl"
-          ref={mapContainerRef}
-          style={{
-            height: '100%',
-            width: '100%',
-          }}
-        />
+        <div className="map-container size-full rounded-2xl" ref={mapContainerRef} />
       )}
     </div>
   );

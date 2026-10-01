@@ -111,8 +111,8 @@ export const PropertyTypeIcons: Record<PropertyTypeEnum, LucideIcon | IconType> 
   Cottage: Trees,
 };
 
-// Add this constant at the end of the file
-export const NAVBAR_HEIGHT = 50; // in pixels
+// Standard navbar height in pixels
+export const NAVBAR_HEIGHT = 64;
 
 // Test users for development
 export const testUsers = {

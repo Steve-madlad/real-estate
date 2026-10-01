@@ -1,120 +1,152 @@
+'use client';
+
+import { ReactNode, useState } from 'react';
+import Image from 'next/image';
+import { Mail, MapPin, PhoneCall, Calendar, ShieldCheck, Clock } from 'lucide-react';
 import { UserRole } from '@/types';
 import { ApplicationWithRelations } from '@/types/prismaTypes';
-import { Mail, MapPin, PhoneCall } from 'lucide-react';
-import Image from 'next/image';
-import { ReactNode, useState } from 'react';
+import { Badge } from './ui/badge';
+import { Avatar, AvatarFallback } from './ui/avatar';
+import { cn } from '@/lib/utils';
 
 interface ApplicationCardProps {
   application: ApplicationWithRelations;
   userType: UserRole;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export default function ApplicationCard({ application, userType, children }: ApplicationCardProps) {
   const [imgSrc, setImgSrc] = useState<string>(
-    application.property.photoUrls[0] || '/placeholder.jpg',
+    application.property.photoUrls?.[0] || '/placeholder.jpg',
   );
 
-  const statusColor =
-    application.status === 'Approved'
-      ? 'bg-green-500'
-      : application.status === 'Denied'
-        ? 'bg-red-500'
-        : 'bg-yellow-500';
+  const contactPerson = userType === 'manager' ? application.tenant : application.manager;
 
-  const contactPerson = userType === 'manager' ? application.manager : application.tenant;
+  const statusVariant =
+    application.status === 'Approved'
+      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+      : application.status === 'Denied'
+        ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+        : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
 
   return (
-    <div className="mb-4 overflow-hidden rounded-xl border bg-white shadow-sm">
-      <div className="col-start justify-between gap-6 px-6 py-6 md:px-4 lg:flex-row lg:gap-4">
-        <div className="col-start w-full! gap-5 lg:flex-row">
-          <Image
-            className="w-full rounded-xl object-cover lg:h-45 2xl:w-100"
-            src={imgSrc}
-            alt={application.property.name}
-            width={200}
-            height={150}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            onError={() => setImgSrc('/placeholder.jpg')}
-          />
-          <div className="col-between">
+    <div className="border-border/80 bg-card text-card-foreground mb-5 overflow-hidden rounded-2xl border shadow-xs transition-all hover:shadow-md">
+      <div className="grid grid-cols-1 items-start gap-6 p-5 sm:p-6 lg:grid-cols-12">
+        {/* Left: Property Preview (5 cols) */}
+        <div className="flex flex-col gap-4 sm:flex-row lg:col-span-5">
+          <div className="bg-muted relative aspect-[4/3] shrink-0 overflow-hidden rounded-xl sm:w-44">
+            <Image
+              src={imgSrc}
+              alt={application.property.name}
+              fill
+              unoptimized
+              className="object-cover"
+              onError={() => setImgSrc('/placeholder.jpg')}
+            />
+          </div>
+
+          <div className="flex flex-col justify-between space-y-2">
             <div>
-              <h2 className="my-2 text-xl font-bold">{application.property.name}</h2>
-              <div className="align-center mb-2">
-                <MapPin className="mr-1 size-5"></MapPin>
-                <span>
+              <div className="text-muted-foreground flex items-center gap-1 text-xs">
+                <MapPin className="text-secondary size-3.5 shrink-0" />
+                <span className="truncate">
                   {application.property.location.city}, {application.property.location.country}
                 </span>
               </div>
+              <h3 className="text-foreground mt-1 text-base font-bold">
+                {application.property.name}
+              </h3>
             </div>
-            <div className="text-xl font-semibold">
-              ${application.property.pricePerMonth}
-              <span className="text-sm font-normal">/ month</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="border-primary-200 hidden h-px w-full border-[0.5px] lg:block" />
-
-        <div className="col-between w-full gap-3 py-2 lg:h-48 lg:basis-2/12 lg:gap-4">
-          <div>
-            <div className="flex-between">
-              <span className="text-gray-500">Status:</span>
-              <span className={`${statusColor} rounded-full px-2 py-1 text-sm text-white`}>
-                {application.status}
+            <div className="pt-2">
+              <span className="text-foreground text-base font-extrabold">
+                ${application.property.pricePerMonth.toLocaleString()}
               </span>
+              <span className="text-muted-foreground text-xs"> / month</span>
             </div>
-            <h4 className="mt-3"></h4>
-          </div>
-          <div className="just-between">
-            <span className="text-gray-500">Start Date:</span>
-            {application?.lease && new Date(application?.lease?.startDate).toLocaleDateString()}
-          </div>
-          <div className="just-between">
-            <span className="text-gray-500">End Date:</span>
-            {application?.lease && new Date(application?.lease?.endDate).toLocaleDateString()}
-          </div>
-          <div className="just-between">
-            <span className="text-gray-500">Next Payment:</span>
-            {application?.lease?.nextPaymentDate &&
-              new Date(application?.lease?.nextPaymentDate).toLocaleDateString()}
           </div>
         </div>
 
-        <div className="col just-start w-full gap-5 py-2 lg:h-48 lg:basis-3/12">
-          <div>
-            <div className="text-lg font-semibold">
-              {userType === 'manager' ? 'Manager' : 'Applicant'}
-            </div>
-            <hr className="mt-3" />
+        {/* Center: Lease / Application Status (4 cols) */}
+        <div className="bg-muted/40 border-border/60 space-y-2.5 rounded-xl border p-4 text-xs lg:col-span-4">
+          <div className="border-border/60 flex items-center justify-between border-b pb-2">
+            <span className="text-muted-foreground font-medium">Application Status</span>
+            <Badge
+              variant="outline"
+              className={cn(
+                'rounded-full border px-2.5 py-0.5 text-[11px] font-bold',
+                statusVariant,
+              )}
+            >
+              {application.status}
+            </Badge>
           </div>
-          <div className="flex gap-4">
-            <div>
-              <Image
-                className="mr-2 min-h-10 min-w-10 rounded-full"
-                src="/landing-i1.png"
-                alt={contactPerson.name}
-                width={40}
-                height={40}
-              />
+
+          {application.lease ? (
+            <>
+              <div className="text-muted-foreground flex items-center justify-between">
+                <span>Lease Start:</span>
+                <span className="text-foreground font-semibold">
+                  {new Date(application.lease.startDate).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="text-muted-foreground flex items-center justify-between">
+                <span>Lease End:</span>
+                <span className="text-foreground font-semibold">
+                  {new Date(application.lease.endDate).toLocaleDateString()}
+                </span>
+              </div>
+              {application.lease.nextPaymentDate && (
+                <div className="text-muted-foreground flex items-center justify-between">
+                  <span>Next Due:</span>
+                  <span className="text-foreground font-semibold">
+                    {new Date(application.lease.nextPaymentDate).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-muted-foreground flex items-center gap-2 py-1">
+              <Clock className="size-4 text-amber-500" />
+              <span>Under review by manager</span>
             </div>
-            <div className="col gap-2">
-              <div className="font-semibold">{contactPerson.name}</div>
-              <div className="align-center text-primary-600 text-sm">
-                <PhoneCall className="mr-2 size-5"></PhoneCall>
-                {contactPerson.phoneNumber || '+1 (515) 555-5555'}
+          )}
+        </div>
+
+        {/* Right: Contact Person (3 cols) */}
+        <div className="space-y-3 lg:col-span-3">
+          <span className="text-muted-foreground block text-xs font-bold tracking-wider uppercase">
+            {userType === 'manager' ? 'Applicant Details' : 'Property Manager'}
+          </span>
+
+          <div className="flex items-center gap-3">
+            <Avatar className="size-10">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
+                {contactPerson?.name ? contactPerson.name[0].toUpperCase() : 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="text-foreground truncate text-xs font-bold">{contactPerson?.name}</p>
+              <div className="text-muted-foreground mt-0.5 flex items-center gap-1.5 truncate text-[11px]">
+                <Mail className="size-3 shrink-0" />
+                <span className="truncate">{contactPerson?.email}</span>
               </div>
-              <div className="align-center text-primary-600 text-sm">
-                <Mail className="mr-2 size-5"></Mail>
-                {contactPerson.email}
-              </div>
+              {contactPerson?.phoneNumber && (
+                <div className="text-muted-foreground mt-0.5 flex items-center gap-1.5 truncate text-[11px]">
+                  <PhoneCall className="size-3 shrink-0" />
+                  <span>{contactPerson.phoneNumber}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <hr className="my-4" />
-      {children}
+      {children && (
+        <div className="bg-muted/20 border-border/60 flex items-center justify-end gap-2 border-t px-5 py-3.5">
+          {children}
+        </div>
+      )}
     </div>
   );
 }
