@@ -1,6 +1,5 @@
 'use client';
 
-import { toast } from 'sonner';
 import ApplicationForm from './form/ApplicationForm';
 import { Modal } from './ui/custom/Modal';
 
@@ -18,7 +17,6 @@ export default function ApplicationModal({
   description,
 }: ApplicationModalProps) {
   const onSuccess = () => {
-    toast.success('Your rental application has been submitted successfully!');
     onClose();
   };
 

@@ -2,8 +2,7 @@
 
 # 🏡 Rentiful — Modern Real Estate & Rental Management Platform
 
-<!-- INSERT SITE SCREENSHOT/HERO BANNER BELOW -->
-<!-- <p align="center"><img src="./docs/hero-preview.png" alt="Rentiful Platform Preview" width="100%" /></p> -->
+<p align="center"><img src="./frontend/public/rentiful-app-banner.webp" alt="Rentiful Platform Preview" width="100%" style="border-radius: 10px;" /></p>
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)

@@ -140,6 +140,10 @@
   --secondary-950: #4c0519;
 
   --royal-blue: #2563eb;
+  --toast-success-accent: #15803d;
+  --toast-error-accent: #b91c1c;
+  --toast-info-accent: #0369a1;
+  --toast-warning-accent: #b45309;
 }
 
 /* ==========================================================================
@@ -207,6 +211,10 @@
   --secondary-950: #451a03;
 
   --royal-blue: #b45309;
+  --toast-success-accent: #4d7c0f;
+  --toast-error-accent: #b91c1c;
+  --toast-info-accent: #0369a1;
+  --toast-warning-accent: #b45309;
 }
 
 /* ==========================================================================
@@ -274,6 +282,10 @@
   --secondary-950: #fff1f2;
 
   --royal-blue: #3b82f6;
+  --toast-success-accent: #4ade80;
+  --toast-error-accent: #f87171;
+  --toast-info-accent: #38bdf8;
+  --toast-warning-accent: #fbbf24;
 }
 
 @layer utilities {
@@ -733,6 +745,55 @@
   [data-close-button='true'] {
     @apply bg-background border-border text-foreground hover:bg-muted;
   }
+}
+
+html [data-sonner-toaster][data-sonner-theme='light'] {
+  --normal-bg: var(--popover);
+  --normal-text: var(--popover-foreground);
+  --normal-border: var(--border);
+  --normal-bg-hover: var(--muted);
+  --normal-border-hover: var(--border);
+  --border-radius: var(--radius);
+  --success-bg: color-mix(in srgb, var(--toast-success-accent) 10%, var(--card));
+  --success-border: color-mix(in srgb, var(--toast-success-accent) 38%, var(--border));
+  --success-text: var(--toast-success-accent);
+  --error-bg: color-mix(in srgb, var(--toast-error-accent) 9%, var(--card));
+  --error-border: color-mix(in srgb, var(--toast-error-accent) 38%, var(--border));
+  --error-text: var(--toast-error-accent);
+  --info-bg: color-mix(in srgb, var(--toast-info-accent) 9%, var(--card));
+  --info-border: color-mix(in srgb, var(--toast-info-accent) 38%, var(--border));
+  --info-text: var(--toast-info-accent);
+  --warning-bg: color-mix(in srgb, var(--toast-warning-accent) 10%, var(--card));
+  --warning-border: color-mix(in srgb, var(--toast-warning-accent) 40%, var(--border));
+  --warning-text: var(--toast-warning-accent);
+}
+
+html.dark [data-sonner-toaster][data-sonner-theme='dark'] {
+  --success-bg: color-mix(in srgb, var(--toast-success-accent) 18%, var(--card));
+  --success-border: color-mix(in srgb, var(--toast-success-accent) 48%, var(--border));
+  --success-text: var(--toast-success-accent);
+  --error-bg: color-mix(in srgb, var(--toast-error-accent) 18%, var(--card));
+  --error-border: color-mix(in srgb, var(--toast-error-accent) 48%, var(--border));
+  --error-text: var(--toast-error-accent);
+  --info-bg: color-mix(in srgb, var(--toast-info-accent) 18%, var(--card));
+  --info-border: color-mix(in srgb, var(--toast-info-accent) 48%, var(--border));
+  --info-text: var(--toast-info-accent);
+  --warning-bg: color-mix(in srgb, var(--toast-warning-accent) 18%, var(--card));
+  --warning-border: color-mix(in srgb, var(--toast-warning-accent) 48%, var(--border));
+  --warning-text: var(--toast-warning-accent);
+}
+
+.cn-toast {
+  font-family: var(--font-geist-sans), sans-serif !important;
+  box-shadow:
+    0 12px 32px rgb(15 23 42 / 14%),
+    0 2px 8px rgb(15 23 42 / 8%) !important;
+  backdrop-filter: blur(16px);
+}
+
+.cn-toast [data-description] {
+  color: inherit !important;
+  opacity: 0.82;
 }
 
 ::-webkit-scrollbar {

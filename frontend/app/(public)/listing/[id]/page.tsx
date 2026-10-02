@@ -16,25 +16,22 @@ import {
   ArrowRight,
   BadgeCheck,
   Building,
-  Calendar,
   CheckCircle2,
   Compass,
   Heart,
   HelpCircle,
-  Home,
   Info,
   Loader2,
   MapPin,
   PawPrint,
   Phone,
   Share2,
-  ShieldCheck,
   Sparkles,
   Star,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import ImagePreview from './components/ImagePreview';
 import ListingMap from './components/ListingMap';
@@ -292,7 +289,7 @@ export default function ListingPage() {
                       key={index}
                       className="border-border/70 bg-card text-foreground flex items-center gap-3 rounded-2xl border p-4 text-xs font-semibold"
                     >
-                      <div className="bg-primary/5 text-foreground flex size-8 shrink-0 items-center justify-center rounded-xl">
+                      <div className="bg-secondary/10 text-secondary flex size-8 shrink-0 items-center justify-center rounded-xl">
                         <Icon className="size-4" />
                       </div>
                       <span>{formatEnumString(highlight)}</span>
