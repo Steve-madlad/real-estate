@@ -29,7 +29,7 @@ export type PropertyFormData = z.infer<typeof propertySchema>;
 export const applicationSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.email('Invalid email address'),
-  phone: z.string().refine((value) => isValidPhoneNumber(value), {
+  phoneNumber: z.string().refine((value) => isValidPhoneNumber(value), {
     message: 'Enter a valid phone number',
   }),
   message: z.string().optional(),
@@ -40,7 +40,9 @@ export type ApplicationFormData = z.infer<typeof applicationSchema>;
 export const settingsSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.email('Invalid email address'),
-  phoneNumber: z.string().min(10, 'Phone number must be at least 10 digits'),
+  phoneNumber: z.string().refine((value) => isValidPhoneNumber(value), {
+    message: 'Enter a valid phone number',
+  }),
 });
 
 export type SettingsFormData = z.infer<typeof settingsSchema>;

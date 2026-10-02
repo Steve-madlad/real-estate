@@ -2,18 +2,18 @@
 
 import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { Building, FileText, Home, Menu, Settings, X } from 'lucide-react';
+import { Building, ChevronLeft, FileText, Heart, Home, Menu, Plus, Settings } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Sidebar as SidebarComponent,
   SidebarContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from './ui/sidebar';
+import { Button } from './ui/button';
 
 const navLinks = (userType: string) =>
   userType === 'manager'
@@ -23,14 +23,15 @@ const navLinks = (userType: string) =>
         { icon: Settings, label: 'Settings', href: '/managers/dashboard/settings' },
       ]
     : [
-        { icon: Building, label: 'Favorites', href: '/tenants/dashboard/favorites' },
+        { icon: Heart, label: 'Saved Favorites', href: '/tenants/dashboard/favorites' },
         { icon: FileText, label: 'Applications', href: '/tenants/dashboard/applications' },
-        { icon: Home, label: 'Residences', href: '/tenants/dashboard/residences' },
+        { icon: Home, label: 'My Residences', href: '/tenants/dashboard/residences' },
         { icon: Settings, label: 'Settings', href: '/tenants/dashboard/settings' },
       ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { toggleSidebar, open } = useSidebar();
 
   const userType = pathname.startsWith('/managers') ? 'manager' : 'tenant';
@@ -38,74 +39,85 @@ export default function Sidebar() {
   return (
     <SidebarComponent
       collapsible="icon"
-      className="fixed left-0 bg-white shadow-lg"
+      className="border-border/80 bg-card text-card-foreground fixed left-0 border-r shadow-xs transition-colors"
       style={{
         top: `${NAVBAR_HEIGHT}px`,
         height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
       }}
     >
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <div
-              className={cn('flex-center mb-3 min-h-14 w-full pt-3', {
-                'justify-between! px-6': open,
-              })}
+      <SidebarHeader className="border-border/60 border-b p-3">
+        <div
+          className={cn('flex w-full items-center', {
+            'justify-between px-2': open,
+            'justify-center': !open,
+          })}
+        >
+          {open ? (
+            <>
+              <div className="flex items-center gap-2">
+                <span className="bg-secondary size-2 rounded-full" />
+                <h2 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                  {userType === 'manager' ? 'Manager Portal' : 'Tenant Portal'}
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => toggleSidebar()}
+                className="text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer rounded-lg p-1.5 transition-colors"
+              >
+                <ChevronLeft className="size-4" />
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer rounded-lg p-1.5 transition-colors"
+              onClick={() => toggleSidebar()}
             >
-              {open ? (
-                <>
-                  <h1 className="text-xl font-bold text-gray-800">
-                    {userType === 'manager' ? 'Manager View' : 'Renter View'}
-                  </h1>
-                  <button
-                    onClick={() => toggleSidebar()}
-                    className="rounded-md p-2 hover:bg-gray-100"
-                  >
-                    <X className="size-6 text-gray-600"></X>
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    className="rounded-md p-2 hover:bg-gray-100"
-                    onClick={() => toggleSidebar()}
-                  >
-                    <Menu className="size-6 text-gray-600" />
-                  </button>
-                </>
-              )}
-            </div>
-          </SidebarMenuItem>
-        </SidebarMenu>
+              <Menu className="size-5" />
+            </button>
+          )}
+        </div>
       </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarMenu>
+      <SidebarContent className="space-y-1 p-2">
+        {open && userType === 'manager' && (
+          <div className="mb-2 p-2">
+            <Button
+              onClick={() => router.push('/managers/create-property')}
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground w-full cursor-pointer gap-2 rounded-xl text-xs font-bold shadow-xs"
+            >
+              <Plus className="size-4" />
+              <span>Add Property</span>
+            </Button>
+          </div>
+        )}
+
+        <SidebarMenu className="space-y-1">
           {navLinks(userType).map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = pathname.startsWith(link.href);
 
             return (
               <SidebarMenuItem key={link.href}>
-                <SidebarMenuButton
+                <Link
+                  href={link.href}
+                  scroll={false}
                   className={cn(
-                    'align-center px-7 py-7',
-                    isActive ? 'bg-gray-100' : 'text-gray-600 hover:bg-gray-100',
-                    open ? 'text-blue-600' : 'ml-1.25',
+                    'flex h-11 cursor-pointer items-center gap-3 rounded-xl px-3 transition-all duration-200',
+                    isActive
+                      ? 'bg-secondary/10 text-secondary font-bold shadow-xs'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground font-medium',
+                    !open && 'justify-center px-0',
                   )}
                 >
-                  <Link href={link.href} scroll={false} className="w-full">
-                    <div className="align-center gap-3">
-                      <link.icon
-                        className={cn('size-5', isActive ? 'text-blue-600' : 'text-gray-600')}
-                      ></link.icon>
-                      <span
-                        className={cn('font-medium', isActive ? 'text-blue-600' : 'text-gray-600')}
-                      >
-                        {link.label}
-                      </span>
-                    </div>
-                  </Link>
-                </SidebarMenuButton>
+                  <link.icon
+                    className={cn(
+                      'size-4.5 shrink-0 transition-colors',
+                      isActive ? 'text-secondary' : 'text-muted-foreground',
+                    )}
+                  />
+                  {open && <span className="text-xs tracking-tight">{link.label}</span>}
+                </Link>
               </SidebarMenuItem>
             );
           })}

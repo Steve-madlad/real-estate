@@ -30,7 +30,7 @@ export default function ApplicationForm({
     defaultValues: {
       name: user?.userInfo.name || '',
       email: user?.userInfo.email || '',
-      phone: user?.userInfo.phoneNumber || '',
+      phoneNumber: user?.userInfo.phoneNumber || '',
       message: '',
     },
   });
@@ -42,12 +42,13 @@ export default function ApplicationForm({
     };
     createApplication(body);
   };
+
   return (
     <FormProvider {...applicationForm}>
       <form className="space-y-3" onSubmit={applicationForm.handleSubmit(handleSubmit)}>
         <InputField name="name" label="Name" />
         <InputField name="email" type="email" label="Email" />
-        <PhoneInputField name="phone" label="Phone Number" defaultCountry="US" />
+        <PhoneInputField name="phoneNumber" label="Phone Number" defaultCountry="US" />
         <InputField name="message" label="Message (optional)" type="textarea" />
 
         <Button className="mt-3 w-full py-2" type="submit" disabled={isPending}>

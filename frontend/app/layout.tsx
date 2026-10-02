@@ -1,9 +1,8 @@
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 import './globals.css';
 import Providers from './providers';
-import { Toaster } from 'sonner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -18,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Find Your Next Rental Home',
+    default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
   description:
@@ -49,7 +48,7 @@ export const metadata: Metadata = {
     description:
       'Browse apartments and homes for rent. Find a property that fits your needs and explore rental listings.',
     url: SITE_URL,
-    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: SITE_NAME }],
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1600, height: 840, alt: SITE_NAME }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -59,9 +58,17 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
   },
   icons: {
-    icon: '/logo.svg',
-    shortcut: '/logo.svg',
+    icon: [
+      { url: '/favicon_io/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon_io/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon_io/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/favicon_io/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon_io/favicon.ico', sizes: 'any' },
+    ],
+    shortcut: '/favicon_io/favicon.ico',
+    apple: '/favicon_io/apple-touch-icon.png',
   },
+  manifest: '/favicon_io/site.webmanifest',
 };
 
 export default function RootLayout({
@@ -70,7 +77,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
       <body className="col min-h-full">
         <script
           type="application/ld+json"
@@ -84,7 +95,6 @@ export default function RootLayout({
           }}
         />
         <Providers>{children}</Providers>
-        <Toaster />
       </body>
     </html>
   );

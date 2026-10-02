@@ -98,6 +98,7 @@ export const getApplicationsByProperty = catchAsync(
     if (userId && role) {
       if (role === "tenant") {
         whereClause = {
+          ...whereClause,
           tenantCognitoId: String(userId),
         };
       } else if (role === "manager") {

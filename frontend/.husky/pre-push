@@ -1,2 +1,0 @@
-echo "building project to check for errors"
-bun run build || exit 1

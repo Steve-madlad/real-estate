@@ -1,12 +1,13 @@
+'use client';
+
+import { useState } from 'react';
+import { Search, X, RotateCcw, Check, Sparkles } from 'lucide-react';
 import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
 import { AmenityEnum, AmenityIcons, PropertyTypeIcons } from '@/lib/constants';
 import { cn, formatEnumString } from '@/lib/utils';
 import { FilterPartial, FilterState, initialFilters, useFiltersStore } from '@/store/filter-store';
-import { Search } from 'lucide-react';
-import { useState } from 'react';
 import { Button } from './ui/button';
 import { DatePickerInput } from './ui/custom/DatePicker';
-import { Select } from './ui/custom/Select';
 import { SliderRange } from './ui/custom/Slider';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -16,6 +17,7 @@ const bedOptions = [
   { label: '1+ bed', value: '1' },
   { label: '2+ beds', value: '2' },
   { label: '3+ beds', value: '3' },
+  { label: '4+ beds', value: '4' },
 ];
 
 const bathOptions = [
@@ -27,7 +29,7 @@ const bathOptions = [
 
 const propertyTypeOptions = Object.entries(PropertyTypeIcons).map(([type, Icon], index) => ({
   type,
-  value: index === 0 ? 'any' : String(index),
+  value: type,
   Icon,
 }));
 
@@ -44,7 +46,8 @@ export default function FiltersSidebar({
   onLocationSearch,
   initialFilterValues,
 }: FiltersSidebarProps) {
-  const { filters, setFilters, filtersSidebarOpen, resetFilters } = useFiltersStore();
+  const { filters, setFilters, filtersSidebarOpen, toggleFiltersSidebar, resetFilters } =
+    useFiltersStore();
   const [localFilters, setLocalFilters] = useState<FilterState>({
     ...filters,
     ...initialFilterValues,
@@ -75,6 +78,7 @@ export default function FiltersSidebar({
     resetFilters();
     onLocationInputChange(initialFilters.location);
     setLocalFilters({ ...initialFilters, availableFrom: new Date() });
+    updateUrl({});
   };
 
   const handleAmenityChange = (amenity: AmenityEnum) => {
@@ -89,57 +93,69 @@ export default function FiltersSidebar({
   if (!filtersSidebarOpen) return null;
 
   return (
-    <div>
-      <div className="h-full overflow-auto rounded-lg bg-white px-4 pb-10">
-        <div className="col space-y-6">
-          {/* Location */}
-          <div>
-            <h4 className="mb-2 font-bold">Location</h4>
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                onLocationSearch();
-              }}
-              className="align-center"
-            >
-              <Input
-                placeholder="Enter location"
-                value={locationInput}
-                onChange={(e) => onLocationInputChange(e.target.value)}
-                className="rounded-l-xl rounded-r-none border-r-0"
-              />
-              <Button
-                type="submit"
-                className="border-l-none rounded-l-none rounded-r-xl border-black shadow-none"
-              >
-                <Search className="size-4" />
-              </Button>
-            </form>
-          </div>
+    <div className="border-border/80 bg-card text-card-foreground h-full overflow-y-auto rounded-2xl border p-5 shadow-sm">
+      <div className="border-border/60 mb-4 flex items-center justify-between border-b pb-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="text-secondary size-4" />
+          <h3 className="text-foreground text-base font-bold tracking-tight">Detailed Filters</h3>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleFiltersSidebar}
+          className="text-muted-foreground hover:text-foreground size-8 rounded-full"
+        >
+          <X className="size-4" />
+          <span className="sr-only">Close filters</span>
+        </Button>
+      </div>
 
-          {/* Property Type */}
-          <div>
-            <h4 className="mb-2 font-bold">Property Type</h4>
-            <div className="grid grid-cols-2 gap-4">
-              {propertyTypeOptions.map(({ type, value, Icon }) => (
-                <div
+      <div className="space-y-6">
+        {/* Property Type Grid */}
+        <div>
+          <Label className="text-muted-foreground mb-2.5 block text-xs font-bold tracking-wider uppercase">
+            Property Type
+          </Label>
+          <div className="grid grid-cols-2 gap-2">
+            {propertyTypeOptions.map(({ type, value, Icon }) => {
+              const isSelected = localFilters.propertyType === value;
+              return (
+                <button
                   key={value}
-                  onClick={() => setLocalFilters((prev) => ({ ...prev, propertyType: value }))}
+                  type="button"
+                  onClick={() =>
+                    setLocalFilters((prev) => ({
+                      ...prev,
+                      propertyType: isSelected ? '' : value,
+                    }))
+                  }
                   className={cn(
-                    'col-full-center rounded-xl border p-4',
-                    localFilters.propertyType === value ? 'border-black' : 'border-gray-200',
+                    'flex cursor-pointer flex-col items-center justify-center rounded-xl border p-3 text-xs font-medium transition-all',
+                    isSelected
+                      ? 'border-secondary bg-secondary/10 text-secondary font-bold shadow-xs'
+                      : 'border-border/70 hover:border-border hover:bg-muted text-muted-foreground',
                   )}
                 >
-                  <Icon className="mb-2 size-6" />
+                  <Icon className="mb-1.5 size-5" />
                   <span>{type}</span>
-                </div>
-              ))}
-            </div>
+                </button>
+              );
+            })}
           </div>
+        </div>
 
-          {/* Price Range  */}
-          <div>
-            <h4 className="mb-2 font-bold">Price Range Monthly</h4>
+        {/* Price Range */}
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <Label className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+              Monthly Price
+            </Label>
+            <span className="text-foreground text-xs font-semibold">
+              ${localFilters.priceRange[0]?.toLocaleString() || '0'} – $
+              {localFilters.priceRange[1]?.toLocaleString() || '10,000+'}
+            </span>
+          </div>
+          <div className="px-1 pt-2">
             <SliderRange
               min={500}
               max={10000}
@@ -152,104 +168,117 @@ export default function FiltersSidebar({
                 }))
               }
             />
-            <div className="just-between mt-2">
-              <span>{localFilters.priceRange[0] ?? 0}</span>
-              <span>{localFilters.priceRange[1] ?? 10000}</span>
-            </div>
           </div>
+        </div>
 
-          {/* Beds & Baths */}
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <h4 className="mb-2 font-bold">Beds</h4>
-              <Select
-                value={localFilters.beds}
-                placeholder="Beds"
-                onChange={(val) => setLocalFilters((prev) => ({ ...prev, beds: val ?? prev.beds }))}
-                options={bedOptions}
-              />
-            </div>
-
-            <div className="flex-1">
-              <h4 className="mb-2 font-bold">Baths</h4>
-              <Select
-                value={localFilters.baths}
-                placeholder="Baths"
-                onChange={(val) =>
-                  setLocalFilters((prev) => ({ ...prev, baths: val ?? prev.baths }))
-                }
-                options={bathOptions}
-              />
-            </div>
-          </div>
-
-          {/* Square Feet  */}
+        {/* Beds & Baths selection */}
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <h4 className="mb-2 font-bold">Square Feet</h4>
-            <SliderRange
-              min={50}
-              max={10000}
-              step={100}
-              value={[localFilters.squareFeet[0] ?? 50, localFilters.squareFeet[1] ?? 10000]}
-              onChange={(value) =>
-                setLocalFilters((prev) => ({
-                  ...prev,
-                  squareFeet: value as [number, number],
-                }))
-              }
-            />
-            <div className="just-between mt-2">
-              <span>{localFilters.squareFeet[0] ?? 0}</span>
-              <span>{localFilters.squareFeet[1] ?? 5000}</span>
-            </div>
-          </div>
-
-          {/* Amenities  */}
-          <div>
-            <h4 className="font-bold-mb-2">Amenities</h4>
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(AmenityIcons).map(([amenity, Icon]) => (
-                <div
-                  key={amenity}
+            <Label className="text-muted-foreground mb-2 block text-xs font-bold tracking-wider uppercase">
+              Beds
+            </Label>
+            <div className="flex flex-col gap-1">
+              {bedOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() =>
+                    setLocalFilters((prev) => ({
+                      ...prev,
+                      beds: opt.value === 'any' ? '' : opt.value,
+                    }))
+                  }
                   className={cn(
-                    'align-center space-x-2 rounded-lg border p-2 hover:cursor-pointer',
-                    localFilters.amenities.includes(amenity as AmenityEnum)
-                      ? 'border-black'
-                      : 'border-gray-200',
+                    'flex cursor-pointer items-center justify-between rounded-lg border px-3 py-1.5 text-left text-xs font-medium transition-colors',
+                    (opt.value === 'any' && !localFilters.beds) || localFilters.beds === opt.value
+                      ? 'border-secondary bg-secondary/10 text-secondary font-bold'
+                      : 'border-border/60 hover:bg-muted text-muted-foreground',
                   )}
-                  onClick={() => handleAmenityChange(amenity as AmenityEnum)}
                 >
-                  <Icon className="size-5 hover:cursor-pointer"></Icon>
-                  <Label className="hover:cursor-pointer">{formatEnumString(amenity)}</Label>
-                </div>
+                  <span>{opt.label}</span>
+                  {((opt.value === 'any' && !localFilters.beds) ||
+                    localFilters.beds === opt.value) && <Check className="text-secondary size-3" />}
+                </button>
               ))}
             </div>
           </div>
 
-          {/* Available From */}
           <div>
-            <h4 className="mb-2 font-bold">Available From</h4>
-            <DatePickerInput
-              value={localFilters.availableFrom !== 'any' ? localFilters.availableFrom : null}
-              onChange={(value) =>
-                setLocalFilters((prev) => ({
-                  ...prev,
-                  availableFrom: value ? value : 'any',
-                }))
-              }
-              placeholder="Select a Date"
-            />
+            <Label className="text-muted-foreground mb-2 block text-xs font-bold tracking-wider uppercase">
+              Baths
+            </Label>
+            <div className="flex flex-col gap-1">
+              {bathOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() =>
+                    setLocalFilters((prev) => ({
+                      ...prev,
+                      baths: opt.value === 'any' ? '' : opt.value,
+                    }))
+                  }
+                  className={cn(
+                    'flex cursor-pointer items-center justify-between rounded-lg border px-3 py-1.5 text-left text-xs font-medium transition-colors',
+                    (opt.value === 'any' && !localFilters.baths) || localFilters.baths === opt.value
+                      ? 'border-secondary bg-secondary/10 text-secondary font-bold'
+                      : 'border-border/60 hover:bg-muted text-muted-foreground',
+                  )}
+                >
+                  <span>{opt.label}</span>
+                  {((opt.value === 'any' && !localFilters.baths) ||
+                    localFilters.baths === opt.value) && (
+                    <Check className="text-secondary size-3" />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
+        </div>
 
-          {/* Apply and Reset button */}
-          <div className="mt-6 flex gap-4">
-            <Button onClick={handleSubmit} className="bg-primary-700 flex-1 rounded-xl text-white">
-              Apply
-            </Button>
-            <Button onClick={handleReset} variant={'outline'} className="flex-1 rounded-xl">
-              Reset Filters
-            </Button>
+        {/* Amenities Selection */}
+        <div>
+          <Label className="text-muted-foreground mb-2.5 block text-xs font-bold tracking-wider uppercase">
+            Amenities & Features
+          </Label>
+          <div className="flex flex-wrap gap-1.5">
+            {Object.entries(AmenityIcons).map(([amenity, Icon]) => {
+              const isSelected = localFilters.amenities.includes(amenity as AmenityEnum);
+              return (
+                <button
+                  key={amenity}
+                  type="button"
+                  onClick={() => handleAmenityChange(amenity as AmenityEnum)}
+                  className={cn(
+                    'flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all',
+                    isSelected
+                      ? 'border-secondary bg-secondary/10 text-secondary font-semibold shadow-xs'
+                      : 'border-border/70 hover:border-border hover:bg-muted text-muted-foreground',
+                  )}
+                >
+                  <Icon className="size-3.5" />
+                  <span>{formatEnumString(amenity)}</span>
+                </button>
+              );
+            })}
           </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="border-border/60 flex items-center gap-2 border-t pt-4">
+          <Button
+            onClick={handleSubmit}
+            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground flex-1 cursor-pointer rounded-xl font-bold shadow-xs"
+          >
+            Apply Filters
+          </Button>
+          <Button
+            onClick={handleReset}
+            variant="outline"
+            className="border-border/80 text-muted-foreground hover:text-foreground cursor-pointer gap-1.5 rounded-xl text-xs"
+          >
+            <RotateCcw className="size-3.5" /> Reset
+          </Button>
         </div>
       </div>
     </div>

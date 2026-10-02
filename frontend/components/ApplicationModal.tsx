@@ -1,4 +1,5 @@
-import { toast } from 'sonner';
+'use client';
+
 import ApplicationForm from './form/ApplicationForm';
 import { Modal } from './ui/custom/Modal';
 
@@ -16,18 +17,18 @@ export default function ApplicationModal({
   description,
 }: ApplicationModalProps) {
   const onSuccess = () => {
-    toast.success('we in there fam');
     onClose();
   };
+
   return (
     <Modal
       open={isOpen}
       onOpenChange={(open) => !open && onClose()}
-      title="Apply for Property"
+      title="Rental Application"
       description={description}
-      className="p-6"
+      className="max-w-lg rounded-3xl p-6 sm:p-8"
     >
-      <ApplicationForm propertyId={propertyId} onSuccess={onClose} />
+      <ApplicationForm propertyId={propertyId} onSuccess={onSuccess} />
     </Modal>
   );
 }

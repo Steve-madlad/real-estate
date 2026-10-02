@@ -1,11 +1,34 @@
-import { cn } from '@/lib/utils';
-import { PropertyWithLocation } from '@/types/prismaTypes';
-import { BadgeCheck, Bath, Bed, ExternalLink, Heart, House, Star } from 'lucide-react';
+'use client';
+
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { motion } from 'framer-motion';
+import {
+  BadgeCheck,
+  Bath,
+  Bed,
+  ExternalLink,
+  Heart,
+  Home as HouseIcon,
+  Loader2,
+  MapPin,
+  PawPrint,
+  Sparkles,
+  Star,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { PropertyWithLocation } from '@/types/prismaTypes';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselDots,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from './ui/carousel';
 
 interface PropertyCardProps {
   property: PropertyWithLocation;
@@ -15,35 +38,16 @@ interface PropertyCardProps {
   likeToggleLoading?: boolean;
   onFavoriteToggle?: (propertyId: number) => void;
   propertyDetailLink?: string;
+  compactMode?: boolean;
 }
 
 const propertyLink = (id: number) => `/listing/${id}`;
 
-export default function PropertyCard({
-  compactMode,
-  ...props
-}: PropertyCardProps & { compactMode?: boolean }) {
-  const [imgSrc, setImgSrc] = useState<string>(props.property.photoUrls?.[0] || '/placehoder.jpg');
-
+export default function PropertyCard({ compactMode, ...props }: PropertyCardProps) {
   if (compactMode) {
-    return (
-      <CompactCard
-        {...props}
-        imgSrc={imgSrc}
-        setImgSrc={setImgSrc}
-        propertyDetailLink={props.propertyDetailLink}
-      />
-    );
-  } else {
-    return (
-      <FullCard
-        {...props}
-        imgSrc={imgSrc}
-        setImgSrc={setImgSrc}
-        propertyDetailLink={props.propertyDetailLink}
-      />
-    );
+    return <CompactCard {...props} />;
   }
+  return <FullCard {...props} />;
 }
 
 function FullCard({
@@ -53,105 +57,167 @@ function FullCard({
   showListingLink,
   likeToggleLoading,
   onFavoriteToggle,
-  imgSrc,
-  setImgSrc,
   propertyDetailLink,
-}: PropertyCardProps & { imgSrc: string; setImgSrc: (src: string) => void }) {
+}: PropertyCardProps) {
   const link = propertyDetailLink || propertyLink(property.id);
+  const photos =
+    property.photoUrls && property.photoUrls.length > 0 ? property.photoUrls : ['/placeholder.jpg'];
 
   return (
-    <div className="mb-5 w-full overflow-hidden rounded-xl shadow-xl">
-      <div className="group relative">
-        <div className="relative h-48 w-full overflow-hidden">
-          <Image
-            className="object-cover"
-            src={imgSrc}
-            alt={property.name}
-            fill
-            unoptimized
-            sizes="(max-width: 768px) 100vh, (max-width: 1200px) 50vw, 33vw"
-            onError={() => setImgSrc('/placeholder.jpg')}
-          />
-          {showListingLink && (
-            <Link
-              href={`/listing/${property.id}`}
-              target="_blank"
-              className="bg-background align-center absolute right-2 -bottom-10 gap-3 rounded-full px-2 text-black duration-150 ease-in group-hover:bottom-2"
-            >
-              Open Public Listing <ExternalLink size={14} />
-            </Link>
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="group border-border/70 bg-card text-card-foreground hover:border-border relative flex flex-col overflow-hidden rounded-2xl border shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+    >
+      {/* Photo Carousel Area */}
+      <div className="bg-muted relative aspect-[4/3] w-full overflow-hidden">
+        <Carousel className="size-full">
+          <CarouselContent className="size-full">
+            {photos.map((photo, index) => (
+              <CarouselItem key={index} className="relative size-full">
+                <Image
+                  src={photo}
+                  alt={`${property.name} - image ${index + 1}`}
+                  fill
+                  unoptimized
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/placeholder.jpg';
+                  }}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+
+          {photos.length > 1 && (
+            <>
+              <CarouselPrevious className="bg-background/80 text-foreground hover:bg-background left-2.5 size-7 rounded-full border-none shadow-md backdrop-blur-xs" />
+              <CarouselNext className="bg-background/80 text-foreground hover:bg-background right-2.5 size-7 rounded-full border-none shadow-md backdrop-blur-xs" />
+              <CarouselDots className="bottom-2.5" />
+            </>
           )}
-        </div>
-        <div className="mt-2 ml-2 flex gap-2">
+        </Carousel>
+
+        {/* Top Badges */}
+        <div className="pointer-events-none absolute top-3 left-3 z-10 flex flex-wrap gap-1.5">
           {property.isPetsAllowed && (
-            <Badge className="bg-primary text-white">
-              <BadgeCheck data-icon="inline-start" />
-              pets allowed
+            <Badge className="bg-background/85 text-foreground border-none px-2 py-0.5 text-[11px] font-semibold shadow-xs backdrop-blur-md">
+              <PawPrint className="text-secondary mr-1 size-3" /> Pets
             </Badge>
           )}
           {property.isParkingIncluded && (
-            <Badge className="bg-primary text-white">
-              <BadgeCheck data-icon="inline-start" /> parking included
+            <Badge className="bg-background/85 text-foreground border-none px-2 py-0.5 text-[11px] font-semibold shadow-xs backdrop-blur-md">
+              <BadgeCheck className="mr-1 size-3 text-emerald-500" /> Parking
             </Badge>
           )}
         </div>
 
+        {/* Favorite Heart Button */}
         {showFavoriteButton && onFavoriteToggle && (
-          <Button
-            className="hover:bg-white-90 cursor absolute top-3 right-3 size-7 rounded-full bg-white p-4 shadow-sm"
-            onClick={() => onFavoriteToggle(property.id)}
+          <motion.button
+            whileTap={{ scale: 0.82 }}
+            type="button"
+            aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+            className="bg-background/80 text-foreground hover:bg-background absolute top-3 right-3 z-10 flex size-9 cursor-pointer items-center justify-center rounded-full shadow-md backdrop-blur-md transition-all hover:scale-110"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onFavoriteToggle(property.id);
+            }}
             disabled={likeToggleLoading}
           >
-            <Heart
-              className={cn('size-5', isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-500')}
-            />
-          </Button>
+            {likeToggleLoading ? (
+              <Loader2 className="text-muted-foreground size-4 animate-spin" />
+            ) : (
+              <Heart
+                className={cn(
+                  'size-4.5 transition-colors',
+                  isFavorited
+                    ? 'fill-secondary text-secondary'
+                    : 'text-foreground/70 hover:text-foreground',
+                )}
+              />
+            )}
+          </motion.button>
         )}
 
-        <div className="p-4">
-          <h2 className="mb-1 text-xl font-bold">
-            {link ? (
-              <Link href={link} scroll={false} className="hover:text-blue-600 hover:underline">
-                {property.name}
-              </Link>
-            ) : (
-              property.name
-            )}
-          </h2>
-          <p className="mb-2 text-gray-600">
-            {property?.location?.address} {property?.location?.city}
-          </p>
-          <div className="flex-between">
-            <div className="align-center mb-2">
-              <Star className="mr-1 size-4 text-yellow-400" />
-              <span className="font-semibold">{property.averageRating?.toFixed(1)}</span>
-              <span className="font-semibold">({property.numberOfReviews} Reviews)</span>
+        {/* Public Listing Link overlay for manager preview */}
+        {showListingLink && (
+          <Link
+            href={`/listing/${property.id}`}
+            target="_blank"
+            className="bg-background/90 text-foreground hover:bg-background absolute right-3 bottom-3 z-10 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold opacity-0 shadow-md backdrop-blur-md transition-all duration-200 group-hover:opacity-100"
+          >
+            <span>Public View</span>
+            <ExternalLink className="text-secondary size-3" />
+          </Link>
+        )}
+      </div>
+
+      {/* Card Content & Details */}
+      <div className="flex flex-1 flex-col justify-between p-4.5">
+        <div>
+          {/* Location & Rating Header */}
+          <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs">
+            <span className="flex items-center gap-1 truncate font-medium">
+              <MapPin className="text-secondary size-3.5 shrink-0" />
+              <span className="truncate">
+                {property.location?.city || 'Location'}, {property.location?.state || ''}
+              </span>
+            </span>
+
+            <div className="text-foreground flex shrink-0 items-center gap-1 font-semibold">
+              <Star className="size-3.5 fill-amber-400 text-amber-400" />
+              <span>{property.averageRating?.toFixed(1) || '4.9'}</span>
+              <span className="text-muted-foreground text-[11px] font-normal">
+                ({property.numberOfReviews || 0})
+              </span>
             </div>
-            <p className="mb-3 text-lg font-bold">
-              ${property.pricePerMonth.toFixed(0)}
-              <span className="text-base font-normal text-gray-600">/month</span>
-            </p>
           </div>
 
-          <hr />
+          {/* Property Name */}
+          <h3 className="text-foreground mt-1.5 line-clamp-1 text-base font-bold tracking-tight">
+            <Link href={link} scroll={false} className="hover:text-secondary transition-colors">
+              {property.name}
+            </Link>
+          </h3>
 
-          <div className="flex-between mt-5 gap-4 text-gray-600">
-            <span className="align-center">
-              <Bed className="mr-2 size-5 -translate-y-0.5" />
-              {property.beds} Beds
+          <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
+            {property.location?.address || property.propertyType}
+          </p>
+        </div>
+
+        <div className="border-border/60 mt-3.5 space-y-2.5 border-t pt-3">
+          {/* Specs row */}
+          <div className="text-muted-foreground flex items-center gap-3 text-xs">
+            <span className="flex items-center gap-1">
+              <Bed className="text-foreground/70 size-3.5" />
+              <span className="text-foreground font-semibold">{property.beds}</span> bd
             </span>
-            <span className="align-center">
-              <Bath className="mr-2 size-5 -translate-y-0.5" />
-              {property.baths} Baths
+            <span className="flex items-center gap-1">
+              <Bath className="text-foreground/70 size-3.5" />
+              <span className="text-foreground font-semibold">{property.baths}</span> ba
             </span>
-            <span className="align-center">
-              <House className="mr-2 size-5 -translate-y-0.5" />
-              {property.squareFeet} sq ft
+            <span className="flex items-center gap-1">
+              <HouseIcon className="text-foreground/70 size-3.5" />
+              <span className="text-foreground font-semibold">
+                {property.squareFeet?.toLocaleString()}
+              </span>{' '}
+              sqft
             </span>
+          </div>
+          {/* Price */}
+          <div>
+            <span className="text-foreground text-lg font-black tracking-tight">
+              ${property.pricePerMonth.toLocaleString()}
+            </span>
+            <span className="text-muted-foreground text-xs font-normal"> /mo</span>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -161,94 +227,89 @@ function CompactCard({
   showFavoriteButton,
   likeToggleLoading,
   onFavoriteToggle,
-  imgSrc,
-  setImgSrc,
   propertyDetailLink,
-}: PropertyCardProps & { imgSrc: string; setImgSrc: (src: string) => void }) {
+}: PropertyCardProps) {
   const link = propertyDetailLink || propertyLink(property.id);
+  const photos =
+    property.photoUrls && property.photoUrls.length > 0 ? property.photoUrls : ['/placeholder.jpg'];
 
   return (
-    <div className="mb-5 flex h-40 w-full overflow-hidden rounded-xl shadow-xl">
-      <div className="relative w-1/3">
+    <div className="group border-border/70 bg-card text-card-foreground hover:border-border relative flex h-36 w-full overflow-hidden rounded-xl border shadow-xs transition-all duration-200 hover:shadow-md">
+      {/* Thumbnail */}
+      <div className="bg-muted relative w-40 shrink-0 overflow-hidden">
         <Image
-          className="object-cover"
-          src={imgSrc}
+          src={photos[0]}
           alt={property.name}
           fill
           unoptimized
-          sizes="(max-width: 768px) 100vh, (max-width: 1200px) 50vw, 33vw"
-          onError={() => setImgSrc('/placeholder.jpg')}
+          sizes="160px"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/placeholder.jpg';
+          }}
         />
-        <div className="col absolute bottom-2 left-2 gap-1">
-          {property.isPetsAllowed && (
-            <Badge className="bg-primary text-white">
-              <BadgeCheck data-icon="inline-start" />
-              pets
-            </Badge>
-          )}
-          {property.isParkingIncluded && (
-            <Badge className="bg-primary text-white">
-              <BadgeCheck data-icon="inline-start" /> parking
-            </Badge>
-          )}
-        </div>
 
         {showFavoriteButton && onFavoriteToggle && (
-          <Button
-            className="hover:bg-white-90 cursor absolute top-2 left-2 size-5 rounded-full bg-white p-4 shadow-sm"
-            onClick={() => onFavoriteToggle(property.id)}
+          <button
+            type="button"
+            aria-label={isFavorited ? 'Remove favorite' : 'Save favorite'}
+            className="bg-background/80 absolute top-2 left-2 z-10 flex size-7 cursor-pointer items-center justify-center rounded-full shadow-xs backdrop-blur-md transition-transform hover:scale-110"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onFavoriteToggle(property.id);
+            }}
             disabled={likeToggleLoading}
           >
-            <Heart
-              className={cn('size-4', isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-500')}
-            />
-          </Button>
+            {likeToggleLoading ? (
+              <Loader2 className="text-muted-foreground size-3.5 animate-spin" />
+            ) : (
+              <Heart
+                className={cn(
+                  'size-3.5',
+                  isFavorited ? 'fill-secondary text-secondary' : 'text-foreground/70',
+                )}
+              />
+            )}
+          </button>
         )}
       </div>
 
-      <div className="col-between w-2/3 p-4">
+      {/* Details */}
+      <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
         <div>
-          <div className="just-between items-start">
-            <h2 className="mb-1 text-xl font-bold">
-              {link ? (
-                <Link href={link} scroll={false} className="hover:text-blue-600 hover:underline">
-                  {property.name}
-                </Link>
-              ) : (
-                property.name
-              )}
-            </h2>
+          <div className="text-muted-foreground flex items-center justify-between gap-1 text-[11px]">
+            <span className="truncate">
+              {property.location?.city}, {property.location?.state}
+            </span>
+            <div className="text-foreground flex shrink-0 items-center gap-0.5 font-semibold">
+              <Star className="size-3 fill-amber-400 text-amber-400" />
+              <span>{property.averageRating?.toFixed(1) || '4.9'}</span>
+            </div>
           </div>
-          <p className="mb-2 text-sm text-gray-600">
-            {property?.location?.address} {property?.location?.city}
-          </p>
-          <div className="align-center text-sm">
-            <Star className="mr-1 size-3 text-yellow-400" />
-            <span className="font-semibold">{property.averageRating?.toFixed(1)}</span>
-            <span className="font-semibold">({property.numberOfReviews})</span>
-          </div>
+
+          <h4 className="text-foreground mt-1 line-clamp-1 text-sm font-bold tracking-tight">
+            <Link href={link} scroll={false} className="hover:text-secondary">
+              {property.name}
+            </Link>
+          </h4>
         </div>
 
-        <div className="flex-between text-sm">
-          <div className="flex gap-2 text-gray-600">
-            <span className="align-center">
-              <Bed className="mr-1 size-4 -translate-y-0.5" />
-              {property.beds}
-            </span>
-            <span className="align-center">
-              <Bath className="mr-1 size-4 -translate-y-0.5" />
-              {property.baths}
-            </span>
-            <span className="align-center">
-              <House className="mr-1 size-4 -translate-y-0.5" />
-              {property.squareFeet}
-            </span>
+        <div className="border-border/50 flex items-center justify-between gap-1.5 border-t pt-2">
+          <div className="text-muted-foreground flex min-w-0 items-center gap-1.5 truncate text-[11px]">
+            <span>{property.beds} bd</span>
+            <span className="text-muted-foreground/40">•</span>
+            <span>{property.baths} ba</span>
+            <span className="text-muted-foreground/40">•</span>
+            <span className="truncate">{property.squareFeet} sqft</span>
           </div>
 
-          <p className="text-base font-bold">
-            ${property.pricePerMonth.toFixed(0)}
-            <span className="text-xs font-normal text-gray-600">/mo</span>
-          </p>
+          <div className="shrink-0 text-right">
+            <span className="text-foreground text-sm font-extrabold">
+              ${property.pricePerMonth.toLocaleString()}
+            </span>
+            <span className="text-muted-foreground text-[10px]">/mo</span>
+          </div>
         </div>
       </div>
     </div>

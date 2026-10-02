@@ -1,5 +1,5 @@
 import Navbar from '@/components/Navbar';
-import Siderbar from '@/components/Sidebar';
+import Sidebar from '@/components/Sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { NAVBAR_HEIGHT } from '@/lib/constants';
 import type { Metadata } from 'next';
@@ -9,16 +9,18 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function layout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <DashboardGuard>
       <SidebarProvider>
-        <div className="bg-primary-100 min-h-screen w-full">
+        <div className="bg-muted/20 text-foreground flex min-h-screen w-full flex-col transition-colors">
           <Navbar />
-          <div style={{ paddingTop: `${NAVBAR_HEIGHT}px` }}>
-            <main className="flex">
-              <Siderbar />
-              <div className="duriation-300 grow p-7 transition-all">{children}</div>
+          <div style={{ paddingTop: `${NAVBAR_HEIGHT}px` }} className="flex w-full flex-1">
+            <main className="flex w-full flex-1">
+              <Sidebar />
+              <div className="mx-auto w-full max-w-7xl flex-1 p-4 transition-all duration-300 sm:p-6 lg:p-8">
+                {children}
+              </div>
             </main>
           </div>
         </div>

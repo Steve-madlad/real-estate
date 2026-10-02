@@ -1,6 +1,7 @@
-export const SITE_URL = 'https://main.dj10cqjnl6way.amplifyapp.com';
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_APP_URL || 'https://main.dj10cqjnl6way.amplifyapp.com';
 export const SITE_NAME = 'Rentiful Real Estate';
-export const DEFAULT_OG_IMAGE = '/og-image.png'; // TODO: Add a 1200x630 image at frontend/public/og-image.png.
+export const DEFAULT_OG_IMAGE = '/Rentiful-OG-image.png';
 
 export type SeoProperty = {
   id: number;
