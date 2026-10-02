@@ -77,7 +77,9 @@ const createPropertyMarker = (property: PropertyWithLocationCoordinates, map: ma
       new mapboxgl.Popup().setHTML(
         `
         <div class="marker-popup">
-          <div class="marker-popup-image"></div>
+          <div class="marker-popup-image">
+            <img style="width: 100%; height: 100%; object-fit: cover" src="${property.photoUrls[0]}" alt="${property.name}" />
+          </div>
           <div>
             <a href="/listing/${property.id}" target="_blank" class="marker-popup-title">${property.name}</a>
             <p class="marker-popup-price">

@@ -418,7 +418,7 @@
   }
 
   .marker-popup-image {
-    @apply bg-muted h-12 w-12 shrink-0 rounded-lg object-cover;
+    @apply bg-muted h-12 w-12 shrink-0 overflow-hidden rounded-md object-cover;
   }
 
   .marker-popup-price {
@@ -426,7 +426,7 @@
   }
 
   .marker-popup-title {
-    @apply hover:text-secondary-500 cursor-pointer font-medium;
+    @apply hover:text-secondary-500 cursor-pointer font-medium hover:underline;
     @apply focus:outline-none;
   }
 
