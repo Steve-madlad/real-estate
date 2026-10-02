@@ -6,12 +6,12 @@ import DiscoverSection from './components/DiscoverSection';
 import CallToActionSection from './components/CallToActionSection';
 
 export const metadata: Metadata = {
-  title: 'Find Your Next Rental Home | Rentiful',
+  title: { absolute: 'Rentiful | Find Your Next Rental Home' },
   description:
     'Discover and rent verified luxury apartments, modern townhouses, and stylish homes with seamless online applications.',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Find Your Next Rental Home | Rentiful',
+    title: 'Rentiful | Find Your Next Rental Home',
     description:
       'Discover and rent verified luxury apartments, modern townhouses, and stylish homes with seamless online applications.',
   },

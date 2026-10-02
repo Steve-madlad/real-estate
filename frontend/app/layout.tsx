@@ -1,6 +1,6 @@
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 import './globals.css';
 import Providers from './providers';
 
@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Find Your Next Rental Home',
+    default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
   description:
@@ -58,9 +58,17 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
   },
   icons: {
-    icon: '/logo.svg',
-    shortcut: '/logo.svg',
+    icon: [
+      { url: '/favicon_io/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon_io/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon_io/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/favicon_io/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon_io/favicon.ico', sizes: 'any' },
+    ],
+    shortcut: '/favicon_io/favicon.ico',
+    apple: '/favicon_io/apple-touch-icon.png',
   },
+  manifest: '/favicon_io/site.webmanifest',
 };
 
 export default function RootLayout({
