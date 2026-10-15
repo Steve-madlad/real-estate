@@ -9,8 +9,7 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc --noEmit",
-    "prepare": "husky"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.15.6",
@@ -60,7 +59,6 @@
     "@types/node": "^26.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/uuid": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "eslint-plugin-unused-imports": "^4.4.1",

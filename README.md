@@ -4,8 +4,8 @@
 
 <p align="center"><img src="./frontend/public/rentiful-app-banner.webp" alt="Rentiful Platform Preview" width="100%" style="border-radius: 10px;" /></p>
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.3-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
@@ -164,6 +164,88 @@ bun dev   # or npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 🐳 Containerized Setup
+
+The repository-root `compose.yaml` runs the frontend and backend as separate
+containers:
+
+- The frontend is exposed at `http://localhost:3000` and is built from
+  `frontend/Dockerfile.standalone`, using Next.js standalone output.
+- The backend is exposed at `http://localhost:3001` and is built from
+  `backend/Dockerfile`.
+- PostgreSQL is not included in Compose. Configure `DATABASE_URL` to point to a
+  database reachable by the backend container.
+
+### Requirements
+
+- Docker with Docker Compose and BuildKit support.
+- A configured `backend/.env` file with the backend's runtime environment
+  variables. Compose loads it into the backend container; the file is excluded
+  from the image build context.
+- `DATABASE_URL` set temporarily in the host shell before building. Prisma
+  needs a datasource URL to generate its client, but client generation does not
+  need to connect to the database. Use a dummy URL for this build-time value;
+  Compose passes it to the backend build as a BuildKit secret, so it is not
+  baked into the image. The backend still needs the actual database URL at
+  runtime in `backend/.env`.
+- Frontend build-argument values set in the host shell or `.env` file before building:
+  `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_COGNITO_USER_POOL_ID`,
+  `NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID`, `NEXT_PUBLIC_MAPBOX_TOKEN`, and
+  `NEXT_PUBLIC_APP_URL`. These are public client-side settings, not secrets.
+  See [frontend/README.Docker.md](./frontend/README.Docker.md) for shell examples.
+
+### Start the application
+
+From the repository root, set a temporary dummy `DATABASE_URL` in your shell
+and start Compose. For PowerShell:
+
+```powershell
+$env:DATABASE_URL = "postgresql://user:password@localhost:5432/dummy?schema=public"
+docker compose up --build
+```
+
+For bash, zsh, or a similar shell:
+
+```sh
+export DATABASE_URL='postgresql://user:password@localhost:5432/dummy?schema=public'
+docker compose up --build
+```
+
+These commands set the variable only for the current shell session. The dummy
+URL is used only during the image build for `prisma generate`; it is not a
+database credential and does not replace the real runtime URL in `backend/.env`.
+That file must contain a valid connection string for a database reachable by
+the backend container.
+
+The Compose configuration uses `depends_on` for startup order; it does not
+wait for the backend or database to become healthy. To stop the services, run
+`docker compose down`. For the configured rebuild-on-change watchers, run
+`docker compose watch`.
+
+Compose passes the frontend build arguments into the standalone image, where
+they are embedded into the client-side application. Rebuild the frontend image
+after changing them. Do not pass private credentials as build arguments. The
+API base URL must be reachable from the browser; for local Compose usage, use
+the published backend address `http://localhost:3001`.
+
+### Frontend image variants
+
+Two frontend Dockerfiles are provided:
+
+- `frontend/Dockerfile.standalone` packages Next.js standalone output and is
+  used by Compose. This matches the current `output: 'standalone'` setting in
+  `frontend/next.config.ts`.
+- `frontend/Dockerfile` packages the regular Next.js build with production
+  dependencies and starts it with `next start`. To use this variant, configure
+  Next.js for its regular (non-standalone) output before building.
+
+For image-specific build and run commands, see
+[frontend/README.Docker.md](./frontend/README.Docker.md). For backend image
+details and build-secret usage, see
+[backend/README.Docker.md](./backend/README.Docker.md).
 
 ---
 
