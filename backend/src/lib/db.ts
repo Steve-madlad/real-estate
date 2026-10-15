@@ -4,7 +4,7 @@ import fs from "fs";
 import { PrismaClient } from "../../prisma/generated/client.js";
 
 // Load AWS RDS Root Certificate
-const rdsCa = fs.readFileSync("/root/certs/global-bundle.pem").toString();
+const rdsCa = fs.readFileSync("/app/certs/global-bundle.pem").toString();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

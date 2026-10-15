@@ -10,6 +10,11 @@ RUN npm ci
 
 COPY . .
 
+RUN apk add --no-cache curl \
+    && mkdir -p /app/certs \
+    && curl -fsSL https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
+       -o /app/certs/global-bundle.pem \
+    && apk del curl
 RUN --mount=type=secret,id=DATABASE_URL,env=DATABASE_URL \
 npx prisma generate
 
