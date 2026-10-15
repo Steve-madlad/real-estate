@@ -11,6 +11,7 @@ services:
         NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID: ${NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID}
         NEXT_PUBLIC_MAPBOX_TOKEN: ${NEXT_PUBLIC_MAPBOX_TOKEN}
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+        NODE_VERSION: ${NODE_VERSION=22.23}
     environment:
       NODE_ENV: production
     ports:
@@ -35,6 +36,8 @@ services:
       dockerfile: Dockerfile
       secrets: 
         - DATABASE_URL
+      args:
+        NODE_VERSION: ${NODE_VERSION=22.23}
     env_file:
       - ./backend/.env
     environment:
