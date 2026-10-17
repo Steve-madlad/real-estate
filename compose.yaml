@@ -1,7 +1,22 @@
 services:
-  frontend-compose:
+  nginx:
+    image: nginx:alpine
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "4001:80"
     depends_on:
-      - backend-compose
+      - frontend
+      - backend
+    develop: 
+      watch: 
+        - path: ./nginx/nginx.conf
+          action: restart
+  frontend:
+    image: real-estate-frontend:latest
+    depends_on:
+      - backend
     build:
       context: ./frontend
       dockerfile: Dockerfile.standalone
@@ -11,11 +26,13 @@ services:
         NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID: ${NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID}
         NEXT_PUBLIC_MAPBOX_TOKEN: ${NEXT_PUBLIC_MAPBOX_TOKEN}
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
-        NODE_VERSION: ${NODE_VERSION=22.23}
+        NODE_VERSION: ${NODE_VERSION:-22.23}
     environment:
       NODE_ENV: production
-    ports:
-      - 3000:3000
+    # ports:
+    #   - "3000:3000"
+    expose: 
+     - "3000"
     develop: 
       watch: 
         - path: ./frontend
@@ -30,20 +47,23 @@ services:
         - path: ./frontend/Dockerfile
           action: rebuild
 
-  backend-compose:
+  backend:
+    image: real-estate-backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
       secrets: 
         - DATABASE_URL
       args:
-        NODE_VERSION: ${NODE_VERSION=22.23}
+        NODE_VERSION: ${NODE_VERSION:-22.23}
     env_file:
       - ./backend/.env
     environment:
       NODE_ENV: production
-    ports:  
-      - 3001:3001
+    # ports:
+    #   - "3001:3001"
+    expose: 
+     - "3001"
     develop: 
       watch: 
         - path: ./backend
@@ -60,37 +80,4 @@ services:
 secrets: 
   DATABASE_URL: 
     environment: DATABASE_URL
-
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts. The `db-password` secret is used
-# to set the database password. You must create `db/password.txt` and add
-# a password of your choosing to it before running `docker-compose up`.
-#     depends_on:
-#       db:
-#         condition: service_healthy
-#   db:
-#     image: postgres
-#     restart: always
-#     user: postgres
-#     secrets:
-#       - db-password
-#     volumes:
-#       - db-data:/var/lib/postgresql/data
-#     environment:
-#       - POSTGRES_DB=example
-#       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-#     expose:
-#       - 5432
-#     healthcheck:
-#       test: [ "CMD", "pg_isready" ]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
-# volumes:
-#   db-data:
-# secrets:
-#   db-password:
-#     file: db/password.txt
 

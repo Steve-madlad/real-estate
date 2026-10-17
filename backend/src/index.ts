@@ -18,15 +18,15 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(cors());
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("Hello, World!");
 });
 
-app.use("/property", propertyRoutes);
-app.use("/tenants", authMiddleWare(["tenant"]), tenantRoutes);
-app.use("/managers", authMiddleWare(["manager"]), managerRoutes);
-app.use("/lease", authMiddleWare(["manager", "tenant"]), leaseRoutes);
-app.use("/applications", applicationRoutes);
+app.use("/api/property", propertyRoutes);
+app.use("/api/tenants", authMiddleWare(["tenant"]), tenantRoutes);
+app.use("/api/managers", authMiddleWare(["manager"]), managerRoutes);
+app.use("/api/lease", authMiddleWare(["manager", "tenant"]), leaseRoutes);
+app.use("/api/applications", applicationRoutes);
 
 app.use(errorHandler);
 const port = Number(process.env.PORT) || 3000;
