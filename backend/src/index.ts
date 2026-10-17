@@ -22,6 +22,10 @@ app.get("/api", (req, res) => {
   res.send("Hello, World!");
 });
 
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Hey there, I'm healthy!" });
+});
+
 app.use("/api/property", propertyRoutes);
 app.use("/api/tenants", authMiddleWare(["tenant"]), tenantRoutes);
 app.use("/api/managers", authMiddleWare(["manager"]), managerRoutes);
