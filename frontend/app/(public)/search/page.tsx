@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { MapPin, Map as MapIcon, List, SlidersHorizontal } from 'lucide-react';
+import { Map as MapIcon, List } from 'lucide-react';
 import { LocationResponse, useGetLocation } from '@/api/properties';
 import FiltersBar from '@/components/FiltersBar';
 import FiltersSidebar from '@/components/FiltersSidebar';
@@ -67,7 +67,7 @@ function Search() {
     if (initialFilterValues.location) {
       searchLocation();
     }
-  }, [params, searchLocation, setFilters]);
+  }, [params, initialFilterValues, searchLocation, setFilters]);
 
   return (
     <div className="relative flex h-[calc(100vh-64px)] w-full flex-col overflow-hidden px-3 sm:px-6">

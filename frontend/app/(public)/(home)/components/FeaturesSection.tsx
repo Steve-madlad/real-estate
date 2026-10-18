@@ -1,16 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {
-  BadgeCheck,
-  CheckCircle2,
-  Compass,
-  FileText,
-  Key,
-  ShieldCheck,
-  Sparkles,
-  Zap,
-} from 'lucide-react';
+import { Compass, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import Link from 'next/link';
 
 export default function FeaturesSection() {

@@ -1,5 +1,5 @@
 import { PropertyWithLocationCoordinates } from '@/types/prismaTypes';
-import { Compass, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useEffect, useRef } from 'react';

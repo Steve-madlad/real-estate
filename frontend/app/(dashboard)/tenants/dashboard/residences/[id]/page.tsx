@@ -33,17 +33,11 @@ export default function UserResidence() {
   const { id } = useParams<{ id: string }>();
 
   const { data: user } = useGetAuthUser();
-  const { data: property, isLoading: propertyLoading } = useGetProperty(id);
-  const {
-    data: leases,
-    isLoading: leasesLoading,
-    refetch: refetchLeases,
-  } = useGetLeases({ enabled: false });
-  const {
-    data: leasePayments,
-    isLoading: leasePaymentssLoading,
-    refetch: refetchLeasePayments,
-  } = useGetLeasePayments(id, { enabled: false });
+  const { data: property } = useGetProperty(id);
+  const { data: leases, refetch: refetchLeases } = useGetLeases({ enabled: false });
+  const { data: leasePayments, refetch: refetchLeasePayments } = useGetLeasePayments(id, {
+    enabled: false,
+  });
 
   const currentLease = leases?.data?.find((lease) => lease.propertyId === property?.id);
 
@@ -52,7 +46,7 @@ export default function UserResidence() {
       refetchLeases();
       refetchLeasePayments();
     }
-  }, [user]);
+  }, [user, refetchLeases, refetchLeasePayments]);
 
   return (
     <div>

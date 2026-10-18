@@ -1,6 +1,5 @@
-import { ArrowUpRightIcon, Building } from 'lucide-react';
+import { Building } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import {
   Empty as EmptyBase,
   EmptyContent,

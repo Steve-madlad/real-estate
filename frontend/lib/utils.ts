@@ -21,7 +21,7 @@ export function formatEnumString(str: string) {
 export function cleanParams(params: Partial<FilterState>): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(params).filter(
-      ([_, value]) =>
+      ([, value]) =>
         value !== undefined &&
         value !== 'any' &&
         value !== '' &&

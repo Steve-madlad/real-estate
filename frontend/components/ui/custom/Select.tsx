@@ -110,7 +110,6 @@ function Combobox({
   invalid,
   className,
   emptyText,
-  showClear,
 }: MultipleSelectProps) {
   const anchor = useComboboxAnchor();
 

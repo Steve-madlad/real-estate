@@ -1,11 +1,8 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import Image from 'next/image';
 
 export default function Loading() {
-  const { theme } = useTheme();
   return (
     <div className="bg-background/80 fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-md">
       <div className="flex flex-col items-center gap-4">

@@ -1,18 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {
-  Building,
-  CheckCircle2,
-  Eye,
-  FileCheck,
-  Heart,
-  Home,
-  Key,
-  MapPin,
-  Search,
-  Sparkles,
-} from 'lucide-react';
+import { Building, FileCheck, Home, Key, Search, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 const steps = [

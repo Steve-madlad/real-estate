@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -14,13 +13,11 @@ import {
   Loader2,
   MapPin,
   PawPrint,
-  Sparkles,
   Star,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PropertyWithLocation } from '@/types/prismaTypes';
 import { Badge } from './ui/badge';
-import { Button } from './ui/button';
 import {
   Carousel,
   CarouselContent,

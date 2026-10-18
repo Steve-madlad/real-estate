@@ -6,7 +6,6 @@ import { useGetApplications } from '@/api/applications';
 import ApplicationCard from '@/components/ApplicationCard';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function TenantApplicationsPage() {
   const { data: applications, isLoading } = useGetApplications();

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Modal } from './ui/custom/Modal';
-import { Loader2, LogIn, Sparkles } from 'lucide-react';
+import { Loader2, LogIn } from 'lucide-react';
 
 export default function SigninPromptModal({
   open,
