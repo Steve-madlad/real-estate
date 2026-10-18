@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/http-client';
 import { getCurrentUser } from 'aws-amplify/auth';
-import { PropertiesResponse, PropertyResponse } from '../properties';
+import { PropertiesResponse } from '../properties';
 import { GetTenantResponse, PropertyFavoriteStatusResponse } from './types';
 
 const getTenant = async (): Promise<GetTenantResponse> => {

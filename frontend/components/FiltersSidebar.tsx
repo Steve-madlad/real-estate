@@ -1,15 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, X, RotateCcw, Check, Sparkles } from 'lucide-react';
+import { X, RotateCcw, Check, Sparkles } from 'lucide-react';
 import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
 import { AmenityEnum, AmenityIcons, PropertyTypeIcons } from '@/lib/constants';
 import { cn, formatEnumString } from '@/lib/utils';
 import { FilterPartial, FilterState, initialFilters, useFiltersStore } from '@/store/filter-store';
 import { Button } from './ui/button';
-import { DatePickerInput } from './ui/custom/DatePicker';
 import { SliderRange } from './ui/custom/Slider';
-import { Input } from './ui/input';
 import { Label } from './ui/label';
 
 const bedOptions = [
@@ -27,7 +25,7 @@ const bathOptions = [
   { label: '3+ baths', value: '3' },
 ];
 
-const propertyTypeOptions = Object.entries(PropertyTypeIcons).map(([type, Icon], index) => ({
+const propertyTypeOptions = Object.entries(PropertyTypeIcons).map(([type, Icon]) => ({
   type,
   value: type,
   Icon,

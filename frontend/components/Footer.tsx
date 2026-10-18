@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { AiFillInstagram, AiFillLinkedin, AiFillYoutube } from 'react-icons/ai';
 import { FaFacebook } from 'react-icons/fa6';
 import { GrTwitter } from 'react-icons/gr';
-import { ArrowRight, Globe, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 

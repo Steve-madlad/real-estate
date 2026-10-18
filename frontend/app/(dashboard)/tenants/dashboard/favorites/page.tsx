@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Heart, Search, Sparkles } from 'lucide-react';
+import { Heart, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { useGetAuthUser } from '@/api/auth';
 import { useGetProperties } from '@/api/properties';

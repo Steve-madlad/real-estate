@@ -1,11 +1,9 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
 export default function useMediaQuery(query: string, serverFallback: boolean): boolean {
-  const getMediaQueryList = () => matchMedia(query);
-
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
-      const mediaQueryList = getMediaQueryList();
+      const mediaQueryList = matchMedia(query);
 
       mediaQueryList.addEventListener('change', onStoreChange);
 
@@ -16,7 +14,7 @@ export default function useMediaQuery(query: string, serverFallback: boolean): b
     [query],
   );
 
-  const getSnapshot = () => getMediaQueryList().matches;
+  const getSnapshot = () => matchMedia(query).matches;
 
   return useSyncExternalStore(subscribe, getSnapshot, () => serverFallback);
 }

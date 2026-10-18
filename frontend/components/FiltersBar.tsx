@@ -2,19 +2,8 @@
 
 import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
 import { cn, k } from '@/lib/utils';
-import { FilterState, useFiltersStore } from '@/store/filter-store';
-import {
-  Building,
-  Grid,
-  Home,
-  List,
-  MapPin,
-  Search,
-  SlidersHorizontal,
-  Trees,
-  X,
-} from 'lucide-react';
-import { MdOutlineHouse } from 'react-icons/md';
+import { useFiltersStore } from '@/store/filter-store';
+import { Grid, List, MapPin, Search, SlidersHorizontal, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -48,12 +37,12 @@ const bedOptions = [
   { label: '4+ Beds', value: '4' },
 ];
 
-const bathOptions = [
-  { label: 'Any Baths', value: 'any' },
-  { label: '1+ Bath', value: '1' },
-  { label: '2+ Baths', value: '2' },
-  { label: '3+ Baths', value: '3' },
-];
+// const bathOptions = [
+//   { label: 'Any Baths', value: 'any' },
+//   { label: '1+ Bath', value: '1' },
+//   { label: '2+ Baths', value: '2' },
+//   { label: '3+ Baths', value: '3' },
+// ];
 
 const propertyTypeOptions = [
   { label: 'Any Type', value: 'any' },

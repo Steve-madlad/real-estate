@@ -6,7 +6,6 @@ import { signOut } from 'aws-amplify/auth';
 import {
   Bell,
   Building,
-  Heart,
   Home,
   LogOut,
   Menu,
@@ -15,8 +14,6 @@ import {
   Search,
   Settings,
   Sparkles,
-  User,
-  X,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';

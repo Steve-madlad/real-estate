@@ -4,17 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import {
-  Building2,
-  DollarSign,
-  Home,
-  Loader2,
-  MapPin,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  Users,
-} from 'lucide-react';
+import { Building2, Loader2, MapPin, Search, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

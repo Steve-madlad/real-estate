@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { Building, Plus, Sparkles, TrendingUp, Users } from 'lucide-react';
+import { Building, Plus, Sparkles, TrendingUp } from 'lucide-react';
 import { useGetAuthUser } from '@/api/auth';
 import { useGetManagerProperties } from '@/api/manager';
 import Header from '@/components/Header';

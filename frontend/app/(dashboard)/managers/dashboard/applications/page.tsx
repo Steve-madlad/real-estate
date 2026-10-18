@@ -2,13 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, Clock, Download, ExternalLink, FileText, Mail, XCircle } from 'lucide-react';
+import { CheckCircle2, Clock, Download, ExternalLink, FileText, XCircle } from 'lucide-react';
 import { ApplicationStatus, useGetApplications, useProcessApplications } from '@/api/applications';
 import ApplicationCard from '@/components/ApplicationCard';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const statuses = ['all', 'pending', 'approved', 'denied'] as const;
 

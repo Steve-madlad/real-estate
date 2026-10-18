@@ -17,19 +17,11 @@ export default function Properties() {
   const { id } = useParams<{ id: string }>();
 
   const { data: user } = useGetAuthUser();
-  const { data: property, isLoading: propertyLoading } = useGetProperty(id);
+  const { data: property } = useGetProperty(id);
 
-  const {
-    data: leases,
-    isLoading: leaseLoading,
-    refetch: refetchLeases,
-  } = useGetPropertyLeases(id, { enabled: false });
+  const { data: leases, refetch: refetchLeases } = useGetPropertyLeases(id, { enabled: false });
 
-  const {
-    data: payments,
-    isLoading: leasePaymentsLoading,
-    refetch: refetchPayments,
-  } = useGetLeasePayments(id, {
+  const { data: payments, refetch: refetchPayments } = useGetLeasePayments(id, {
     enabled: false,
   });
 
@@ -38,7 +30,7 @@ export default function Properties() {
       refetchPayments();
       refetchLeases();
     }
-  }, [user?.userRole]);
+  }, [user?.userRole, refetchLeases, refetchPayments]);
 
   const getCurrentMonthPaymentStatus = (leaseId: number) => {
     const today = new Date();

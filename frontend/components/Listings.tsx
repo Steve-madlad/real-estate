@@ -5,7 +5,7 @@ import { useGetProperties } from '@/api/properties';
 import { useFavoriteProperty, useGetTenant, useUnfavoriteProperty } from '@/api/tenant';
 import { cn } from '@/lib/utils';
 import { useFiltersStore } from '@/store/filter-store';
-import { Sparkles, MapPin, SearchX } from 'lucide-react';
+import { SearchX } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import PropertyCard from './PropertyCard';
@@ -50,7 +50,7 @@ export default function Listings() {
 
         return [[key, value]];
       })
-      .filter(([_, v]) => {
+      .filter(([, v]) => {
         return !(v == null || v === 'any' || (Array.isArray(v) && !v.length));
       }),
   );

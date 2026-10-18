@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import Image from 'next/image';
-import { Mail, MapPin, PhoneCall, Calendar, ShieldCheck, Clock } from 'lucide-react';
+import { Mail, MapPin, PhoneCall, Clock } from 'lucide-react';
 import { UserRole } from '@/types';
 import { ApplicationWithRelations } from '@/types/prismaTypes';
 import { Badge } from './ui/badge';

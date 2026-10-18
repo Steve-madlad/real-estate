@@ -6,21 +6,12 @@ import { UserRole } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import z from 'zod';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from '../ui/field';
-import { PhoneInput } from '../ui/phone-input';
+import { FieldDescription, FieldGroup, FieldLegend, FieldSet } from '../ui/field';
 import InputField from './fields/InputField';
 import PhoneInputField from './fields/PhoneInputField';
 
