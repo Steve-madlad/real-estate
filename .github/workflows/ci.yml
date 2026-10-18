@@ -26,6 +26,8 @@ jobs:
       - name: Generate Prisma clients
         working-directory: backend
         run: npx prisma generate
+        env: 
+          DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
 
       - name: Install frontend dependencies
         working-directory: frontend
