@@ -155,7 +155,6 @@ NEXT_PUBLIC_API_BASE_URL="http://localhost:8000"
 NEXT_PUBLIC_MAPBOX_TOKEN="your_mapbox_public_token"
 NEXT_PUBLIC_COGNITO_USER_POOL_ID="your-user-pool-id"
 NEXT_PUBLIC_COGNITO_CLIENT_ID="your-client-id"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 Start the frontend development server:
@@ -194,7 +193,6 @@ containers:
 - Frontend build-argument values set in the host shell or `.env` file before building:
   `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_COGNITO_USER_POOL_ID`,
   `NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID`, `NEXT_PUBLIC_MAPBOX_TOKEN`, and
-  `NEXT_PUBLIC_APP_URL`. These are public client-side settings, not secrets.
   See [frontend/README.Docker.md](./frontend/README.Docker.md) for shell examples.
 
 ### Start the application

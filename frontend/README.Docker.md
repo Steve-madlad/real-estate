@@ -35,7 +35,6 @@ arguments, which `compose.yaml` reads from the host environment:
 - `NEXT_PUBLIC_COGNITO_USER_POOL_ID`
 - `NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID`
 - `NEXT_PUBLIC_MAPBOX_TOKEN`
-- `NEXT_PUBLIC_APP_URL`
 
 Set all five in your shell or `.env` file before running Compose. For PowerShell:
 
@@ -44,7 +43,6 @@ $env:NEXT_PUBLIC_API_BASE_URL = "http://localhost:3001"
 $env:NEXT_PUBLIC_COGNITO_USER_POOL_ID = "your-user-pool-id"
 $env:NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID = "your-user-pool-client-id"
 $env:NEXT_PUBLIC_MAPBOX_TOKEN = "your-public-mapbox-token"
-$env:NEXT_PUBLIC_APP_URL = "http://localhost:3000"
 docker compose up --build
 ```
 
@@ -80,7 +78,6 @@ docker build \
   --build-arg NEXT_PUBLIC_COGNITO_USER_POOL_ID="$NEXT_PUBLIC_COGNITO_USER_POOL_ID" \
   --build-arg NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID="$NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID" \
   --build-arg NEXT_PUBLIC_MAPBOX_TOKEN="$NEXT_PUBLIC_MAPBOX_TOKEN" \
-  --build-arg NEXT_PUBLIC_APP_URL="$NEXT_PUBLIC_APP_URL" \
   -f frontend/Dockerfile.standalone \
   -t real-estate-frontend:standalone ./frontend
 docker run --rm -p 3000:3000 real-estate-frontend:standalone
