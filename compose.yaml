@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx:alpine
+    image: ganerino69/nginx:alpine
     build:
       context: ./nginx
       dockerfile: Dockerfile
@@ -16,7 +16,7 @@ services:
           action: restart
 
   frontend:
-    image: real-estate-frontend:latest
+    image: ganerino69/real-estate-frontend:${IMAGE_TAG:-latest}
     depends_on:
       - backend
     # Uncomment when building the image locally so we don't get warnings from Docker about missing variables
@@ -67,7 +67,7 @@ services:
           action: rebuild
 
   backend:
-    image: real-estate-backend:latest
+    image: ganerino69/real-estate-backend:${IMAGE_TAG:-latest}
     # Uncomment when building the image locally so we don't get warnings from Docker about missing variables
     # build:
     #   context: ./backend

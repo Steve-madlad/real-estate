@@ -103,3 +103,40 @@ jobs:
             DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
           cache-from: type=gha
           cache-to: type=gha,mode=max
+  deploy:
+    needs: [validate, publish]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency: production
+
+    steps:
+      - name: Configure ssh
+        env:
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+      
+      - name: Copy Compose file to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          scp -i ~/.ssh/deploy_key \
+          compose.yaml \
+          "$EC2_USER@$EC2_HOST:/home/deploy/real-estate/compose.yaml"
+          
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "$EC2_USER@$EC2_HOST" \
+          "cd /home/deploy/real-estate &&
+          sudo env IMAGE_TAG=$IMAGE_TAG docker compose pull && 
+          sudo env IMAGE_TAG=$IMAGE_TAG docker compose up -d"
