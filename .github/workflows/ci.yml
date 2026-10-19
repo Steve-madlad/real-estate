@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   validate:
@@ -47,7 +48,8 @@ jobs:
         env:
           NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ vars.NEXT_PUBLIC_COGNITO_USER_POOL_ID }}
           NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID: ${{ vars.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID }}
-
+          NEXT_PUBLIC_MAPBOX_TOKEN: ${{ vars.NEXT_PUBLIC_MAPBOX_TOKEN }}
+          
       - name: Build backend
         working-directory: backend
         run: npm run build
