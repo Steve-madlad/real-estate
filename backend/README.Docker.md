@@ -1,69 +1,31 @@
-# Backend Docker setup
+﻿# Backend Docker setup
 
-The backend image is built from `backend/Dockerfile` with `backend` as its build
-context. It compiles the TypeScript application, generates the Prisma client,
-and runs the production server on port `3001`.
+`backend/Dockerfile` generates Prisma clients, compiles the API, and creates a production image listening on port `3001`. Prisma generation writes both the backend client and generated frontend model/types from `backend/prisma/schema.prisma`.
 
-## Requirements
+## Build requirements
 
-- Docker with BuildKit enabled (the Dockerfile uses a BuildKit secret mount).
-- A `backend/.env` file containing the backend's runtime environment variables.
-  Compose reads this file on the host; it is not copied into the image.
-- A temporary dummy `DATABASE_URL` set in the host environment when building.
-  Prisma needs a datasource URL to generate its client, but generation does not
-  connect to the database. Compose passes this value to the build as a BuildKit
-  secret; it is not baked into the image. The actual runtime connection string
-  belongs in `backend/.env`.
+Docker BuildKit is required. During the build, Prisma needs a datasource URL to generate the client, so the Dockerfile reads a `DATABASE_URL` BuildKit secret. A dummy PostgreSQL URL is sufficient because generation does not connect to the database. The production runtime still needs its real database URL and other environment configuration.
 
-## Run with Docker Compose
-
-From the repository root, set a temporary dummy `DATABASE_URL` in your shell.
-For PowerShell:
+From the repository root, in PowerShell:
 
 ```powershell
 $env:DATABASE_URL = "postgresql://user:password@localhost:5432/dummy?schema=public"
-docker compose up --build
+docker build --secret id=DATABASE_URL,env=DATABASE_URL -t real-estate-backend:latest ./backend
 ```
 
-For bash, zsh, or a similar shell:
+After changing the Prisma schema, regenerate from `backend/` with `npm run prisma:gen`; include the generated frontend client changes as well.
+
+## Compose and runtime
+
+Compose expects `real-estate-backend:${IMAGE_TAG:-latest}` to exist; the backend build block in root `compose.yaml` is commented out. CI/CD builds and publishes the application images. When building locally through Compose, enable the backend build block, set the dummy build `DATABASE_URL` in the host environment, and use BuildKit.
+
+Compose reads runtime settings from `backend/.env`. Set a real `DATABASE_URL` there that the container can reach. Compose does not start PostgreSQL. The backend listens on `3001`, available to other Compose services at `http://backend:3001`; it is not published to the host by default. Browser API requests go through Nginx at `http://localhost/api` in local deployments.
+
+For a standalone container, publish port `3001` and supply runtime configuration with an environment file. Ensure `PORT=3001` is set in that file because the application otherwise defaults to port `3000`:
 
 ```sh
-export DATABASE_URL='postgresql://user:password@localhost:5432/dummy?schema=public'
-docker compose up --build
+docker run --rm --env-file backend/.env -p 3001:3001 real-estate-backend:latest
 ```
 
-The temporary value is only used by `prisma generate` during the image build;
-it is not a real credential and is not used to connect to a database. Compose
-passes it as a BuildKit secret. For runtime, the backend reads the actual
-connection string from `backend/.env`. The Compose setup does not start a
-database, so configure a database reachable from the backend container there.
+See the [root README](../README.md) for the full Compose topology and the [backend guide](README.md) for local development and migration commands.
 
-To stop the services, run `docker compose down`. To use Compose's configured
-file watchers while developing, run `docker compose watch`.
-
-## Build and run the backend separately
-
-From the repository root, set the temporary dummy `DATABASE_URL` in the host
-environment, then build the image. For example, in PowerShell:
-
-```powershell
-$env:DATABASE_URL = "postgresql://user:password@localhost:5432/dummy?schema=public"
-docker build --secret id=DATABASE_URL,env=DATABASE_URL -t real-estate-backend ./backend
-```
-
-In bash, zsh, or a similar shell, set
-`export DATABASE_URL='postgresql://user:password@localhost:5432/dummy?schema=public'`
-before running the `docker build` command.
-
-Run it with the backend environment file:
-
-```sh
-docker run --rm --env-file backend/.env -p 3001:3001 real-estate-backend
-```
-
-## Ports and service connection
-
-The backend listens on port `3001`. In Compose, the frontend and backend are
-separate services. Browser requests to the frontend use the API URL configured
-at frontend build time; backend-to-backend container requests should use the
-Compose service hostname `backend-compose` and port `3001`, not `localhost`.
