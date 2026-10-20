@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+﻿# Frontend
 
-## Getting Started
+Rentiful's Next.js App Router client. The app uses Next.js standalone output and serves on port `3000`.
 
-First, run the development server:
+## Local development
 
-```bash
+From `frontend/`, install dependencies, configure `.env.local`, then start Next.js:
+
+```sh
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The `NEXT_PUBLIC_*` settings are public values bundled into the application during `next build`. Configure `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_COGNITO_USER_POOL_ID`, `NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID`, and `NEXT_PUBLIC_MAPBOX_TOKEN`. For a local browser, the API base URL is typically `http://localhost:3001/api`. These values must be supplied for production image builds too; changing them requires a new build. Never put private credentials in `NEXT_PUBLIC_*` values or Docker build arguments.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The app's public production URL is defined by `appPublicUrl` in [`lib/constants.ts`](lib/constants.ts); update that constant when the canonical URL changes.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Prisma generated types
 
-## Learn More
+The frontend imports Prisma generated model types from `prisma/generated/client`. That client is generated from the backend schema by running `npm run prisma:gen` in `backend/`. When the schema changes, regenerate both clients and keep the generated frontend files synchronized with the schema.
 
-To learn more about Next.js, take a look at the following resources:
+## Docker
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`Dockerfile.standalone` is the image used for Compose deployments. It builds the Next.js standalone output and requires the four public build values above. The alternate `Dockerfile` packages a regular Next.js production build; use it only when its output mode and start command match the Next.js config. See [README.Docker.md](README.Docker.md) for image build commands and [the root README](../README.md) for deployment topology.
