@@ -287,7 +287,7 @@ export default function Auth({ children }: { children: React.ReactNode }) {
           sizes="100vw"
           className="scale-105 object-cover object-center opacity-60 transition-transform duration-1000 ease-out dark:opacity-40"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/75 to-black/60 dark:from-black/95 dark:via-black/85 dark:to-black/80" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/90 via-black/75 to-black/60 dark:from-black/95 dark:via-black/85 dark:to-black/80" />
       </div>
 
       {/* Main Container */}
@@ -370,7 +370,7 @@ export default function Auth({ children }: { children: React.ReactNode }) {
           <div className="my-auto w-full max-w-xl space-y-6 py-8 text-center">
             <h1 className="text-3xl leading-tight font-black tracking-tight text-white xl:text-4xl 2xl:text-5xl">
               Discover, Lease & Manage <br />
-              <span className="bg-gradient-to-r from-rose-400 via-amber-300 to-rose-400 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-rose-400 via-amber-300 to-rose-400 bg-clip-text text-transparent">
                 Verified Homes Seamlessly
               </span>
             </h1>

@@ -17,7 +17,7 @@ export default function CallToActionSection() {
           sizes="100vw"
           className="object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/95 via-zinc-950/85 to-zinc-950/90" />
+        <div className="absolute inset-0 bg-linear-to-r from-zinc-950/95 via-zinc-950/85 to-zinc-950/90" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
