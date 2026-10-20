@@ -28,4 +28,3 @@ docker run --rm --env-file backend/.env -p 3001:3001 real-estate-backend:latest
 ```
 
 See the [root README](../README.md) for the full Compose topology and the [backend guide](README.md) for local development and migration commands.
-
