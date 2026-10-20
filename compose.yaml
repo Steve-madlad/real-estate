@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: gangerino/nginx:alpine
+    image: gangerino69/nginx:alpine
     build:
       context: ./nginx
       dockerfile: Dockerfile
@@ -16,19 +16,19 @@ services:
           action: restart
 
   frontend:
-    image: gangerino/real-estate-frontend:${IMAGE_TAG:-latest}
+    image: gangerino69/real-estate-frontend:${IMAGE_TAG:-latest}
     depends_on:
       - backend
     # Uncomment when building the image locally so we don't get warnings from Docker about missing variables
-    # build:
-    #   context: ./frontend
-    #   dockerfile: Dockerfile.standalone
-    #   args:
-    #     NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
-    #     NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${NEXT_PUBLIC_COGNITO_USER_POOL_ID}
-    #     NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID: ${NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID}
-    #     NEXT_PUBLIC_MAPBOX_TOKEN: ${NEXT_PUBLIC_MAPBOX_TOKEN}
-    #     NODE_VERSION: ${NODE_VERSION:-22.23}
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.standalone
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+        NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${NEXT_PUBLIC_COGNITO_USER_POOL_ID}
+        NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID: ${NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID}
+        NEXT_PUBLIC_MAPBOX_TOKEN: ${NEXT_PUBLIC_MAPBOX_TOKEN}
+        NODE_VERSION: ${NODE_VERSION:-22.23}
     environment:
       HOSTNAME: "0.0.0.0"
       NODE_ENV: production
@@ -67,15 +67,15 @@ services:
           action: rebuild
 
   backend:
-    image: gangerino/real-estate-backend:${IMAGE_TAG:-latest}
+    image: gangerino69/real-estate-backend:${IMAGE_TAG:-latest}
     # Uncomment when building the image locally so we don't get warnings from Docker about missing variables
-    # build:
-    #   context: ./backend
-    #   dockerfile: Dockerfile
-    #   secrets: 
-    #     - DATABASE_URL
-    #   args:
-    #     NODE_VERSION: ${NODE_VERSION:-22.23}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      secrets: 
+        - DATABASE_URL
+      args:
+        NODE_VERSION: ${NODE_VERSION:-22.23}
     env_file:
       - ./backend/.env
     environment:
