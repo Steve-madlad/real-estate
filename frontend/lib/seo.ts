@@ -1,5 +1,6 @@
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_APP_URL || 'https://main.dj10cqjnl6way.amplifyapp.com';
+import { appPublicUrl } from './constants';
+
+export const SITE_URL = appPublicUrl || 'http://localhost:3000';
 export const SITE_NAME = 'Rentiful Real Estate';
 export const DEFAULT_OG_IMAGE = '/Rentiful-OG-image.png';
 

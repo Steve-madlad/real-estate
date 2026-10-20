@@ -178,3 +178,6 @@ export enum PropertyTypeEnum {
   'Town House' = 'Townhouse',
   Cottage = 'Cottage',
 }
+
+export const appPublicUrl = 'https://d10fau2xrmgzkt.cloudfront.net';
+// export const appPublicUrl = 'https://main.dj10cqjnl6way.amplifyapp.com';
