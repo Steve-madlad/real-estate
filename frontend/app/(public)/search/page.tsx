@@ -46,13 +46,18 @@ function Search() {
     [setFilters, updateUrl],
   );
 
-  const { refetch: searchLocation } = useGetLocation(locationInput, {
+  const { refetch: refetchLocation } = useGetLocation(locationInput, {
     enabled: false,
     onSuccess: onLocationSuccess,
     onError: () => {
       toast.error('Failed to fetch location. Please try again.');
     },
   });
+
+  const searchLocation = useCallback(() => {
+    if (!locationInput.trim()) return;
+    return refetchLocation();
+  }, [locationInput, refetchLocation]);
 
   const initialized = useRef(false);
 
