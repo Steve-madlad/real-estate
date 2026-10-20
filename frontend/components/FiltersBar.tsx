@@ -4,6 +4,7 @@ import { useUpdateFiltersUrl } from '@/hooks/useUpdateUrl';
 import { cn, k } from '@/lib/utils';
 import { useFiltersStore } from '@/store/filter-store';
 import { Grid, List, MapPin, Search, SlidersHorizontal, X } from 'lucide-react';
+import { useRef } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -68,6 +69,7 @@ export default function FiltersBar({
   const { filters, setFilters, viewMode, setViewMode, filtersSidebarOpen, toggleFiltersSidebar } =
     useFiltersStore();
   const updateUrl = useUpdateFiltersUrl();
+  const locationInputRef = useRef<HTMLInputElement>(null);
 
   type FilterKey =
     'location' | 'beds' | 'baths' | 'squareFeet' | 'priceMin' | 'priceMax' | 'propertyType';
@@ -150,6 +152,7 @@ export default function FiltersBar({
         >
           <MapPin className="text-muted-foreground absolute top-1/2 left-3 size-3.5 -translate-y-1/2" />
           <Input
+            ref={locationInputRef}
             value={locationInput}
             onChange={(e) => onLocationInputChange(e.target.value)}
             placeholder="City, ZIP, address"
@@ -161,6 +164,7 @@ export default function FiltersBar({
               onClick={() => {
                 onLocationInputChange('');
                 handleFilterChange('location', null);
+                locationInputRef.current?.focus();
               }}
               className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer"
             >
