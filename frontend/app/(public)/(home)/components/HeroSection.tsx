@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Building2, Loader2, MapPin, Search, ShieldCheck, Sparkles, Users } from 'lucide-react';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useFiltersStore } from '@/store/filter-store';
+import { motion } from 'framer-motion';
+import { Building2, Loader2, MapPin, Search, ShieldCheck, Sparkles, Users } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 const TRENDING_SEARCHES = [
   'New York',
@@ -65,7 +65,7 @@ export default function HeroSection() {
           sizes="100vw"
           className="scale-105 object-cover object-center opacity-85 transition-transform duration-1000 ease-out dark:opacity-65"
         />
-        <div className="dark:from-background absolute inset-0 bg-gradient-to-t from-black/50 via-black/25 to-black/40 dark:via-black/50 dark:to-black/70" />
+        <div className="dark:from-background absolute inset-0 bg-linear-to-t from-black/50 via-black/25 to-black/40 dark:via-black/50 dark:to-black/70" />
         <div className="absolute inset-0 bg-radial from-transparent via-black/15 to-black/35 dark:via-black/40 dark:to-black/80" />
       </div>
 
@@ -89,7 +89,7 @@ export default function HeroSection() {
           className="max-w-4xl text-4xl leading-[1.1] font-black tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
         >
           Find Your Next Home <br />
-          <span className="bg-gradient-to-r from-rose-400 via-amber-300 to-rose-400 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-rose-400 via-amber-300 to-rose-400 bg-clip-text text-transparent">
             Without the Hassle
           </span>
         </motion.h1>
